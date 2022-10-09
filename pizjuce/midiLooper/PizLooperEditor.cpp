@@ -264,7 +264,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Velocity->setBounds(306, 283, 72, 20);
 
     label3 = std::make_unique<juce::Label>("new label",
-                                 TRANS("Semitones"));
+                                           TRANS("Semitones"));
     addAndMakeVisible(label3.get());
     label3->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label3->setJustificationType(juce::Justification::centred);
@@ -276,7 +276,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label3->setBounds(146, 267, 72, 16);
 
     label4 = std::make_unique<juce::Label>("new label",
-                                 TRANS("Octave"));
+                                           TRANS("Octave"));
     addAndMakeVisible(label4.get());
     label4->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label4->setJustificationType(juce::Justification::centred);
@@ -288,7 +288,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label4->setBounds(226, 267, 72, 16);
 
     label5 = std::make_unique<juce::Label>("new label",
-                                 TRANS("Velocity"));
+                                           TRANS("Velocity"));
     addAndMakeVisible(label5.get());
     label5->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label5->setJustificationType(juce::Justification::centred);
@@ -313,7 +313,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Start->setBounds(66, 367, 72, 20);
 
     label6 = std::make_unique<juce::Label>("new label",
-                                 TRANS("Start Offset"));
+                                           TRANS("Start Offset"));
     addAndMakeVisible(label6.get());
     label6->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label6->setJustificationType(juce::Justification::centred);
@@ -338,7 +338,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_End->setBounds(146, 367, 72, 20);
 
     label7 = std::make_unique<juce::Label>("new label",
-                                 TRANS("End Offset"));
+                                           TRANS("End Offset"));
     addAndMakeVisible(label7.get());
     label7->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label7->setJustificationType(juce::Justification::centred);
@@ -363,7 +363,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Stretch->setBounds(306, 367, 72, 20);
 
     label8 = std::make_unique<juce::Label>("new label",
-                                 TRANS("Speed"));
+                                           TRANS("Speed"));
     addAndMakeVisible(label8.get());
     label8->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label8->setJustificationType(juce::Justification::centred);
@@ -433,7 +433,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Root->setBounds(76, 174, 64, 20);
 
     label9 = std::make_unique<juce::Label>("new label",
-                                 TRANS("Root Note:"));
+                                           TRANS("Root Note:"));
     addAndMakeVisible(label9.get());
     label9->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label9->setJustificationType(juce::Justification::centred);
@@ -458,7 +458,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Low->setBounds(18, 440, 64, 20);
 
     label10 = std::make_unique<juce::Label>("new label",
-                                  TRANS("Low Note"));
+                                            TRANS("Low Note"));
     addAndMakeVisible(label10.get());
     label10->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label10->setJustificationType(juce::Justification::centred);
@@ -483,7 +483,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_High->setBounds(90, 440, 64, 20);
 
     label11 = std::make_unique<juce::Label>("new label",
-                                  TRANS("High Note"));
+                                            TRANS("High Note"));
     addAndMakeVisible(label11.get());
     label11->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label11->setJustificationType(juce::Justification::centred);
@@ -508,7 +508,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_TrigChan->setBounds(162, 440, 64, 20);
 
     label12 = std::make_unique<juce::Label>("Trigger Channel",
-                                  TRANS("Channel"));
+                                            TRANS("Channel"));
     addAndMakeVisible(label12.get());
     label12->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label12->setJustificationType(juce::Justification::centred);
@@ -547,7 +547,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     quantizeBox->setBounds(439, 15, 77, 16);
 
     label21 = std::make_unique<juce::Label>("LoopStepSize",
-                                  TRANS("Loop Step Size"));
+                                            TRANS("Loop Step Size"));
     addAndMakeVisible(label21.get());
     label21->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label21->setJustificationType(juce::Justification::centred);
@@ -572,7 +572,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Shift->setBounds(226, 367, 72, 20);
 
     label2 = std::make_unique<juce::Label>("Shift",
-                                 TRANS("Beat Shift"));
+                                           TRANS("Beat Shift"));
     addAndMakeVisible(label2.get());
     label2->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label2->setJustificationType(juce::Justification::centred);
@@ -584,7 +584,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label2->setBounds(226, 351, 72, 16);
 
     label23 = std::make_unique<juce::Label>("QuantizeLabel",
-                                  TRANS("Quantize Input"));
+                                            TRANS("Quantize Input"));
     addAndMakeVisible(label23.get());
     label23->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label23->setJustificationType(juce::Justification::centred);
@@ -596,7 +596,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label23->setBounds(433, 0, 87, 16);
 
     nameLabel = std::make_unique<ClickableLabel>("Name",
-                                       TRANS("Bassline (4 bars)"));
+                                                 TRANS("Bassline (4 bars)"));
     addAndMakeVisible(nameLabel.get());
     nameLabel->setTooltip(TRANS("Current pattern name (double-click to edit)"));
     nameLabel->setFont(juce::Font(26.30f, juce::Font::plain).withTypefaceStyle("Bold"));
@@ -620,7 +620,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_Save->setBounds(304, 90, 39, 22);
 
     label22 = std::make_unique<juce::Label>("Sync",
-                                  TRANS("Host Sync Mode"));
+                                            TRANS("Host Sync Mode"));
     addAndMakeVisible(label22.get());
     label22->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label22->setJustificationType(juce::Justification::centred);
@@ -632,7 +632,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label22->setBounds(162, 0, 95, 16);
 
     label18 = std::make_unique<juce::Label>("Sync:",
-                                  TRANS("Note Triggering"));
+                                            TRANS("Note Triggering"));
     addAndMakeVisible(label18.get());
     label18->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     label18->setJustificationType(juce::Justification::centred);
@@ -644,7 +644,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label18->setBounds(12, 469, 125, 16);
 
     loopinfoLabel = std::make_unique<juce::Label>("Loop Info",
-                                        TRANS("label text"));
+                                                  TRANS("label text"));
     addAndMakeVisible(loopinfoLabel.get());
     loopinfoLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopinfoLabel->setJustificationType(juce::Justification::centredLeft);
@@ -656,7 +656,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     loopinfoLabel->setBounds(14, 205, 272, 16);
 
     loopinfoLabel2 = std::make_unique<juce::Label>("Loop Info 2",
-                                         TRANS("label text"));
+                                                   TRANS("label text"));
     addAndMakeVisible(loopinfoLabel2.get());
     loopinfoLabel2->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopinfoLabel2->setJustificationType(juce::Justification::centredLeft);
@@ -667,7 +667,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     loopinfoLabel2->setBounds(14, 225, 272, 16);
 
     label17 = std::make_unique<juce::Label>("Sync:",
-                                  TRANS("Loop Manipulation"));
+                                            TRANS("Loop Manipulation"));
     addAndMakeVisible(label17.get());
     label17->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     label17->setJustificationType(juce::Justification::centred);
@@ -692,7 +692,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Channel->setBounds(314, 414, 64, 20);
 
     label19 = std::make_unique<juce::Label>("I/O Channel",
-                                  TRANS("I/O Channel"));
+                                            TRANS("I/O Channel"));
     addAndMakeVisible(label19.get());
     label19->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label19->setJustificationType(juce::Justification::centred);
@@ -704,7 +704,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label19->setBounds(309, 398, 74, 16);
 
     label20 = std::make_unique<juce::Label>("RecordLengthLabel",
-                                  TRANS("Record Length"));
+                                            TRANS("Record Length"));
     addAndMakeVisible(label20.get());
     label20->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label20->setJustificationType(juce::Justification::centred);
@@ -738,7 +738,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Filt->setBounds(314, 440, 64, 20);
 
-    viewport = std::make_unique<PianoPort>("Piano Roll View");
+    viewport = std::make_unique<PianoRollViewport>("Piano Roll View");
     addAndMakeVisible(viewport.get());
     viewport->setScrollBarThickness(16);
     viewport->setViewedComponent(new PianoRoll(this->getFilter(), this, timeline.get()));
@@ -769,7 +769,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_PlayGroup->setBounds(312, 136, 64, 20);
 
     label13 = std::make_unique<juce::Label>("Trigger Channel",
-                                  TRANS("Play Group"));
+                                            TRANS("Play Group"));
     addAndMakeVisible(label13.get());
     label13->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label13->setJustificationType(juce::Justification::centred);
@@ -794,7 +794,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_MuteGroup->setBounds(312, 174, 64, 20);
 
     label14 = std::make_unique<juce::Label>("Trigger Channel",
-                                  TRANS("Mute Group"));
+                                            TRANS("Mute Group"));
     addAndMakeVisible(label14.get());
     label14->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label14->setJustificationType(juce::Justification::centred);
@@ -887,7 +887,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_MasterVelocity->setBounds(371, 36, 72, 16);
 
     label15 = std::make_unique<juce::Label>("new label",
-                                  TRANS("Master Velocity:"));
+                                            TRANS("Master Velocity:"));
     addAndMakeVisible(label15.get());
     label15->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label15->setJustificationType(juce::Justification::centredRight);
@@ -951,7 +951,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_ZoomIn->setBounds(674, 64, 18, 18);
 
     numerator = std::make_unique<juce::Label>("new label",
-                                    TRANS("4"));
+                                              TRANS("4"));
     addAndMakeVisible(numerator.get());
     numerator->setTooltip(TRANS("Time Sig Numerator"));
     numerator->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
@@ -964,7 +964,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     numerator->setBounds(555, 64, 27, 18);
 
     denominator = std::make_unique<juce::Label>("new label",
-                                      TRANS("4"));
+                                                TRANS("4"));
     addAndMakeVisible(denominator.get());
     denominator->setTooltip(TRANS("Time Sig Denominator"));
     denominator->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
@@ -999,7 +999,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_ScaleChannel->setBounds(10, 283, 60, 20);
 
     label25 = std::make_unique<juce::Label>("scale ch",
-                                  TRANS("Scale Ch"));
+                                            TRANS("Scale Ch"));
     addAndMakeVisible(label25.get());
     label25->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label25->setJustificationType(juce::Justification::centred);
@@ -1024,7 +1024,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_MasterTranspose->setBounds(554, 36, 72, 16);
 
     label26 = std::make_unique<juce::Label>("new label",
-                                  TRANS("Master Transpose:"));
+                                            TRANS("Master Transpose:"));
     addAndMakeVisible(label26.get());
     label26->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label26->setJustificationType(juce::Justification::centredRight);
@@ -1056,7 +1056,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     midiOutDeviceBox->setBounds(633, 15, 158, 16);
 
     label27 = std::make_unique<juce::Label>("QuantizeLabel",
-                                  TRANS("MIDI Output Device"));
+                                            TRANS("MIDI Output Device"));
     addAndMakeVisible(label27.get());
     label27->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label27->setJustificationType(juce::Justification::centred);
@@ -1112,7 +1112,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_NextSlot->setBounds(234, 174, 64, 20);
 
     label16 = std::make_unique<juce::Label>("Sync:",
-                                  TRANS("Loop Settings"));
+                                            TRANS("Loop Settings"));
     addAndMakeVisible(label16.get());
     label16->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     label16->setJustificationType(juce::Justification::centred);
@@ -1165,7 +1165,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_AddBar->setBounds(773, 64, 18, 18);
 
     LengthLabel = std::make_unique<juce::Label>("Length",
-                                      TRANS("4"));
+                                                TRANS("4"));
     addAndMakeVisible(LengthLabel.get());
     LengthLabel->setTooltip(TRANS("Pattern length in bars"));
     LengthLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
@@ -2137,7 +2137,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_VelocitySens->setBounds(234, 440, 64, 20);
 
     label24 = std::make_unique<juce::Label>("new label",
-                                  TRANS("VeloSens"));
+                                            TRANS("VeloSens"));
     addAndMakeVisible(label24.get());
     label24->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label24->setJustificationType(juce::Justification::centred);
@@ -2171,7 +2171,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_TransposeChannel->setBounds(76, 283, 60, 20);
 
     label28 = std::make_unique<juce::Label>("tr ch",
-                                  TRANS("Transpose Ch"));
+                                            TRANS("Transpose Ch"));
     addAndMakeVisible(label28.get());
     label28->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label28->setJustificationType(juce::Justification::centred);
@@ -2183,7 +2183,6 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     label28->setBounds(66, 267, 80, 16);
 
     cachedImage_piznew40_png_1 = juce::ImageCache::getFromMemory(piznew40_png, piznew40_pngSize);
-
 
     aboutButton->setTooltip(L"Insert Piz Here-> midiLooper v" + juce::String(JucePlugin_VersionString) + " https://github.com/sleiner/pizmidi");
     viewport->setTimeline(timeline.get());
@@ -2898,7 +2897,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 723, y = 64, width = 51, height = 18;
-        auto fillColour   = juce::Colour(0xffbababa);
+        auto fillColour           = juce::Colour(0xffbababa);
         juce::Colour strokeColour = juce::Colours::black;
 
         g.setColour(fillColour);

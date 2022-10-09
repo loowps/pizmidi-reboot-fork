@@ -6,7 +6,7 @@
 class KeySelector : public juce::MidiKeyboardComponent
 {
 public:
-    KeySelector(juce::MidiKeyboardState& state);
+    explicit KeySelector(juce::MidiKeyboardState& state);
     ~KeySelector() override;
 
 private:

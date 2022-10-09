@@ -17,6 +17,7 @@ target_sources(
           "${CMAKE_CURRENT_LIST_DIR}/PizLooper.h"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperEditor.h"
           "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.h"
+          "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollViewport.h"
           "${CMAKE_CURRENT_LIST_DIR}/ui/Timeline.h"
           # Sources
           "${CMAKE_CURRENT_LIST_DIR}/data/MidiLoop.cpp"
@@ -26,6 +27,7 @@ target_sources(
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperEditor.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperProcessing.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.cpp"
+          "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollViewport.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/ui/Timeline.cpp")
 
 target_link_libraries(

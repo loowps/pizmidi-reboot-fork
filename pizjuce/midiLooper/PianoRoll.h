@@ -9,60 +9,9 @@
 #include <juce_events/juce_events.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class PianoRoll;
-
-class PianoPort : public juce::Viewport, public juce::ChangeBroadcaster
-{
-public:
-    PianoPort(juce::String name)
-        : Viewport(name){};
-
-    ~PianoPort() override
-    {
-        dispatchPendingMessages();
-    }
-
-    void setTimeline(Timeline* t)
-    {
-        timeline = t;
-    }
-
-    void setPlayline(Component* p)
-    {
-        playline = p;
-    }
-
-    void setKeyboard(Viewport* kb)
-    {
-        keyboard = kb;
-    }
-
-    void mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) override
-    {
-        this->getParentComponent()->mouseWheelMove(e, wheel);
-    }
-
-    void visibleAreaChanged(const juce::Rectangle<int>& newVisibleArea) override
-    {
-        timeline->scrollOffset = newVisibleArea.getX();
-        timeline->repaint();
-        playline->setBounds(newVisibleArea);
-        keyboard->setViewPosition(0, newVisibleArea.getY());
-        sendChangeMessage();
-    }
-
-private:
-    Timeline* timeline;
-    Component* playline;
-    Viewport* keyboard;
-};
-
 class PianoRoll : public juce::Component,
                   public juce::ChangeBroadcaster
 {
-    friend class Timeline;
-    friend class PianoPort;
-
 public:
     PianoRoll(juce::AudioProcessor* _plugin, juce::AudioProcessorEditor* _owner, Timeline* _timeline);
     ~PianoRoll() override;
@@ -187,6 +136,8 @@ public:
     {
         bg->repaint();
     }
+
+    double seqLengthInPpq;
 
 private:
     juce::Rectangle<int> lasso;
@@ -403,7 +354,7 @@ private:
     int hoveringNoteIndex;
     double timebase;
     double stepLengthInPpq;
-    double seqLengthInPpq;
+
     float seqLength;
     float gridSize; //quantization grid size in pixels
     float beatSize; //number of pixels per beat

@@ -5,6 +5,7 @@
 #include "PianoRoll.h"
 #include "PizLooper.h"
 #include "ui/KeySelector.h"
+#include "ui/PianoRollViewport.h"
 
 //==============================================================================
 class PizLooperEditor : public juce::AudioProcessorEditor,
@@ -151,7 +152,7 @@ private:
     std::unique_ptr<juce::Label> label20;
     std::unique_ptr<VSTSlider> s_FixedLength;
     std::unique_ptr<juce::TextButton> b_Filt;
-    std::unique_ptr<PianoPort> viewport;
+    std::unique_ptr<PianoRollViewport> viewport;
     std::unique_ptr<juce::ResizableCornerComponent> resizer;
     std::unique_ptr<juce::TextButton> b_NoteToggle;
     std::unique_ptr<VSTSlider> s_PlayGroup;
