@@ -3,6 +3,7 @@
 
 #include "data/MidiLoop.h"
 #include "data/PizNote.h"
+#include "ui/Playbar.h"
 #include "ui/Timeline.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
@@ -138,6 +139,7 @@ public:
     }
 
     double seqLengthInPpq;
+    double playTime;
 
 private:
     juce::Rectangle<int> lasso;
@@ -163,36 +165,7 @@ private:
         selectedNoteLengths.clear();
     }
 
-    class Playbar : public Component
-    {
-    public:
-        Playbar(PianoRoll* pianoroll)
-            : Component(), roll(pianoroll)
-        {
-        }
-
-        ~Playbar() override
-        {
-        }
-
-        void paint(juce::Graphics& g) override
-        {
-            g.fillAll(juce::Colour(0x0));
-            //if (sequence->isRecording) {
-            //	g.setColour(Colours::red);
-            //	g.drawVerticalLine((int)((float)sequence->recTime*(float)getWidth()/seqLengthInPpq),0.f,(float)getHeight());
-            //}
-            //else {
-            g.setColour(juce::Colours::green);
-            g.drawVerticalLine((int) roll->ppqToPixelsWithOffset(roll->playTime), 0.f, (float) getHeight());
-            //}
-        }
-
-    private:
-        PianoRoll* roll;
-    };
-
-    class PianoRollBackground : public Component
+    class PianoRollBackground : public juce::Component
     {
     public:
         PianoRollBackground()
@@ -377,7 +350,6 @@ private:
     bool wasResizing;
     bool snapToGrid;
     float noteLength;
-    double playTime;
     double quarterNotesPerBar;
 };
 
