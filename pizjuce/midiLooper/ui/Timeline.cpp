@@ -1,4 +1,6 @@
-#include "PianoRoll.h"
+#include "Timeline.h"
+
+#include "../PianoRoll.h"
 
 using juce::jlimit;
 using juce::jmax;

@@ -3,41 +3,13 @@
 
 #include "data/MidiLoop.h"
 #include "data/PizNote.h"
+#include "ui/Timeline.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_events/juce_events.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
 class PianoRoll;
-
-class Timeline : public juce::Component, public juce::ChangeBroadcaster
-{
-    friend class PianoRoll;
-
-public:
-    Timeline();
-    ~Timeline() override;
-
-    void setPianoRoll(PianoRoll* pr);
-
-    void paint(juce::Graphics& g) override;
-    float getStartPixel();
-    float getEndPixel();
-    double getLength();
-    double getStart();
-
-    void setLoop(double start, double length);
-
-    void mouseDown(const juce::MouseEvent& e) override;
-    void mouseDrag(const juce::MouseEvent& e) override;
-
-    int scrollOffset;
-
-private:
-    double loopStart;
-    double loopEnd;
-    PianoRoll* roll;
-};
 
 class PianoPort : public juce::Viewport, public juce::ChangeBroadcaster
 {
