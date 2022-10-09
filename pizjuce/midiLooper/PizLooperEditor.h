@@ -4,40 +4,7 @@
 #include "../_common/VSTSlider.h"
 #include "PianoRoll.h"
 #include "PizLooper.h"
-
-#include <juce_audio_utils/juce_audio_utils.h>
-#include <juce_gui_basics/juce_gui_basics.h>
-
-class KeySelector : public juce::MidiKeyboardComponent
-{
-public:
-    KeySelector(juce::MidiKeyboardState& state)
-        : MidiKeyboardComponent(state, MidiKeyboardComponent::horizontalKeyboard)
-    {
-        s = &state;
-        this->setColour(MidiKeyboardComponent::textLabelColourId, juce::Colours::transparentBlack);
-    }
-
-    ~KeySelector() override
-    {
-    }
-
-private:
-    bool mouseDownOnKey(int midiNoteNumber, const juce::MouseEvent& e) override
-    {
-        if (s->isNoteOn(this->getMidiChannel(), midiNoteNumber))
-        {
-            s->noteOff(this->getMidiChannel(), midiNoteNumber, 1.f);
-        }
-        else
-        {
-            s->noteOn(this->getMidiChannel(), midiNoteNumber, 1.f);
-        }
-        return false;
-    }
-
-    juce::MidiKeyboardState* s;
-};
+#include "ui/KeySelector.h"
 
 //==============================================================================
 class PizLooperEditor : public juce::AudioProcessorEditor,

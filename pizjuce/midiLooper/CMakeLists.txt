@@ -15,12 +15,14 @@ target_sources(
           "${CMAKE_CURRENT_LIST_DIR}/piz_MidiMessageSequence.h"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooper.h"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperEditor.h"
+          "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.h"
           # Sources
           "${CMAKE_CURRENT_LIST_DIR}/MidiLoop.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PianoRoll.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/piz_MidiMessageSequence.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooper.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperEditor.cpp"
+          "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperProcessing.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/Timeline.cpp")
 
