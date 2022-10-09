@@ -4,7 +4,7 @@
 #include "../_common/key.h"
 #include "../_common/PizArray.h"
 #include "../_common/PizAudioProcessor.h"
-#include "MidiLoop.h"
+#include "data/MidiLoop.h"
 
 #include <juce_audio_devices/juce_audio_devices.h>
 #include <juce_data_structures/juce_data_structures.h>

@@ -1,41 +1,14 @@
 #ifndef PIZ_PIANO_ROLL_HEADER
 #define PIZ_PIANO_ROLL_HEADER
 
-#include "MidiLoop.h"
+#include "data/MidiLoop.h"
+#include "data/PizNote.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_events/juce_events.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
 class PianoRoll;
-
-struct PizNote
-{
-    PizNote()
-    {
-        object = nullptr;
-        length = -1;
-    }
-
-    PizNote(PizMidiMessageSequence::mehPtr _object)
-    {
-        object = _object;
-        jassert(_object->noteOffObject != nullptr);
-        length = _object->noteOffObject != nullptr ? _object->noteOffObject->message.getTimeStamp() - _object->message.getTimeStamp() : 0;
-    }
-
-    void updateLength()
-    {
-        if (object->message.isNoteOn())
-        {
-            jassert(object->noteOffObject != nullptr);
-            length = object->noteOffObject != nullptr ? object->noteOffObject->message.getTimeStamp() - object->message.getTimeStamp() : 0;
-        }
-    }
-
-    double length;
-    PizMidiMessageSequence::mehPtr object;
-};
 
 class Timeline : public juce::Component, public juce::ChangeBroadcaster
 {

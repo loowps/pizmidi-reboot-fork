@@ -10,16 +10,17 @@ piz_add_plugin(
 target_sources(
   piz_midiLooper
   PRIVATE # Headers
-          "${CMAKE_CURRENT_LIST_DIR}/MidiLoop.h"
+          "${CMAKE_CURRENT_LIST_DIR}/data/MidiLoop.h"
+          "${CMAKE_CURRENT_LIST_DIR}/data/PizNote.h"
           "${CMAKE_CURRENT_LIST_DIR}/PianoRoll.h"
-          "${CMAKE_CURRENT_LIST_DIR}/piz_MidiMessageSequence.h"
+          "${CMAKE_CURRENT_LIST_DIR}/data/piz_MidiMessageSequence.h"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooper.h"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperEditor.h"
           "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.h"
           # Sources
-          "${CMAKE_CURRENT_LIST_DIR}/MidiLoop.cpp"
+          "${CMAKE_CURRENT_LIST_DIR}/data/MidiLoop.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PianoRoll.cpp"
-          "${CMAKE_CURRENT_LIST_DIR}/piz_MidiMessageSequence.cpp"
+          "${CMAKE_CURRENT_LIST_DIR}/data/piz_MidiMessageSequence.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooper.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/PizLooperEditor.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.cpp"
