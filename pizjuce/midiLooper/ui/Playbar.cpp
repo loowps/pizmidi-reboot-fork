@@ -1,6 +1,6 @@
 #include "Playbar.h"
 
-#include "../PianoRoll.h"
+#include "PianoRoll.h"
 
 Playbar::Playbar(PianoRoll* pianoroll)
     : Component(), roll(pianoroll)

@@ -1,7 +1,7 @@
 
 #include "PianoRollNotes.h"
 
-#include "../PianoRoll.h"
+#include "PianoRoll.h"
 
 PianoRollNotes::PianoRollNotes()
 {

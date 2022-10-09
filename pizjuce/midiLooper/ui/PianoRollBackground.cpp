@@ -1,6 +1,6 @@
 #include "PianoRollBackground.h"
 
-#include "../PianoRoll.h"
+#include "PianoRoll.h"
 
 PianoRollBackground::PianoRollBackground()
 {

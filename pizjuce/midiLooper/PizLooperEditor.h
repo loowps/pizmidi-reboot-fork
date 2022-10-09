@@ -2,9 +2,9 @@
 
 #include "../_common/ClickableLabel.h"
 #include "../_common/VSTSlider.h"
-#include "PianoRoll.h"
 #include "PizLooper.h"
 #include "ui/KeySelector.h"
+#include "ui/PianoRoll.h"
 #include "ui/PianoRollViewport.h"
 
 //==============================================================================
