@@ -3,6 +3,7 @@
 
 #include "data/MidiLoop.h"
 #include "data/PizNote.h"
+#include "ui/PianoRollBackground.h"
 #include "ui/Playbar.h"
 #include "ui/Timeline.h"
 
@@ -141,6 +142,10 @@ public:
     double seqLengthInPpq;
     double playTime;
 
+    float gridSize; //quantization grid size in pixels
+    float beatSize; //number of pixels per beat
+    float barSize;  //number of pixels per measure
+
 private:
     juce::Rectangle<int> lasso;
     juce::Array<PizMidiMessageSequence::mehPtr> selectedNotes;
@@ -165,87 +170,7 @@ private:
         selectedNoteLengths.clear();
     }
 
-    class PianoRollBackground : public juce::Component
-    {
-    public:
-        PianoRollBackground()
-        {
-            setBufferedToImage(true);
-        }
-
-        ~PianoRollBackground() override
-        {
-        }
-
-        void paint(juce::Graphics& g) override
-        {
-            const PianoRoll* roll = (PianoRoll*) getParentComponent();
-            int n                 = 0;
-            float y               = (float) getHeight();
-            float yinc            = (float) getHeight() / 128.f;
-
-            while (y > 0)
-            {
-                if (getNoteNameWithoutOctave(n).contains("#"))
-                {
-                    g.setColour(juce::Colours::lightgrey);
-                }
-                else if (n == 60)
-                {
-                    g.setColour(juce::Colours::yellow);
-                }
-                else
-                {
-                    g.setColour(juce::Colours::white);
-                }
-                g.fillRect(0.f, y - yinc, (float) getWidth(), yinc);
-                if (getNoteNameWithoutOctave(n).contains("F") && ! getNoteNameWithoutOctave(n).contains("#"))
-                {
-                    g.setColour(juce::Colours::grey);
-                    g.drawLine(0.f, y, (float) getWidth(), y, 1);
-                }
-                if (getNoteNameWithoutOctave(n).contains("C") && ! getNoteNameWithoutOctave(n).contains("#"))
-                {
-                    g.setColour(juce::Colours::black);
-                    g.drawLine(0.f, y, (float) getWidth(), y, 1);
-                }
-                n++;
-                y -= yinc;
-            }
-            float x = roll->gridSize;
-            while (x < getWidth())
-            {
-                //draw grid
-                if (! (fmod(x, roll->barSize) < 0.0001) && ! (fmod(x, roll->beatSize) < 0.0001))
-                {
-                    g.setColour(juce::Colours::lightgrey);
-                    g.drawLine(x, 0.f, x, (float) getHeight());
-                }
-                x += roll->gridSize;
-            }
-            x = roll->beatSize;
-            while (x < getWidth())
-            {
-                //draw beats
-                if (! (fmod(x, roll->barSize) < 0.0001))
-                {
-                    g.setColour(juce::Colours::grey);
-                    g.drawLine(x, 0.f, x, (float) getHeight());
-                }
-                x += roll->beatSize;
-            }
-            x = roll->barSize;
-            while (x < getWidth())
-            {
-                //draw bars
-                g.setColour(juce::Colours::black);
-                g.drawLine(x, 0.f, x, (float) getHeight());
-                x += roll->barSize;
-            }
-        }
-    };
-
-    class PianoRollNotes : public Component
+    class PianoRollNotes : public juce::Component
     {
     public:
         PianoRollNotes()
@@ -268,7 +193,7 @@ private:
                     {
                         if (roll->sequence->getEventPointer(i)->message.isNoteOn() /* && (i-9999!=hoveringNote)*/)
                         {
-                            float noteLength = (float) (juce::jmax(1.0, (roll->sequence->getEventTime(roll->sequence->getIndexOfMatchingKeyUp(i)) - roll->sequence->getEventTime(i))) * (double) getWidth() / roll->seqLengthInPpq);
+                            auto noteLength = (float) (juce::jmax(1.0, (roll->sequence->getEventTime(roll->sequence->getIndexOfMatchingKeyUp(i)) - roll->sequence->getEventTime(i))) * (double) getWidth() / roll->seqLengthInPpq);
                             //if (i==sequence->indexOfLastNoteOn
                             //	|| abs(sequence->getEventTime(i)-sequence->getEventTime(sequence->indexOfLastNoteOn))<sequence->chordTolerance)
                             //	g.setColour(Colours::blue);
@@ -329,9 +254,7 @@ private:
     double stepLengthInPpq;
 
     float seqLength;
-    float gridSize; //quantization grid size in pixels
-    float beatSize; //number of pixels per beat
-    float barSize;  //number of pixels per measure
+
     int numEvents;
     float xinc;
     float yinc;
