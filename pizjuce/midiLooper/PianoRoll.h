@@ -4,6 +4,7 @@
 #include "data/MidiLoop.h"
 #include "data/PizNote.h"
 #include "ui/PianoRollBackground.h"
+#include "ui/PianoRollNotes.h"
 #include "ui/Playbar.h"
 #include "ui/Timeline.h"
 
@@ -146,9 +147,18 @@ public:
     float beatSize; //number of pixels per beat
     float barSize;  //number of pixels per measure
 
+    Loop* sequence;
+
+    float xinc;
+    float yinc;
+
+    int draggingNoteTransposition;
+    double draggingNoteTimeDelta;
+
+    juce::Array<PizMidiMessageSequence::mehPtr> selectedNotes;
+
 private:
     juce::Rectangle<int> lasso;
-    juce::Array<PizMidiMessageSequence::mehPtr> selectedNotes;
     juce::Array<PizNote> selectedNoteLengths;
 
     void addToSelection(PizMidiMessageSequence::mehPtr note)
@@ -170,84 +180,12 @@ private:
         selectedNoteLengths.clear();
     }
 
-    class PianoRollNotes : public juce::Component
-    {
-    public:
-        PianoRollNotes()
-        {
-            setBufferedToImage(true);
-        }
-
-        ~PianoRollNotes() override
-        {
-        }
-
-        void paint(juce::Graphics& g) override
-        {
-            const PianoRoll* roll = (PianoRoll*) getParentComponent();
-            if (roll->barSize > 0)
-            {
-                if (roll->sequence)
-                {
-                    for (int i = 0; i < roll->sequence->getNumEvents(); i++)
-                    {
-                        if (roll->sequence->getEventPointer(i)->message.isNoteOn() /* && (i-9999!=hoveringNote)*/)
-                        {
-                            auto noteLength = (float) (juce::jmax(1.0, (roll->sequence->getEventTime(roll->sequence->getIndexOfMatchingKeyUp(i)) - roll->sequence->getEventTime(i))) * (double) getWidth() / roll->seqLengthInPpq);
-                            //if (i==sequence->indexOfLastNoteOn
-                            //	|| abs(sequence->getEventTime(i)-sequence->getEventTime(sequence->indexOfLastNoteOn))<sequence->chordTolerance)
-                            //	g.setColour(Colours::blue);
-                            //else
-                            if (roll->selectedNotes.contains(roll->sequence->getEventPointer(i)))
-                            {
-                                //outline of original note position
-                                g.setColour(juce::Colours::blue);
-                                g.drawRect((float) getWidth() * (float) (roll->sequence->getEventTime(i) / roll->seqLengthInPpq),
-                                           (float) getHeight() - (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber()) * roll->yinc - roll->yinc,
-                                           noteLength,
-                                           roll->yinc);
-
-                                //dragging note position
-                                const double newTime = (float) ((roll->sequence->getEventTime(i) + roll->draggingNoteTimeDelta));
-                                const float newNote  = (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber() + roll->draggingNoteTransposition);
-                                g.setColour(juce::Colours::darkgoldenrod.withAlpha(roll->sequence->getEventPointer(i)->message.getFloatVelocity()));
-                                g.fillRect((float) getWidth() * (float) (newTime / roll->seqLengthInPpq),
-                                           (float) getHeight() - newNote * roll->yinc - roll->yinc,
-                                           noteLength,
-                                           roll->yinc);
-                                g.setColour(juce::Colours::red);
-                                g.drawRect((float) getWidth() * (float) (newTime / roll->seqLengthInPpq),
-                                           (float) getHeight() - newNote * roll->yinc - roll->yinc,
-                                           noteLength,
-                                           roll->yinc);
-                            }
-                            else
-                            {
-                                g.setColour(juce::Colours::darkgoldenrod.withAlpha(roll->sequence->getEventPointer(i)->message.getFloatVelocity()));
-                                g.fillRect((float) getWidth() * (float) (roll->sequence->getEventTime(i) / roll->seqLengthInPpq),
-                                           (float) getHeight() - (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber()) * roll->yinc - roll->yinc,
-                                           noteLength,
-                                           roll->yinc);
-                                g.setColour(juce::Colours::black);
-                                g.drawRect((float) getWidth() * (float) (roll->sequence->getEventTime(i) / roll->seqLengthInPpq),
-                                           (float) getHeight() - (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber()) * roll->yinc - roll->yinc,
-                                           noteLength,
-                                           roll->yinc);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    };
-
     Timeline* timeline;
     Playbar* playline;
     PianoRollBackground* bg;
     PianoRollNotes* noteLayer;
     juce::AudioProcessor* plugin;
     juce::AudioProcessorEditor* owner;
-    Loop* sequence;
     PizMidiMessageSequence::mehPtr hoveringNote;
     int hoveringNoteIndex;
     double timebase;
@@ -256,8 +194,6 @@ private:
     float seqLength;
 
     int numEvents;
-    float xinc;
-    float yinc;
     double lastDragTime;
     juce::uint8 draggingNoteChannel;
     int draggingNoteNumber;
@@ -266,9 +202,6 @@ private:
     double draggingNoteLength;
     double draggingNoteStartTime;
     double draggingNoteEndOffset;
-
-    int draggingNoteTransposition;
-    double draggingNoteTimeDelta;
 
     bool wasResizing;
     bool snapToGrid;

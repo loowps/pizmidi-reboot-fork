@@ -19,6 +19,7 @@ target_sources(
           "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.h"
           "${CMAKE_CURRENT_LIST_DIR}/ui/Playbar.h"
           "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollBackground.h"
+          "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollNotes.h"
           "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollViewport.h"
           "${CMAKE_CURRENT_LIST_DIR}/ui/Timeline.h"
           # Sources
@@ -31,6 +32,7 @@ target_sources(
           "${CMAKE_CURRENT_LIST_DIR}/ui/KeySelector.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/ui/Playbar.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollBackground.cpp"
+          "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollNotes.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollViewport.cpp"
           "${CMAKE_CURRENT_LIST_DIR}/ui/Timeline.cpp")
 
