@@ -9,19 +9,263 @@ using juce::roundToInt;
 PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     : AudioProcessorEditor(ownerFilter)
 {
-    label = std::make_unique<juce::Label>("new label", TRANS("Zoom"));
-    addAndMakeVisible(label.get());
-    label->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label->setJustificationType(juce::Justification::centredLeft);
-    label->setEditable(false, false, false);
-    label->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    aboutButton = std::make_unique<juce::ImageButton>("new button");
+    addAndMakeVisible(aboutButton.get());
+    aboutButton->setTooltip(TRANS("Insert Piz Here-> midiLooper v1.3  https://github.com/sleiner/pizmidi"));
+    aboutButton->setButtonText(juce::String());
+    aboutButton->setImages(false, true, true, juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000));
+    aboutButton->setBounds(9, 1, 136, 47);
+    aboutButton->onClick = []
+    {
+        handleAboutButtonClick();
+    };
+    aboutButton->setTooltip(L"Insert Piz Here-> midiLooper v" + juce::String(JucePlugin_VersionString) + " https://github.com/sleiner/pizmidi");
 
-    label->setBounds(613, 64, 46, 18);
+    hostSyncModeLabel = std::make_unique<juce::Label>("Sync",
+                                                      TRANS("Host Sync Mode"));
+    addAndMakeVisible(hostSyncModeLabel.get());
+    hostSyncModeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    hostSyncModeLabel->setJustificationType(juce::Justification::centred);
+    hostSyncModeLabel->setEditable(false, false, false);
+    hostSyncModeLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    hostSyncModeLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    hostSyncModeLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    timeline = std::make_unique<Timeline>();
-    addAndMakeVisible(timeline.get());
-    timeline->setName("timeline");
+    hostSyncModeLabel->setBounds(162, 0, 95, 16);
+
+    syncModeComboBox = std::make_unique<juce::ComboBox>("Sync");
+    addAndMakeVisible(syncModeComboBox.get());
+    syncModeComboBox->setTooltip(TRANS("\"PPQ\" modes always follow host timeline, which may not work in all hosts. \"Sample\" mode ignores the host\'s timeline, but the host\'s tempo is still followed."));
+    syncModeComboBox->setEditableText(false);
+    syncModeComboBox->setJustificationType(juce::Justification::centredLeft);
+    syncModeComboBox->setTextWhenNothingSelected(TRANS("PPQ (Recstart)"));
+    syncModeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    syncModeComboBox->addItem(TRANS("PPQ (Host 0)"), 1);
+    syncModeComboBox->addItem(TRANS("PPQ (Recstart)"), 2);
+    syncModeComboBox->addItem(TRANS("Sample"), 3);
+    syncModeComboBox->onChange = [this]
+    {
+        handleSyncModeComboBoxChange();
+    };
+
+    syncModeComboBox->setBounds(159, 15, 99, 16);
+
+    loopStepSizeLabel = std::make_unique<juce::Label>("LoopStepSize",
+                                                      TRANS("Loop Step Size"));
+    addAndMakeVisible(loopStepSizeLabel.get());
+    loopStepSizeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    loopStepSizeLabel->setJustificationType(juce::Justification::centred);
+    loopStepSizeLabel->setEditable(false, false, false);
+    loopStepSizeLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    loopStepSizeLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    loopStepSizeLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    loopStepSizeLabel->setBounds(261, 0, 84, 16);
+
+    stepSizeComboBox = std::make_unique<juce::ComboBox>("Loop Step Size");
+    addAndMakeVisible(stepSizeComboBox.get());
+    stepSizeComboBox->setTooltip(TRANS("Recording length will be quantized to this step size."));
+    stepSizeComboBox->setEditableText(false);
+    stepSizeComboBox->setJustificationType(juce::Justification::centredLeft);
+    stepSizeComboBox->setTextWhenNothingSelected(TRANS("16th Note"));
+    stepSizeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    stepSizeComboBox->addItem(TRANS("1 Bar"), 1);
+    stepSizeComboBox->addItem(TRANS("3 Beats"), 2);
+    stepSizeComboBox->addItem(TRANS("2 Beats"), 3);
+    stepSizeComboBox->addItem(TRANS("1 Beat"), 4);
+    stepSizeComboBox->addItem(TRANS("16th Note"), 5);
+    stepSizeComboBox->addItem(TRANS("1 Tick"), 6);
+    stepSizeComboBox->setBounds(264, 15, 77, 16);
+    stepSizeComboBox->onChange = [this]
+    {
+        handleStepsizeComboBoxChange();
+    };
+
+    recordLengthLabel = std::make_unique<juce::Label>("RecordLengthLabel",
+                                                      TRANS("Record Length"));
+    addAndMakeVisible(recordLengthLabel.get());
+    recordLengthLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    recordLengthLabel->setJustificationType(juce::Justification::centred);
+    recordLengthLabel->setEditable(false, false, false);
+    recordLengthLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    recordLengthLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    recordLengthLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    recordLengthLabel->setBounds(347, 0, 83, 16);
+
+    fixedLengthSlider = std::make_unique<VSTSlider>("Recording Length");
+    addAndMakeVisible(fixedLengthSlider.get());
+    fixedLengthSlider->setTooltip(TRANS("If set to \"Manual\", recording will go on as long as the record button is on. Otherwise, length will be limited to this number of steps (based on \"Loop Step Size\" setting)."));
+    fixedLengthSlider->setRange(0, 32, 1);
+    fixedLengthSlider->setSliderStyle(juce::Slider::LinearBar);
+    fixedLengthSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    fixedLengthSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
+    fixedLengthSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    fixedLengthSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    fixedLengthSlider->onValueChange = [this]
+    {
+        handleFixedLengthSliderChange();
+    };
+    fixedLengthSlider->setBounds(347, 15, 86, 16);
+
+    quantizeComboBox = std::make_unique<juce::ComboBox>("Input Quantize Step");
+    addAndMakeVisible(quantizeComboBox.get());
+    quantizeComboBox->setTooltip(TRANS("Recorded events will be quantized to this step size"));
+    quantizeComboBox->setEditableText(false);
+    quantizeComboBox->setJustificationType(juce::Justification::centredLeft);
+    quantizeComboBox->setTextWhenNothingSelected(TRANS("32nd"));
+    quantizeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    quantizeComboBox->addItem(TRANS("Off"), 1);
+    quantizeComboBox->addItem(TRANS("8th"), 2);
+    quantizeComboBox->addItem(TRANS("16th"), 3);
+    quantizeComboBox->addItem(TRANS("32nd"), 4);
+    quantizeComboBox->addItem(TRANS("64th"), 5);
+    quantizeComboBox->onChange = [this]
+    {
+        handleQuantizeComboBoxChange();
+    };
+
+    quantizeComboBox->setBounds(439, 15, 77, 16);
+
+    quantizeInputLabel = std::make_unique<juce::Label>("QuantizeLabel",
+                                                       TRANS("Quantize Input"));
+    addAndMakeVisible(quantizeInputLabel.get());
+    quantizeInputLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    quantizeInputLabel->setJustificationType(juce::Justification::centred);
+    quantizeInputLabel->setEditable(false, false, false);
+    quantizeInputLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    quantizeInputLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    quantizeInputLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    quantizeInputLabel->setBounds(433, 0, 87, 16);
+
+    overdubButton = std::make_unique<juce::TextButton>("Overdub");
+    addAndMakeVisible(overdubButton.get());
+    overdubButton->setTooltip(TRANS("Toggle overdub recording"));
+    overdubButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+    overdubButton->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+    overdubButton->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    overdubButton->setBounds(523, 12, 80, 20);
+    overdubButton->onClick = [this]
+    {
+        handleOverdubButtonClick();
+    };
+
+    midiOutDeviceComboBox = std::make_unique<juce::ComboBox>("midiOutDevice");
+    addAndMakeVisible(midiOutDeviceComboBox.get());
+    midiOutDeviceComboBox->setTooltip(TRANS("Send output to selected MIDI port in addition to VST host output"));
+    midiOutDeviceComboBox->setEditableText(false);
+    midiOutDeviceComboBox->setJustificationType(juce::Justification::centredLeft);
+    midiOutDeviceComboBox->setTextWhenNothingSelected(TRANS("--"));
+    midiOutDeviceComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    midiOutDeviceComboBox->onChange = [this]
+    {
+        handleMidiOutDeviceComboBoxChange();
+    };
+
+    midiOutDeviceComboBox->setBounds(633, 15, 158, 16);
+
+    midiOutDeviceLabel = std::make_unique<juce::Label>("QuantizeLabel",
+                                                       TRANS("MIDI Output Device"));
+    addAndMakeVisible(midiOutDeviceLabel.get());
+    midiOutDeviceLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    midiOutDeviceLabel->setJustificationType(juce::Justification::centred);
+    midiOutDeviceLabel->setEditable(false, false, false);
+    midiOutDeviceLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    midiOutDeviceLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    midiOutDeviceLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    midiOutDeviceLabel->setBounds(627, 0, 117, 16);
+
+    singleLoopToggleButton = std::make_unique<juce::ToggleButton>("Single Loop");
+    addAndMakeVisible(singleLoopToggleButton.get());
+    singleLoopToggleButton->setTooltip(TRANS("When checked, switching from a playing slot to another slot will automatically play the new slot and stop the previous one"));
+    singleLoopToggleButton->setButtonText(TRANS("Play active slot only"));
+    singleLoopToggleButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+    singleLoopToggleButton->setBounds(155, 36, 122, 16);
+    singleLoopToggleButton->onClick = [this]
+    {
+        handleSingleLoopButtonClick();
+    };
+
+    masterVelocitySlider = std::make_unique<VSTSlider>("VMasterVelocity");
+    addAndMakeVisible(masterVelocitySlider.get());
+    masterVelocitySlider->setTooltip(TRANS("Global velocity adjustment applied to all played notes"));
+    masterVelocitySlider->setRange(0, 200, 1);
+    masterVelocitySlider->setSliderStyle(juce::Slider::LinearBar);
+    masterVelocitySlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    masterVelocitySlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
+    masterVelocitySlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    masterVelocitySlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    masterVelocitySlider->onValueChange = [this]
+    {
+        handleMasterVelocitySliderChange();
+    };
+
+    masterVelocitySlider->setBounds(371, 36, 72, 16);
+
+    masterVelocityLabel = std::make_unique<juce::Label>("new label",
+                                                        TRANS("Master Velocity:"));
+    addAndMakeVisible(masterVelocityLabel.get());
+    masterVelocityLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    masterVelocityLabel->setJustificationType(juce::Justification::centredRight);
+    masterVelocityLabel->setEditable(false, false, false);
+    masterVelocityLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    masterVelocityLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    masterVelocityLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    masterVelocityLabel->setBounds(283, 36, 88, 16);
+
+    masterTransposeSlider = std::make_unique<VSTSlider>("MasterTranspose");
+    addAndMakeVisible(masterTransposeSlider.get());
+    masterTransposeSlider->setTooltip(TRANS("Global transposition applied to all played notes (after Force to Scale)"));
+    masterTransposeSlider->setRange(-12, 12, 1);
+    masterTransposeSlider->setSliderStyle(juce::Slider::LinearBar);
+    masterTransposeSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    masterTransposeSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
+    masterTransposeSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    masterTransposeSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    masterTransposeSlider->onValueChange = [this]
+    {
+        handleMasterTransposeSliderChange();
+    };
+
+    masterTransposeSlider->setBounds(554, 36, 72, 16);
+
+    masterTransposeLabel = std::make_unique<juce::Label>("new label",
+                                                         TRANS("Master Transpose:"));
+    addAndMakeVisible(masterTransposeLabel.get());
+    masterTransposeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    masterTransposeLabel->setJustificationType(juce::Justification::centredRight);
+    masterTransposeLabel->setEditable(false, false, false);
+    masterTransposeLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    masterTransposeLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    masterTransposeLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    masterTransposeLabel->setBounds(452, 36, 102, 16);
+
+    midiThruButton = std::make_unique<juce::TextButton>("MIDI Thru");
+    addAndMakeVisible(midiThruButton.get());
+    midiThruButton->setTooltip(TRANS("Toggle MIDI Thru (Notes selected for Note Triggering and Scale Channel are always blocked)"));
+    midiThruButton->setButtonText(TRANS("Thru"));
+    midiThruButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+    midiThruButton->setBounds(634, 33, 40, 20);
+    midiThruButton->onClick = [this]
+    {
+        handleThruButtonClick();
+    };
+
+    monitorButton = std::make_unique<juce::TextButton>("MIDI_Monitor");
+    addAndMakeVisible(monitorButton.get());
+    monitorButton->setTooltip(TRANS("Monitor input MIDI through active slot\'s settings (Transpose, Scale, I/O Channel)"));
+    monitorButton->setButtonText(TRANS("Monitor"));
+    monitorButton->onClick = [this]
+    {
+        handleMonitorButtonClick();
+    };
+    monitorButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+
+    monitorButton->setBounds(678, 33, 55, 20);
 
     textButton1 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton1.get());
@@ -152,1139 +396,785 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton16->setBounds(359, 61, 28, 24);
 
-    b_Play = std::make_unique<juce::TextButton>("Play");
-    addAndMakeVisible(b_Play.get());
-    b_Play->setTooltip(TRANS("Toggle playback of current slot"));
-    b_Play->setButtonText(TRANS("PLAY"));
-    b_Play->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnTop);
-    b_Play->setColour(juce::TextButton::buttonColourId, juce::Colour(0xd213540e));
-    b_Play->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff00c400));
-    b_Play->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
-    b_Play->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
-
-    b_Play->setBounds(78, 117, 72, 50);
-
-    b_Record = std::make_unique<juce::TextButton>("Record");
-    addAndMakeVisible(b_Record.get());
-    b_Record->setTooltip(TRANS("Toggle recording to current slot"));
-    b_Record->setButtonText(TRANS("RECORD "));
-    b_Record->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnTop);
-    b_Record->setColour(juce::TextButton::buttonColourId, juce::Colour(0xd2a90000));
-    b_Record->setColour(juce::TextButton::buttonOnColourId, juce::Colours::red);
-    b_Record->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
-    b_Record->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
-
-    b_Record->setBounds(6, 117, 72, 50);
-
-    b_Overdub = std::make_unique<juce::TextButton>("Overdub");
-    addAndMakeVisible(b_Overdub.get());
-    b_Overdub->setTooltip(TRANS("Toggle overdub recording"));
-    b_Overdub->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-    b_Overdub->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
-    b_Overdub->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
-    b_Overdub->setBounds(523, 12, 80, 20);
-    b_Overdub->onClick = [this]
+    patternNameLabel = std::make_unique<ClickableLabel>("Name",
+                                                        TRANS("Bassline (4 bars)"));
+    addAndMakeVisible(patternNameLabel.get());
+    patternNameLabel->setTooltip(TRANS("Current pattern name (double-click to edit)"));
+    patternNameLabel->setFont(juce::Font(26.30f, juce::Font::plain).withTypefaceStyle("Bold"));
+    patternNameLabel->setJustificationType(juce::Justification::centredLeft);
+    patternNameLabel->setEditable(false, true, false);
+    patternNameLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    patternNameLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::white);
+    patternNameLabel->onTextChange = [this]
     {
-        handleOverdubButtonClick();
+        handleNameLabelTextChange();
     };
+    patternNameLabel->setBounds(4, 87, 256, 27);
 
-    b_Thru = std::make_unique<juce::TextButton>("MIDI Thru");
-    addAndMakeVisible(b_Thru.get());
-    b_Thru->setTooltip(TRANS("Toggle MIDI Thru (Notes selected for Note Triggering and Scale Channel are always blocked)"));
-    b_Thru->setButtonText(TRANS("Thru"));
-    b_Thru->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-    b_Thru->setBounds(634, 33, 40, 20);
-    b_Thru->onClick = [this]
-    {
-        handleThruButtonClick();
-    };
-
-    b_Clear = std::make_unique<juce::TextButton>("Clear");
-    addAndMakeVisible(b_Clear.get());
-    b_Clear->setTooltip(TRANS("Erase MIDI data from the current slot"));
-    b_Clear->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_Clear->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
-    b_Clear->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
-    b_Clear->setColour(juce::TextButton::textColourOnId, juce::Colours::azure);
-    b_Clear->setBounds(264, 90, 39, 22);
-    b_Clear->onClick = [this]
+    clearButton = std::make_unique<juce::TextButton>("Clear");
+    addAndMakeVisible(clearButton.get());
+    clearButton->setTooltip(TRANS("Erase MIDI data from the current slot"));
+    clearButton->setConnectedEdges(juce::Button::ConnectedOnRight);
+    clearButton->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    clearButton->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    clearButton->setColour(juce::TextButton::textColourOnId, juce::Colours::azure);
+    clearButton->setBounds(264, 90, 39, 22);
+    clearButton->onClick = [this]
     {
         handleClearButtonClick();
     };
 
-    stepsizeBox = std::make_unique<juce::ComboBox>("Loop Step Size");
-    addAndMakeVisible(stepsizeBox.get());
-    stepsizeBox->setTooltip(TRANS("Recording length will be quantized to this step size."));
-    stepsizeBox->setEditableText(false);
-    stepsizeBox->setJustificationType(juce::Justification::centredLeft);
-    stepsizeBox->setTextWhenNothingSelected(TRANS("16th Note"));
-    stepsizeBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    stepsizeBox->addItem(TRANS("1 Bar"), 1);
-    stepsizeBox->addItem(TRANS("3 Beats"), 2);
-    stepsizeBox->addItem(TRANS("2 Beats"), 3);
-    stepsizeBox->addItem(TRANS("1 Beat"), 4);
-    stepsizeBox->addItem(TRANS("16th Note"), 5);
-    stepsizeBox->addItem(TRANS("1 Tick"), 6);
-    stepsizeBox->setBounds(264, 15, 77, 16);
-    stepsizeBox->onChange = [this] {
-        handleStepsizeComboBoxChange();
-    };
-
-    s_Transpose = std::make_unique<VSTSlider>("Transpose");
-    addAndMakeVisible(s_Transpose.get());
-    s_Transpose->setTooltip(TRANS("Transposition applied to the current slot"));
-    s_Transpose->setRange(-12, 12, 1);
-    s_Transpose->setSliderStyle(juce::Slider::LinearBar);
-    s_Transpose->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_Transpose->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Transpose->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Transpose->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Transpose->onValueChange = [this] {
-        handleTransposeSliderChange();
-    };
-
-    s_Transpose->setBounds(146, 283, 72, 20);
-
-    s_Octave = std::make_unique<VSTSlider>("Octave Shift");
-    addAndMakeVisible(s_Octave.get());
-    s_Octave->setTooltip(TRANS("Transposition by octave for the current slot"));
-    s_Octave->setRange(-4, 4, 1);
-    s_Octave->setSliderStyle(juce::Slider::LinearBar);
-    s_Octave->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_Octave->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Octave->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Octave->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Octave->onValueChange = [this] {
-      handleOctaveSliderChange();
-    };
-
-    s_Octave->setBounds(226, 283, 72, 20);
-
-    s_Velocity = std::make_unique<VSTSlider>("Velocity Offset");
-    addAndMakeVisible(s_Velocity.get());
-    s_Velocity->setTooltip(TRANS("Velocity adjustment for the current slot"));
-    s_Velocity->setRange(0, 200, 1);
-    s_Velocity->setSliderStyle(juce::Slider::LinearBar);
-    s_Velocity->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_Velocity->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Velocity->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Velocity->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Velocity->onValueChange = [this] {
-        handleVelocitySliderChange();
-    };
-
-    s_Velocity->setBounds(306, 283, 72, 20);
-
-    label3 = std::make_unique<juce::Label>("new label",
-                                           TRANS("Semitones"));
-    addAndMakeVisible(label3.get());
-    label3->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label3->setJustificationType(juce::Justification::centred);
-    label3->setEditable(false, false, false);
-    label3->setColour(juce::Label::textColourId, juce::Colours::white);
-    label3->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label3->setBounds(146, 267, 72, 16);
-
-    label4 = std::make_unique<juce::Label>("new label",
-                                           TRANS("Octave"));
-    addAndMakeVisible(label4.get());
-    label4->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label4->setJustificationType(juce::Justification::centred);
-    label4->setEditable(false, false, false);
-    label4->setColour(juce::Label::textColourId, juce::Colours::white);
-    label4->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label4->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label4->setBounds(226, 267, 72, 16);
-
-    label5 = std::make_unique<juce::Label>("new label",
-                                           TRANS("Velocity"));
-    addAndMakeVisible(label5.get());
-    label5->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label5->setJustificationType(juce::Justification::centred);
-    label5->setEditable(false, false, false);
-    label5->setColour(juce::Label::textColourId, juce::Colours::white);
-    label5->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label5->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label5->setBounds(301, 267, 80, 16);
-
-    s_Start = std::make_unique<VSTSlider>("Loop Start");
-    addAndMakeVisible(s_Start.get());
-    s_Start->setTooltip(TRANS("Offsets the loop start time by this number of beats"));
-    s_Start->setRange(-8, 8, 1);
-    s_Start->setSliderStyle(juce::Slider::LinearBar);
-    s_Start->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
-    s_Start->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Start->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Start->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Start->onValueChange = [this] {
-        handleStartSliderChange();
-    };
-
-    s_Start->setBounds(66, 367, 72, 20);
-
-    label6 = std::make_unique<juce::Label>("new label",
-                                           TRANS("Start Offset"));
-    addAndMakeVisible(label6.get());
-    label6->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label6->setJustificationType(juce::Justification::centred);
-    label6->setEditable(false, false, false);
-    label6->setColour(juce::Label::textColourId, juce::Colours::white);
-    label6->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label6->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label6->setBounds(66, 351, 72, 16);
-
-    s_End = std::make_unique<VSTSlider>("Loop End");
-    addAndMakeVisible(s_End.get());
-    s_End->setTooltip(TRANS("Offsets the loop end time by this number of beats"));
-    s_End->setRange(-8, 8, 1);
-    s_End->setSliderStyle(juce::Slider::LinearBar);
-    s_End->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
-    s_End->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_End->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_End->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_End->onValueChange = [this] {
-        handleEndSliderChange();
-    };
-
-    s_End->setBounds(146, 367, 72, 20);
-
-    label7 = std::make_unique<juce::Label>("new label",
-                                           TRANS("End Offset"));
-    addAndMakeVisible(label7.get());
-    label7->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label7->setJustificationType(juce::Justification::centred);
-    label7->setEditable(false, false, false);
-    label7->setColour(juce::Label::textColourId, juce::Colours::white);
-    label7->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label7->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label7->setBounds(146, 351, 72, 16);
-
-    s_Stretch = std::make_unique<VSTSlider>("Loop Stretch");
-    addAndMakeVisible(s_Stretch.get());
-    s_Stretch->setTooltip(TRANS("Playback speed, relative to host tempo"));
-    s_Stretch->setRange(-10, 10, 1);
-    s_Stretch->setSliderStyle(juce::Slider::LinearBar);
-    s_Stretch->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_Stretch->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Stretch->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Stretch->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Stretch->onValueChange = [this] {
-        handleStretchSliderChange();
-    };
-
-    s_Stretch->setBounds(306, 367, 72, 20);
-
-    label8 = std::make_unique<juce::Label>("new label",
-                                           TRANS("Speed"));
-    addAndMakeVisible(label8.get());
-    label8->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label8->setJustificationType(juce::Justification::centred);
-    label8->setEditable(false, false, false);
-    label8->setColour(juce::Label::textColourId, juce::Colours::white);
-    label8->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label8->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label8->setBounds(306, 351, 72, 16);
-
-    loopmodeBox = std::make_unique<juce::ComboBox>("Loop Mode");
-    addAndMakeVisible(loopmodeBox.get());
-    loopmodeBox->setTooltip(TRANS("Playback Mode: \"Sync Loop\" follows the host timeline. \"Loop after rec\" is the same but also plays automatically as soon as recording ends. \"Unsync\" modes play the pattern from the beginning as soon as playback is started."));
-    loopmodeBox->setEditableText(false);
-    loopmodeBox->setJustificationType(juce::Justification::centredLeft);
-    loopmodeBox->setTextWhenNothingSelected(TRANS("Unsync 1-shot"));
-    loopmodeBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    loopmodeBox->addItem(TRANS("Loop after rec"), 1);
-    loopmodeBox->addItem(TRANS("Sync loop"), 2);
-    loopmodeBox->addItem(TRANS("Unsync 1-shot"), 3);
-    loopmodeBox->addItem(TRANS("Unsync loop"), 4);
-    loopmodeBox->onChange = [this] {
-        handleLoopModeComboBoxChange();
-    };
-
-    loopmodeBox->setBounds(175, 144, 110, 16);
-
-    notetriggerBox = std::make_unique<juce::ComboBox>("Note Trigger");
-    addAndMakeVisible(notetriggerBox.get());
-    notetriggerBox->setTooltip(TRANS("For \"Transpose\" modes, pattern will be transposed relative to \"Root Note\""));
-    notetriggerBox->setEditableText(false);
-    notetriggerBox->setJustificationType(juce::Justification::centredLeft);
-    notetriggerBox->setTextWhenNothingSelected(TRANS("Mono (Transposed)"));
-    notetriggerBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    notetriggerBox->addItem(TRANS("Off"), 1);
-    notetriggerBox->addItem(TRANS("Mono (Transpose)"), 2);
-    notetriggerBox->addItem(TRANS("Poly (Transpose)"), 3);
-    notetriggerBox->addItem(TRANS("Mono (Orig. Key)"), 4);
-    notetriggerBox->addSeparator();
-    notetriggerBox->onChange = [this] {
-        handleNoteTriggerComboBoxChange();
-    };
-
-    notetriggerBox->setBounds(146, 402, 106, 16);
-
-    syncmodeBox = std::make_unique<juce::ComboBox>("Sync");
-    addAndMakeVisible(syncmodeBox.get());
-    syncmodeBox->setTooltip(TRANS("\"PPQ\" modes always follow host timeline, which may not work in all hosts. \"Sample\" mode ignores the host\'s timeline, but the host\'s tempo is still followed."));
-    syncmodeBox->setEditableText(false);
-    syncmodeBox->setJustificationType(juce::Justification::centredLeft);
-    syncmodeBox->setTextWhenNothingSelected(TRANS("PPQ (Recstart)"));
-    syncmodeBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    syncmodeBox->addItem(TRANS("PPQ (Host 0)"), 1);
-    syncmodeBox->addItem(TRANS("PPQ (Recstart)"), 2);
-    syncmodeBox->addItem(TRANS("Sample"), 3);
-    syncmodeBox->onChange = [this] {
-        handleSyncModeComboBoxChange();
-    };
-
-    syncmodeBox->setBounds(159, 15, 99, 16);
-
-    s_Root = std::make_unique<VSTSlider>("Root Note");
-    addAndMakeVisible(s_Root.get());
-    s_Root->setTooltip(TRANS("Transposed note triggering and Scale Channel input will transpose the pattern relative to this note"));
-    s_Root->setRange(-1, 127, 1);
-    s_Root->setSliderStyle(juce::Slider::LinearBar);
-    s_Root->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_Root->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Root->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Root->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Root->onValueChange = [this] {
-        handleRootSliderChange();
-    };
-
-    s_Root->setBounds(76, 174, 64, 20);
-
-    label9 = std::make_unique<juce::Label>("new label",
-                                           TRANS("Root Note:"));
-    addAndMakeVisible(label9.get());
-    label9->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label9->setJustificationType(juce::Justification::centred);
-    label9->setEditable(false, false, false);
-    label9->setColour(juce::Label::textColourId, juce::Colours::white);
-    label9->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label9->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label9->setBounds(15, 176, 64, 16);
-
-    s_Low = std::make_unique<VSTSlider>("Low Note");
-    addAndMakeVisible(s_Low.get());
-    s_Low->setTooltip(TRANS("Lowest note to use for triggering"));
-    s_Low->setRange(-1, 127, 1);
-    s_Low->setSliderStyle(juce::Slider::LinearBar);
-    s_Low->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_Low->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Low->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Low->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Low->onValueChange = [this] {
-        handleLowSliderChange();
-    };
-
-    s_Low->setBounds(18, 440, 64, 20);
-
-    label10 = std::make_unique<juce::Label>("new label",
-                                            TRANS("Low Note"));
-    addAndMakeVisible(label10.get());
-    label10->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label10->setJustificationType(juce::Justification::centred);
-    label10->setEditable(false, false, false);
-    label10->setColour(juce::Label::textColourId, juce::Colours::white);
-    label10->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label10->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label10->setBounds(18, 424, 64, 16);
-
-    s_High = std::make_unique<VSTSlider>("High Note");
-    addAndMakeVisible(s_High.get());
-    s_High->setTooltip(TRANS("Highest note to use for triggering"));
-    s_High->setRange(-1, 127, 1);
-    s_High->setSliderStyle(juce::Slider::LinearBar);
-    s_High->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_High->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_High->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_High->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_High->onValueChange = [this] {
-        handleHighSliderChange();
-    };
-
-    s_High->setBounds(90, 440, 64, 20);
-
-    label11 = std::make_unique<juce::Label>("new label",
-                                            TRANS("High Note"));
-    addAndMakeVisible(label11.get());
-    label11->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label11->setJustificationType(juce::Justification::centred);
-    label11->setEditable(false, false, false);
-    label11->setColour(juce::Label::textColourId, juce::Colours::white);
-    label11->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label11->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label11->setBounds(90, 424, 64, 16);
-
-    s_TrigChan = std::make_unique<VSTSlider>("TriggerChannel");
-    addAndMakeVisible(s_TrigChan.get());
-    s_TrigChan->setTooltip(TRANS("Channel to use for trigger notes"));
-    s_TrigChan->setRange(1, 16, 1);
-    s_TrigChan->setSliderStyle(juce::Slider::LinearBar);
-    s_TrigChan->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_TrigChan->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_TrigChan->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_TrigChan->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_TrigChan->onValueChange = [this] {
-        handleTrigChanSliderChange();
-    };
-
-    s_TrigChan->setBounds(162, 440, 64, 20);
-
-    label12 = std::make_unique<juce::Label>("Trigger Channel",
-                                            TRANS("Channel"));
-    addAndMakeVisible(label12.get());
-    label12->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label12->setJustificationType(juce::Justification::centred);
-    label12->setEditable(false, false, false);
-    label12->setColour(juce::Label::textColourId, juce::Colours::white);
-    label12->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label12->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label12->setBounds(161, 424, 64, 16);
-
-    b_Reload = std::make_unique<juce::TextButton>("Load");
-    addAndMakeVisible(b_Reload.get());
-    b_Reload->setTooltip(TRANS("Load MIDI file (Ctrl-click: load MIDI file with the current pattern name from the \"midiloops\" folder)"));
-    b_Reload->setConnectedEdges(juce::Button::ConnectedOnLeft);
-    b_Reload->onClick = [this]
-    {
-        handleReloadButtonClick();
-    };
-    b_Reload->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
-    b_Reload->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
-    b_Reload->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
-
-    b_Reload->setBounds(344, 90, 39, 22);
-
-    quantizeBox = std::make_unique<juce::ComboBox>("Input Quantize Step");
-    addAndMakeVisible(quantizeBox.get());
-    quantizeBox->setTooltip(TRANS("Recorded events will be quantized to this step size"));
-    quantizeBox->setEditableText(false);
-    quantizeBox->setJustificationType(juce::Justification::centredLeft);
-    quantizeBox->setTextWhenNothingSelected(TRANS("32nd"));
-    quantizeBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    quantizeBox->addItem(TRANS("Off"), 1);
-    quantizeBox->addItem(TRANS("8th"), 2);
-    quantizeBox->addItem(TRANS("16th"), 3);
-    quantizeBox->addItem(TRANS("32nd"), 4);
-    quantizeBox->addItem(TRANS("64th"), 5);
-    quantizeBox->onChange = [this] {
-        handleQuantizeComboBoxChange();
-    };
-
-    quantizeBox->setBounds(439, 15, 77, 16);
-
-    label21 = std::make_unique<juce::Label>("LoopStepSize",
-                                            TRANS("Loop Step Size"));
-    addAndMakeVisible(label21.get());
-    label21->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label21->setJustificationType(juce::Justification::centred);
-    label21->setEditable(false, false, false);
-    label21->setColour(juce::Label::textColourId, juce::Colours::white);
-    label21->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label21->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label21->setBounds(261, 0, 84, 16);
-
-    s_Shift = std::make_unique<VSTSlider>("Shift");
-    addAndMakeVisible(s_Shift.get());
-    s_Shift->setTooltip(TRANS("Shifts the pattern by this number of beats, with wraparound"));
-    s_Shift->setRange(-8, 8, 1);
-    s_Shift->setSliderStyle(juce::Slider::LinearBar);
-    s_Shift->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
-    s_Shift->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Shift->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Shift->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Shift->onValueChange = [this] {
-        handleShiftSliderChange();
-    };
-
-    s_Shift->setBounds(226, 367, 72, 20);
-
-    label2 = std::make_unique<juce::Label>("Shift",
-                                           TRANS("Beat Shift"));
-    addAndMakeVisible(label2.get());
-    label2->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label2->setJustificationType(juce::Justification::centred);
-    label2->setEditable(false, false, false);
-    label2->setColour(juce::Label::textColourId, juce::Colours::white);
-    label2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label2->setBounds(226, 351, 72, 16);
-
-    label23 = std::make_unique<juce::Label>("QuantizeLabel",
-                                            TRANS("Quantize Input"));
-    addAndMakeVisible(label23.get());
-    label23->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label23->setJustificationType(juce::Justification::centred);
-    label23->setEditable(false, false, false);
-    label23->setColour(juce::Label::textColourId, juce::Colours::white);
-    label23->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label23->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label23->setBounds(433, 0, 87, 16);
-
-    nameLabel = std::make_unique<ClickableLabel>("Name",
-                                                 TRANS("Bassline (4 bars)"));
-    addAndMakeVisible(nameLabel.get());
-    nameLabel->setTooltip(TRANS("Current pattern name (double-click to edit)"));
-    nameLabel->setFont(juce::Font(26.30f, juce::Font::plain).withTypefaceStyle("Bold"));
-    nameLabel->setJustificationType(juce::Justification::centredLeft);
-    nameLabel->setEditable(false, true, false);
-    nameLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    nameLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::white);
-    nameLabel->onTextChange = [this] {
-        handleNameLabelTextChange();
-    };
-    nameLabel->setBounds(4, 87, 256, 27);
-
-    b_Save = std::make_unique<juce::TextButton>("Save");
-    addAndMakeVisible(b_Save.get());
-    b_Save->setTooltip(TRANS("Save a MIDI file of the current pattern (Ctrl-click: save to the \"midiloops\" folder with the current name)"));
-    b_Save->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
-    b_Save->onClick = [this]
+    saveButton = std::make_unique<juce::TextButton>("Save");
+    addAndMakeVisible(saveButton.get());
+    saveButton->setTooltip(TRANS("Save a MIDI file of the current pattern (Ctrl-click: save to the \"midiloops\" folder with the current name)"));
+    saveButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
+    saveButton->onClick = [this]
     {
         handleSaveButtonClick();
     };
-    b_Save->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
-    b_Save->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
-    b_Save->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    saveButton->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    saveButton->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    saveButton->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
 
-    b_Save->setBounds(304, 90, 39, 22);
+    saveButton->setBounds(304, 90, 39, 22);
 
-    label22 = std::make_unique<juce::Label>("Sync",
-                                            TRANS("Host Sync Mode"));
-    addAndMakeVisible(label22.get());
-    label22->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label22->setJustificationType(juce::Justification::centred);
-    label22->setEditable(false, false, false);
-    label22->setColour(juce::Label::textColourId, juce::Colours::white);
-    label22->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label22->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label22->setBounds(162, 0, 95, 16);
-
-    label18 = std::make_unique<juce::Label>("Sync:",
-                                            TRANS("Note Triggering"));
-    addAndMakeVisible(label18.get());
-    label18->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
-    label18->setJustificationType(juce::Justification::centred);
-    label18->setEditable(false, false, false);
-    label18->setColour(juce::Label::textColourId, juce::Colour(0xff9f9f9f));
-    label18->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label18->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label18->setBounds(12, 469, 125, 16);
-
-    loopinfoLabel = std::make_unique<juce::Label>("Loop Info",
-                                                  TRANS("label text"));
-    addAndMakeVisible(loopinfoLabel.get());
-    loopinfoLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    loopinfoLabel->setJustificationType(juce::Justification::centredLeft);
-    loopinfoLabel->setEditable(false, false, false);
-    loopinfoLabel->setColour(juce::Label::textColourId, juce::Colours::black);
-    loopinfoLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    loopinfoLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    loopinfoLabel->setBounds(14, 205, 272, 16);
-
-    loopinfoLabel2 = std::make_unique<juce::Label>("Loop Info 2",
-                                                   TRANS("label text"));
-    addAndMakeVisible(loopinfoLabel2.get());
-    loopinfoLabel2->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    loopinfoLabel2->setJustificationType(juce::Justification::centredLeft);
-    loopinfoLabel2->setEditable(false, false, false);
-    loopinfoLabel2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    loopinfoLabel2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    loopinfoLabel2->setBounds(14, 225, 272, 16);
-
-    label17 = std::make_unique<juce::Label>("Sync:",
-                                            TRANS("Loop Manipulation"));
-    addAndMakeVisible(label17.get());
-    label17->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
-    label17->setJustificationType(juce::Justification::centred);
-    label17->setEditable(false, false, false);
-    label17->setColour(juce::Label::textColourId, juce::Colour(0xff9f9f9f));
-    label17->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label17->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label17->setBounds(14, 391, 125, 16);
-
-    s_Channel = std::make_unique<VSTSlider>("Channel");
-    addAndMakeVisible(s_Channel.get());
-    s_Channel->setTooltip(TRANS("Input and output channel for the current slot"));
-    s_Channel->setRange(0, 16, 1);
-    s_Channel->setSliderStyle(juce::Slider::LinearBar);
-    s_Channel->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_Channel->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_Channel->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_Channel->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Channel->onValueChange = [this] {
-        handleChannelSliderChange();
-    };
-
-    s_Channel->setBounds(314, 414, 64, 20);
-
-    label19 = std::make_unique<juce::Label>("I/O Channel",
-                                            TRANS("I/O Channel"));
-    addAndMakeVisible(label19.get());
-    label19->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label19->setJustificationType(juce::Justification::centred);
-    label19->setEditable(false, false, false);
-    label19->setColour(juce::Label::textColourId, juce::Colours::white);
-    label19->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label19->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label19->setBounds(309, 398, 74, 16);
-
-    label20 = std::make_unique<juce::Label>("RecordLengthLabel",
-                                            TRANS("Record Length"));
-    addAndMakeVisible(label20.get());
-    label20->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label20->setJustificationType(juce::Justification::centred);
-    label20->setEditable(false, false, false);
-    label20->setColour(juce::Label::textColourId, juce::Colours::white);
-    label20->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label20->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label20->setBounds(347, 0, 83, 16);
-
-    s_FixedLength = std::make_unique<VSTSlider>("Recording Length");
-    addAndMakeVisible(s_FixedLength.get());
-    s_FixedLength->setTooltip(TRANS("If set to \"Manual\", recording will go on as long as the record button is on. Otherwise, length will be limited to this number of steps (based on \"Loop Step Size\" setting)."));
-    s_FixedLength->setRange(0, 32, 1);
-    s_FixedLength->setSliderStyle(juce::Slider::LinearBar);
-    s_FixedLength->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_FixedLength->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
-    s_FixedLength->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_FixedLength->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_FixedLength->onValueChange = [this] {
-        handleFixedLengthSliderChange();
-    };
-
-    s_FixedLength->setBounds(347, 15, 86, 16);
-
-    b_Filt = std::make_unique<juce::TextButton>("Transform/Filter");
-    addAndMakeVisible(b_Filt.get());
-    b_Filt->setTooltip(TRANS("Transform: all events in the pattern are channelized to the sected channel; Filter: only events with the selected channel will be output"));
-    b_Filt->setButtonText(TRANS("Transform"));
-    b_Filt->onClick = [this]
+    reloadButton = std::make_unique<juce::TextButton>("Load");
+    addAndMakeVisible(reloadButton.get());
+    reloadButton->setTooltip(TRANS("Load MIDI file (Ctrl-click: load MIDI file with the current pattern name from the \"midiloops\" folder)"));
+    reloadButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
+    reloadButton->onClick = [this]
     {
-        handleFiltButtonClick();
+        handleReloadButtonClick();
     };
-    b_Filt->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-    b_Filt->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+    reloadButton->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    reloadButton->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    reloadButton->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
 
-    b_Filt->setBounds(314, 440, 64, 20);
+    reloadButton->setBounds(344, 90, 39, 22);
 
-    viewport = std::make_unique<PianoRollViewport>("Piano Roll View");
-    addAndMakeVisible(viewport.get());
-    viewport->setScrollBarThickness(16);
-    viewport->setViewedComponent(new PianoRoll(this->getFilter(), this, timeline.get()));
+    playButton = std::make_unique<juce::TextButton>("Play");
+    addAndMakeVisible(playButton.get());
+    playButton->setTooltip(TRANS("Toggle playback of current slot"));
+    playButton->setButtonText(TRANS("PLAY"));
+    playButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnTop);
+    playButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xd213540e));
+    playButton->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff00c400));
+    playButton->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+    playButton->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    playButton->setBounds(78, 117, 72, 50);
 
-    resizer = std::make_unique<juce::ResizableCornerComponent>(this, &resizeLimits);
-    addAndMakeVisible(resizer.get());
+    recordButton = std::make_unique<juce::TextButton>("Record");
+    addAndMakeVisible(recordButton.get());
+    recordButton->setTooltip(TRANS("Toggle recording to current slot"));
+    recordButton->setButtonText(TRANS("RECORD "));
+    recordButton->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnTop);
+    recordButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xd2a90000));
+    recordButton->setColour(juce::TextButton::buttonOnColourId, juce::Colours::red);
+    recordButton->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    recordButton->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
 
-    b_NoteToggle = std::make_unique<juce::TextButton>("new button");
-    addAndMakeVisible(b_NoteToggle.get());
-    b_NoteToggle->setTooltip(TRANS("When enabled, Note On events will toggle playback, ignoring Note Off events; otherwise Note Off will stop playback"));
-    b_NoteToggle->setButtonText(TRANS("Toggle"));
-    b_NoteToggle->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-    b_NoteToggle->setBounds(257, 402, 40, 16);
-    b_NoteToggle->onClick = [this]
+    recordButton->setBounds(6, 117, 72, 50);
+
+    waitForBarButton = std::make_unique<juce::ToggleButton>("WaitForBar");
+    addAndMakeVisible(waitForBarButton.get());
+    waitForBarButton->setTooltip(TRANS("When checked, play/stop of this slot will happen at the start of the bar after"));
+    waitForBarButton->setButtonText(TRANS("Wait for Next Bar"));
+    waitForBarButton->onClick = [this]
     {
-        handleNoteToggleButtonClick();
+        handleWaitForBarButtonClick();
     };
+    waitForBarButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+    waitForBarButton->setBounds(175, 123, 107, 16);
 
-    s_PlayGroup = std::make_unique<VSTSlider>("TriggerChannel");
-    addAndMakeVisible(s_PlayGroup.get());
-    s_PlayGroup->setTooltip(TRANS("Slots with the same Play Group number will all start/stop at the same time"));
-    s_PlayGroup->setRange(0, 16, 1);
-    s_PlayGroup->setSliderStyle(juce::Slider::LinearBar);
-    s_PlayGroup->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_PlayGroup->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_PlayGroup->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_PlayGroup->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_PlayGroup->onValueChange = [this] {
+    loopModeComboBox = std::make_unique<juce::ComboBox>("Loop Mode");
+    addAndMakeVisible(loopModeComboBox.get());
+    loopModeComboBox->setTooltip(TRANS("Playback Mode: \"Sync Loop\" follows the host timeline. \"Loop after rec\" is the same but also plays automatically as soon as recording ends. \"Unsync\" modes play the pattern from the beginning as soon as playback is started."));
+    loopModeComboBox->setEditableText(false);
+    loopModeComboBox->setJustificationType(juce::Justification::centredLeft);
+    loopModeComboBox->setTextWhenNothingSelected(TRANS("Unsync 1-shot"));
+    loopModeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    loopModeComboBox->addItem(TRANS("Loop after rec"), 1);
+    loopModeComboBox->addItem(TRANS("Sync loop"), 2);
+    loopModeComboBox->addItem(TRANS("Unsync 1-shot"), 3);
+    loopModeComboBox->addItem(TRANS("Unsync loop"), 4);
+    loopModeComboBox->onChange = [this]
+    {
+        handleLoopModeComboBoxChange();
+    };
+    loopModeComboBox->setBounds(175, 144, 110, 16);
+
+    playGroupSlider = std::make_unique<VSTSlider>("TriggerChannel");
+    addAndMakeVisible(playGroupSlider.get());
+    playGroupSlider->setTooltip(TRANS("Slots with the same Play Group number will all start/stop at the same time"));
+    playGroupSlider->setRange(0, 16, 1);
+    playGroupSlider->setSliderStyle(juce::Slider::LinearBar);
+    playGroupSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    playGroupSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    playGroupSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    playGroupSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    playGroupSlider->onValueChange = [this]
+    {
         handlePlayGroupSliderChange();
     };
 
-    s_PlayGroup->setBounds(312, 136, 64, 20);
+    playGroupSlider->setBounds(312, 136, 64, 20);
 
-    label13 = std::make_unique<juce::Label>("Trigger Channel",
-                                            TRANS("Play Group"));
-    addAndMakeVisible(label13.get());
-    label13->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label13->setJustificationType(juce::Justification::centred);
-    label13->setEditable(false, false, false);
-    label13->setColour(juce::Label::textColourId, juce::Colours::white);
-    label13->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label13->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    playGroupLabel = std::make_unique<juce::Label>("Trigger Channel",
+                                                   TRANS("Play Group"));
+    addAndMakeVisible(playGroupLabel.get());
+    playGroupLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    playGroupLabel->setJustificationType(juce::Justification::centred);
+    playGroupLabel->setEditable(false, false, false);
+    playGroupLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    playGroupLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    playGroupLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label13->setBounds(313, 119, 64, 16);
+    playGroupLabel->setBounds(313, 119, 64, 16);
 
-    s_MuteGroup = std::make_unique<VSTSlider>("TriggerChannel");
-    addAndMakeVisible(s_MuteGroup.get());
-    s_MuteGroup->setTooltip(TRANS("Only one slot with the same Mute Group number can be played at the same time"));
-    s_MuteGroup->setRange(0, 16, 1);
-    s_MuteGroup->setSliderStyle(juce::Slider::LinearBar);
-    s_MuteGroup->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_MuteGroup->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_MuteGroup->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_MuteGroup->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_MuteGroup->onValueChange = [this] {
+    rootNoteSlider = std::make_unique<VSTSlider>("Root Note");
+    addAndMakeVisible(rootNoteSlider.get());
+    rootNoteSlider->setTooltip(TRANS("Transposed note triggering and Scale Channel input will transpose the pattern relative to this note"));
+    rootNoteSlider->setRange(-1, 127, 1);
+    rootNoteSlider->setSliderStyle(juce::Slider::LinearBar);
+    rootNoteSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    rootNoteSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    rootNoteSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    rootNoteSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    rootNoteSlider->onValueChange = [this]
+    {
+        handleRootSliderChange();
+    };
+
+    rootNoteSlider->setBounds(76, 174, 64, 20);
+
+    rootNoteLabel = std::make_unique<juce::Label>("new label",
+                                                  TRANS("Root Note:"));
+    addAndMakeVisible(rootNoteLabel.get());
+    rootNoteLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    rootNoteLabel->setJustificationType(juce::Justification::centred);
+    rootNoteLabel->setEditable(false, false, false);
+    rootNoteLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    rootNoteLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    rootNoteLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    rootNoteLabel->setBounds(15, 176, 64, 16);
+
+    numLoopsSlider = std::make_unique<VSTSlider>("NumLoops");
+    addAndMakeVisible(numLoopsSlider.get());
+    numLoopsSlider->setTooltip(TRANS("Number of times to loop playback"));
+    numLoopsSlider->setRange(0, 64, 1);
+    numLoopsSlider->setSliderStyle(juce::Slider::LinearBar);
+    numLoopsSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    numLoopsSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    numLoopsSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    numLoopsSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    numLoopsSlider->onValueChange = [this]
+    {
+        handleNumLoopsSliderChange();
+    };
+
+    numLoopsSlider->setBounds(155, 174, 64, 20);
+
+    nextSlotSlider = std::make_unique<VSTSlider>("NextSlot");
+    addAndMakeVisible(nextSlotSlider.get());
+    nextSlotSlider->setTooltip(TRANS("What to do after the selected number of loops have played"));
+    nextSlotSlider->setRange(0, 16, 1);
+    nextSlotSlider->setSliderStyle(juce::Slider::LinearBar);
+    nextSlotSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    nextSlotSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    nextSlotSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    nextSlotSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    nextSlotSlider->onValueChange = [this]
+    {
+        handleNextSlotSliderChange();
+    };
+
+    nextSlotSlider->setBounds(234, 174, 64, 20);
+
+    muteGroupSlider = std::make_unique<VSTSlider>("TriggerChannel");
+    addAndMakeVisible(muteGroupSlider.get());
+    muteGroupSlider->setTooltip(TRANS("Only one slot with the same Mute Group number can be played at the same time"));
+    muteGroupSlider->setRange(0, 16, 1);
+    muteGroupSlider->setSliderStyle(juce::Slider::LinearBar);
+    muteGroupSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    muteGroupSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    muteGroupSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    muteGroupSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    muteGroupSlider->onValueChange = [this]
+    {
         handleMuteGroupSliderChange();
     };
 
-    s_MuteGroup->setBounds(312, 174, 64, 20);
+    muteGroupSlider->setBounds(312, 174, 64, 20);
 
-    label14 = std::make_unique<juce::Label>("Trigger Channel",
-                                            TRANS("Mute Group"));
-    addAndMakeVisible(label14.get());
-    label14->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label14->setJustificationType(juce::Justification::centred);
-    label14->setEditable(false, false, false);
-    label14->setColour(juce::Label::textColourId, juce::Colours::white);
-    label14->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label14->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    muteGroupLabel = std::make_unique<juce::Label>("Trigger Channel",
+                                                   TRANS("Mute Group"));
+    addAndMakeVisible(muteGroupLabel.get());
+    muteGroupLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    muteGroupLabel->setJustificationType(juce::Justification::centred);
+    muteGroupLabel->setEditable(false, false, false);
+    muteGroupLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    muteGroupLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    muteGroupLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label14->setBounds(307, 157, 74, 16);
+    muteGroupLabel->setBounds(307, 157, 74, 16);
 
-    b_Snap = std::make_unique<juce::ToggleButton>("new toggle button");
-    addAndMakeVisible(b_Snap.get());
-    b_Snap->setTooltip(TRANS("Toggle Snap to Grid"));
-    b_Snap->setButtonText(TRANS("Snap"));
-    b_Snap->setBounds(392, 61, 59, 24);
-    b_Snap->onClick = [this]
+    loopSettingsLabel = std::make_unique<juce::Label>("Sync:",
+                                                      TRANS("Loop Settings"));
+    addAndMakeVisible(loopSettingsLabel.get());
+    loopSettingsLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
+    loopSettingsLabel->setJustificationType(juce::Justification::centred);
+    loopSettingsLabel->setEditable(false, false, false);
+    loopSettingsLabel->setColour(juce::Label::textColourId, juce::Colour(0xff9f9f9f));
+    loopSettingsLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    loopSettingsLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    loopSettingsLabel->setBounds(12, 247, 125, 16);
+
+    useTransposeChannelButton = std::make_unique<juce::ToggleButton>("new toggle button");
+    addAndMakeVisible(useTransposeChannelButton.get());
+    useTransposeChannelButton->setTooltip(TRANS("When checked, notes on selected \"Transpose Ch\" will apply to \"Semitones\" and \"Octave\" settings, relative to \"Root Note\""));
+    useTransposeChannelButton->setButtonText(TRANS("Use Transp Ch"));
+    useTransposeChannelButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+    useTransposeChannelButton->setBounds(148, 252, 130, 17);
+    useTransposeChannelButton->onClick = [this]
     {
-        handleSnapButtonClick();
+        handleUseTrChannelButtonClick();
     };
 
-    quantizeBox2 = std::make_unique<juce::ComboBox>("PR Quantize Step");
-    addAndMakeVisible(quantizeBox2.get());
-    quantizeBox2->setTooltip(TRANS("Grid Size"));
-    quantizeBox2->setEditableText(false);
-    quantizeBox2->setJustificationType(juce::Justification::centredLeft);
-    quantizeBox2->setTextWhenNothingSelected(TRANS("32nd"));
-    quantizeBox2->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    quantizeBox2->addItem(TRANS("4th"), 1);
-    quantizeBox2->addItem(TRANS("8th"), 2);
-    quantizeBox2->addItem(TRANS("16th"), 3);
-    quantizeBox2->addItem(TRANS("32nd"), 4);
-    quantizeBox2->addItem(TRANS("64th"), 5);
-    quantizeBox2->onChange = [this] {
-        handleQuantize2ComboBoxChange();
+    immediateTransposeButton = std::make_unique<juce::ToggleButton>("new toggle button");
+    addAndMakeVisible(immediateTransposeButton.get());
+    immediateTransposeButton->setTooltip(TRANS("When checked, playing notes will be split and transposed immediately on changes to Semitones / Octave / Force to Scale / Master Transpose settings"));
+    immediateTransposeButton->setButtonText(TRANS("Split"));
+    immediateTransposeButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+    immediateTransposeButton->setBounds(247, 252, 48, 17);
+    immediateTransposeButton->onClick = [this]
+    {
+        handleImmediateTransposeButtonClick();
     };
 
-    quantizeBox2->setBounds(453, 64, 50, 18);
+    transpose10Button = std::make_unique<juce::TextButton>("new button");
+    addAndMakeVisible(transpose10Button.get());
+    transpose10Button->setButtonText(TRANS("transpose channel 10"));
+    transpose10Button->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+    transpose10Button->setBounds(306, 252, 72, 13);
+    transpose10Button->onClick = [this]
+    {
+        handleTranspose10ButtonClick();
+    };
 
-    b_ForceToKey = std::make_unique<juce::ToggleButton>("new toggle button");
-    addAndMakeVisible(b_ForceToKey.get());
-    b_ForceToKey->setTooltip(TRANS("When checked, played notes will be fitted to the defined scale"));
-    b_ForceToKey->setButtonText(TRANS("Force to Scale"));
-    b_ForceToKey->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-    b_ForceToKey->setBounds(11, 312, 99, 17);
-    b_ForceToKey->onClick = [this]
+    scaleChannelSlider = std::make_unique<VSTSlider>("ScaleChannel");
+    addAndMakeVisible(scaleChannelSlider.get());
+    scaleChannelSlider->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Scale Ch\" is enabled"));
+    scaleChannelSlider->setRange(1, 16, 1);
+    scaleChannelSlider->setSliderStyle(juce::Slider::LinearBar);
+    scaleChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    scaleChannelSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    scaleChannelSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    scaleChannelSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    scaleChannelSlider->onValueChange = [this]
+    {
+        handleScaleChannelSliderChange();
+    };
+
+    scaleChannelSlider->setBounds(10, 283, 60, 20);
+
+    scaleChannelLabel = std::make_unique<juce::Label>("scale ch",
+                                                      TRANS("Scale Ch"));
+    addAndMakeVisible(scaleChannelLabel.get());
+    scaleChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    scaleChannelLabel->setJustificationType(juce::Justification::centred);
+    scaleChannelLabel->setEditable(false, false, false);
+    scaleChannelLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    scaleChannelLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    scaleChannelLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    scaleChannelLabel->setBounds(13, 267, 54, 16);
+
+    transposeChannelSlider = std::make_unique<VSTSlider>("TransposeChannel");
+    addAndMakeVisible(transposeChannelSlider.get());
+    transposeChannelSlider->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Transp Ch\" is enabled"));
+    transposeChannelSlider->setRange(1, 16, 1);
+    transposeChannelSlider->setSliderStyle(juce::Slider::LinearBar);
+    transposeChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    transposeChannelSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    transposeChannelSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    transposeChannelSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    transposeChannelSlider->onValueChange = [this]
+    {
+        handleTransposeChannelSliderChange();
+    };
+
+    transposeChannelSlider->setBounds(76, 283, 60, 20);
+
+    transposeChannelLabel = std::make_unique<juce::Label>("tr ch",
+                                                          TRANS("Transpose Ch"));
+    addAndMakeVisible(transposeChannelLabel.get());
+    transposeChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    transposeChannelLabel->setJustificationType(juce::Justification::centred);
+    transposeChannelLabel->setEditable(false, false, false);
+    transposeChannelLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    transposeChannelLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    transposeChannelLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    transposeChannelLabel->setBounds(66, 267, 80, 16);
+
+    transposeSlider = std::make_unique<VSTSlider>("Transpose");
+    addAndMakeVisible(transposeSlider.get());
+    transposeSlider->setTooltip(TRANS("Transposition applied to the current slot"));
+    transposeSlider->setRange(-12, 12, 1);
+    transposeSlider->setSliderStyle(juce::Slider::LinearBar);
+    transposeSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    transposeSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    transposeSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    transposeSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    transposeSlider->onValueChange = [this]
+    {
+        handleTransposeSliderChange();
+    };
+
+    transposeSlider->setBounds(146, 283, 72, 20);
+
+    transposeLabel = std::make_unique<juce::Label>("new label",
+                                                   TRANS("Semitones"));
+    addAndMakeVisible(transposeLabel.get());
+    transposeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    transposeLabel->setJustificationType(juce::Justification::centred);
+    transposeLabel->setEditable(false, false, false);
+    transposeLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    transposeLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    transposeLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    transposeLabel->setBounds(146, 267, 72, 16);
+
+    octaveSlider = std::make_unique<VSTSlider>("Octave Shift");
+    addAndMakeVisible(octaveSlider.get());
+    octaveSlider->setTooltip(TRANS("Transposition by octave for the current slot"));
+    octaveSlider->setRange(-4, 4, 1);
+    octaveSlider->setSliderStyle(juce::Slider::LinearBar);
+    octaveSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    octaveSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    octaveSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    octaveSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    octaveSlider->onValueChange = [this]
+    {
+        handleOctaveSliderChange();
+    };
+
+    octaveSlider->setBounds(226, 283, 72, 20);
+
+    octaveLabel = std::make_unique<juce::Label>("new label",
+                                                TRANS("Octave"));
+    addAndMakeVisible(octaveLabel.get());
+    octaveLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    octaveLabel->setJustificationType(juce::Justification::centred);
+    octaveLabel->setEditable(false, false, false);
+    octaveLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    octaveLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    octaveLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    octaveLabel->setBounds(226, 267, 72, 16);
+
+    velocitySlider = std::make_unique<VSTSlider>("Velocity Offset");
+    addAndMakeVisible(velocitySlider.get());
+    velocitySlider->setTooltip(TRANS("Velocity adjustment for the current slot"));
+    velocitySlider->setRange(0, 200, 1);
+    velocitySlider->setSliderStyle(juce::Slider::LinearBar);
+    velocitySlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    velocitySlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    velocitySlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    velocitySlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    velocitySlider->onValueChange = [this]
+    {
+        handleVelocitySliderChange();
+    };
+
+    velocitySlider->setBounds(306, 283, 72, 20);
+
+    velocityLabel = std::make_unique<juce::Label>("new label",
+                                                  TRANS("Velocity"));
+    addAndMakeVisible(velocityLabel.get());
+    velocityLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    velocityLabel->setJustificationType(juce::Justification::centred);
+    velocityLabel->setEditable(false, false, false);
+    velocityLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    velocityLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    velocityLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    velocityLabel->setBounds(301, 267, 80, 16);
+
+    forceToKeyButton = std::make_unique<juce::ToggleButton>("new toggle button");
+    addAndMakeVisible(forceToKeyButton.get());
+    forceToKeyButton->setTooltip(TRANS("When checked, played notes will be fitted to the defined scale"));
+    forceToKeyButton->setButtonText(TRANS("Force to Scale"));
+    forceToKeyButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+    forceToKeyButton->setBounds(11, 312, 99, 17);
+    forceToKeyButton->onClick = [this]
     {
         handleForceToKeyButtonClick();
+    };
+
+    forceModeComboBox = std::make_unique<juce::ComboBox>("Force To Scale Mode");
+    addAndMakeVisible(forceModeComboBox.get());
+    forceModeComboBox->setEditableText(false);
+    forceModeComboBox->setJustificationType(juce::Justification::centredLeft);
+    forceModeComboBox->setTextWhenNothingSelected(TRANS("Nearest"));
+    forceModeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    forceModeComboBox->addItem(TRANS("Nearest"), 1);
+    forceModeComboBox->addItem(TRANS("Up"), 2);
+    forceModeComboBox->addItem(TRANS("Down"), 3);
+    forceModeComboBox->addItem(TRANS("Block"), 4);
+    forceModeComboBox->onChange = [this]
+    {
+        handleForceModeComboBoxChange();
+    };
+
+    forceModeComboBox->setBounds(110, 313, 61, 16);
+
+    useScaleChannelButton = std::make_unique<juce::ToggleButton>("new toggle button");
+    addAndMakeVisible(useScaleChannelButton.get());
+    useScaleChannelButton->setTooltip(TRANS("When checked, input notes on \"Scale Ch\" will be used to define the scale"));
+    useScaleChannelButton->setButtonText(TRANS("Use Scale Channel"));
+    useScaleChannelButton->onClick = [this]
+    {
+        handleUseScaleChannelButtonClick();
+    };
+    useScaleChannelButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+    useScaleChannelButton->setBounds(11, 329, 129, 17);
+
+    shiftDownButton = std::make_unique<juce::TextButton>("new button");
+    addAndMakeVisible(shiftDownButton.get());
+    shiftDownButton->setTooltip(TRANS("Shift selected notes one semitone down"));
+    shiftDownButton->setButtonText(TRANS("<"));
+    shiftDownButton->setConnectedEdges(juce::Button::ConnectedOnRight);
+    shiftDownButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+    shiftDownButton->setBounds(178, 314, 21, 30);
+    shiftDownButton->onClick = [this]
+    {
+        handleShiftDownButtonClick();
     };
 
     keySelector = std::make_unique<KeySelector>(ownerFilter->keySelectorState);
     addAndMakeVisible(keySelector.get());
     keySelector->setName("new component");
-
     keySelector->setBounds(199, 315, 154, 28);
 
-    b_ShiftUp = std::make_unique<juce::TextButton>("new button");
-    addAndMakeVisible(b_ShiftUp.get());
-    b_ShiftUp->setTooltip(TRANS("Shift selected notes one semitone up"));
-    b_ShiftUp->setButtonText(TRANS(">"));
-    b_ShiftUp->setConnectedEdges(juce::Button::ConnectedOnLeft);
-    b_ShiftUp->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-    b_ShiftUp->setBounds(353, 314, 21, 30);
-    b_ShiftUp->onClick = [this]
+    shiftUpButton = std::make_unique<juce::TextButton>("new button");
+    addAndMakeVisible(shiftUpButton.get());
+    shiftUpButton->setTooltip(TRANS("Shift selected notes one semitone up"));
+    shiftUpButton->setButtonText(TRANS(">"));
+    shiftUpButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
+    shiftUpButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+    shiftUpButton->setBounds(353, 314, 21, 30);
+    shiftUpButton->onClick = [this]
     {
         handleShiftUpButtonClick();
     };
 
-    b_ShiftDown = std::make_unique<juce::TextButton>("new button");
-    addAndMakeVisible(b_ShiftDown.get());
-    b_ShiftDown->setTooltip(TRANS("Shift selected notes one semitone down"));
-    b_ShiftDown->setButtonText(TRANS("<"));
-    b_ShiftDown->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_ShiftDown->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-    b_ShiftDown->setBounds(178, 314, 21, 30);
-    b_ShiftDown->onClick = [this]
+    loopStartSlider = std::make_unique<VSTSlider>("Loop Start");
+    addAndMakeVisible(loopStartSlider.get());
+    loopStartSlider->setTooltip(TRANS("Offsets the loop start time by this number of beats"));
+    loopStartSlider->setRange(-8, 8, 1);
+    loopStartSlider->setSliderStyle(juce::Slider::LinearBar);
+    loopStartSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
+    loopStartSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    loopStartSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    loopStartSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    loopStartSlider->onValueChange = [this]
     {
-        handleShiftDownButtonClick();
+        handleLoopStartSliderChange();
     };
 
-    b_SingleLoop = std::make_unique<juce::ToggleButton>("Single Loop");
-    addAndMakeVisible(b_SingleLoop.get());
-    b_SingleLoop->setTooltip(TRANS("When checked, switching from a playing slot to another slot will automatically play the new slot and stop the previous one"));
-    b_SingleLoop->setButtonText(TRANS("Play active slot only"));
-    b_SingleLoop->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-    b_SingleLoop->setBounds(155, 36, 122, 16);
-    b_SingleLoop->onClick = [this]
+    loopStartSlider->setBounds(66, 367, 72, 20);
+
+    startOffsetLabel = std::make_unique<juce::Label>("new label",
+                                                     TRANS("Start Offset"));
+    addAndMakeVisible(startOffsetLabel.get());
+    startOffsetLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    startOffsetLabel->setJustificationType(juce::Justification::centred);
+    startOffsetLabel->setEditable(false, false, false);
+    startOffsetLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    startOffsetLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    startOffsetLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    startOffsetLabel->setBounds(66, 351, 72, 16);
+
+    loopEndOffsetSlider = std::make_unique<VSTSlider>("Loop End");
+    addAndMakeVisible(loopEndOffsetSlider.get());
+    loopEndOffsetSlider->setTooltip(TRANS("Offsets the loop end time by this number of beats"));
+    loopEndOffsetSlider->setRange(-8, 8, 1);
+    loopEndOffsetSlider->setSliderStyle(juce::Slider::LinearBar);
+    loopEndOffsetSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
+    loopEndOffsetSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    loopEndOffsetSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    loopEndOffsetSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    loopEndOffsetSlider->onValueChange = [this]
     {
-        handleSingleLoopButtonClick();
+        handleEndSliderChange();
     };
 
-    s_MasterVelocity = std::make_unique<VSTSlider>("VMasterVelocity");
-    addAndMakeVisible(s_MasterVelocity.get());
-    s_MasterVelocity->setTooltip(TRANS("Global velocity adjustment applied to all played notes"));
-    s_MasterVelocity->setRange(0, 200, 1);
-    s_MasterVelocity->setSliderStyle(juce::Slider::LinearBar);
-    s_MasterVelocity->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_MasterVelocity->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
-    s_MasterVelocity->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_MasterVelocity->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_MasterVelocity->onValueChange = [this] {
-        handleMasterVelocitySliderChange();
-    };
+    loopEndOffsetSlider->setBounds(146, 367, 72, 20);
 
-    s_MasterVelocity->setBounds(371, 36, 72, 16);
+    loopEndOffsetLabel = std::make_unique<juce::Label>("new label",
+                                                       TRANS("End Offset"));
+    addAndMakeVisible(loopEndOffsetLabel.get());
+    loopEndOffsetLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    loopEndOffsetLabel->setJustificationType(juce::Justification::centred);
+    loopEndOffsetLabel->setEditable(false, false, false);
+    loopEndOffsetLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    loopEndOffsetLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    loopEndOffsetLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label15 = std::make_unique<juce::Label>("new label",
-                                            TRANS("Master Velocity:"));
-    addAndMakeVisible(label15.get());
-    label15->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label15->setJustificationType(juce::Justification::centredRight);
-    label15->setEditable(false, false, false);
-    label15->setColour(juce::Label::textColourId, juce::Colours::white);
-    label15->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label15->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    loopEndOffsetLabel->setBounds(146, 351, 72, 16);
 
-    label15->setBounds(283, 36, 88, 16);
-
-    aboutButton = std::make_unique<juce::ImageButton>("new button");
-    addAndMakeVisible(aboutButton.get());
-    aboutButton->setTooltip(TRANS("Insert Piz Here-> midiLooper v1.3  https://github.com/sleiner/pizmidi"));
-    aboutButton->setButtonText(juce::String());
-    aboutButton->setImages(false, true, true, juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000));
-    aboutButton->setBounds(9, 1, 136, 47);
-    aboutButton->onClick = []
+    shiftPatternSlider = std::make_unique<VSTSlider>("Shift");
+    addAndMakeVisible(shiftPatternSlider.get());
+    shiftPatternSlider->setTooltip(TRANS("Shifts the pattern by this number of beats, with wraparound"));
+    shiftPatternSlider->setRange(-8, 8, 1);
+    shiftPatternSlider->setSliderStyle(juce::Slider::LinearBar);
+    shiftPatternSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
+    shiftPatternSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    shiftPatternSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    shiftPatternSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    shiftPatternSlider->onValueChange = [this]
     {
-        handleAboutButtonClick();
+        handleShiftSliderChange();
     };
 
-    b_Triplet = std::make_unique<juce::TextButton>("Triplet");
-    addAndMakeVisible(b_Triplet.get());
-    b_Triplet->setTooltip(TRANS("Toggle Triplet Note Grid"));
-    b_Triplet->setButtonText(TRANS("3"));
-    b_Triplet->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
-    b_Triplet->setRadioGroupId(2);
-    b_Triplet->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
-    b_Triplet->setBounds(506, 64, 18, 18);
-    b_Triplet->onClick = [this]
+    shiftPatternSlider->setBounds(226, 367, 72, 20);
+
+    shiftPatternLabel = std::make_unique<juce::Label>("Shift",
+                                                      TRANS("Beat Shift"));
+    addAndMakeVisible(shiftPatternLabel.get());
+    shiftPatternLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    shiftPatternLabel->setJustificationType(juce::Justification::centred);
+    shiftPatternLabel->setEditable(false, false, false);
+    shiftPatternLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    shiftPatternLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    shiftPatternLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    shiftPatternLabel->setBounds(226, 351, 72, 16);
+
+    stretchSlider = std::make_unique<VSTSlider>("Loop Stretch");
+    addAndMakeVisible(stretchSlider.get());
+    stretchSlider->setTooltip(TRANS("Playback speed, relative to host tempo"));
+    stretchSlider->setRange(-10, 10, 1);
+    stretchSlider->setSliderStyle(juce::Slider::LinearBar);
+    stretchSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    stretchSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    stretchSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    stretchSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    stretchSlider->onValueChange = [this]
     {
-        handleTripletButtonClick();
+        handleStretchSliderChange();
     };
 
-    b_Dotted = std::make_unique<juce::TextButton>("Dotted");
-    addAndMakeVisible(b_Dotted.get());
-    b_Dotted->setTooltip(TRANS("Toggle Dotted Note Grid"));
-    b_Dotted->setButtonText(TRANS("."));
-    b_Dotted->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
-    b_Dotted->setRadioGroupId(2);
-    b_Dotted->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
-    b_Dotted->setBounds(528, 64, 18, 18);
-    b_Dotted->onClick = [this]
+    stretchSlider->setBounds(306, 367, 72, 20);
+
+    speedLabel = std::make_unique<juce::Label>("new label",
+                                               TRANS("Speed"));
+    addAndMakeVisible(speedLabel.get());
+    speedLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    speedLabel->setJustificationType(juce::Justification::centred);
+    speedLabel->setEditable(false, false, false);
+    speedLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    speedLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    speedLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    speedLabel->setBounds(306, 351, 72, 16);
+
+    noteTriggerComboBox = std::make_unique<juce::ComboBox>("Note Trigger");
+    addAndMakeVisible(noteTriggerComboBox.get());
+    noteTriggerComboBox->setTooltip(TRANS("For \"Transpose\" modes, pattern will be transposed relative to \"Root Note\""));
+    noteTriggerComboBox->setEditableText(false);
+    noteTriggerComboBox->setJustificationType(juce::Justification::centredLeft);
+    noteTriggerComboBox->setTextWhenNothingSelected(TRANS("Mono (Transposed)"));
+    noteTriggerComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    noteTriggerComboBox->addItem(TRANS("Off"), 1);
+    noteTriggerComboBox->addItem(TRANS("Mono (Transpose)"), 2);
+    noteTriggerComboBox->addItem(TRANS("Poly (Transpose)"), 3);
+    noteTriggerComboBox->addItem(TRANS("Mono (Orig. Key)"), 4);
+    noteTriggerComboBox->addSeparator();
+    noteTriggerComboBox->onChange = [this]
     {
-        handleDottedButtonClick();
+        handleNoteTriggerComboBoxChange();
     };
 
-    b_ZoomOut = std::make_unique<juce::TextButton>("ZoomOut");
-    addAndMakeVisible(b_ZoomOut.get());
-    b_ZoomOut->setTooltip(TRANS("Zoom Out (Ctrl-click for vertical)"));
-    b_ZoomOut->setButtonText(TRANS("-"));
-    b_ZoomOut->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_ZoomOut->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-    b_ZoomOut->setBounds(656, 64, 18, 18);
-    b_ZoomOut->onClick = [this]
+    noteTriggerComboBox->setBounds(146, 402, 106, 16);
+
+    noteToggleButton = std::make_unique<juce::TextButton>("new button");
+    addAndMakeVisible(noteToggleButton.get());
+    noteToggleButton->setTooltip(TRANS("When enabled, Note On events will toggle playback, ignoring Note Off events; otherwise Note Off will stop playback"));
+    noteToggleButton->setButtonText(TRANS("Toggle"));
+    noteToggleButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+    noteToggleButton->setBounds(257, 402, 40, 16);
+    noteToggleButton->onClick = [this]
     {
-        handleZoomOutButtonClick();
+        handleNoteToggleButtonClick();
     };
 
-    b_ZoomIn = std::make_unique<juce::TextButton>("ZoomIn");
-    addAndMakeVisible(b_ZoomIn.get());
-    b_ZoomIn->setTooltip(TRANS("Zoom In (Ctrl-click for vertical)"));
-    b_ZoomIn->setButtonText(TRANS("+"));
-    b_ZoomIn->setConnectedEdges(juce::Button::ConnectedOnLeft);
-    b_ZoomIn->setRadioGroupId(2);
-    b_ZoomIn->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-    b_ZoomIn->setBounds(674, 64, 18, 18);
-    b_ZoomIn->onClick = [this]
+    minTriggerNoteSlider = std::make_unique<VSTSlider>("Low Note");
+    addAndMakeVisible(minTriggerNoteSlider.get());
+    minTriggerNoteSlider->setTooltip(TRANS("Lowest note to use for triggering"));
+    minTriggerNoteSlider->setRange(-1, 127, 1);
+    minTriggerNoteSlider->setSliderStyle(juce::Slider::LinearBar);
+    minTriggerNoteSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    minTriggerNoteSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    minTriggerNoteSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    minTriggerNoteSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    minTriggerNoteSlider->onValueChange = [this]
     {
-        handleZoomInButtonClick();
+        handleLowSliderChange();
     };
 
-    numeratorLabel = std::make_unique<juce::Label>("new label",
-                                              TRANS("4"));
-    addAndMakeVisible(numeratorLabel.get());
-    numeratorLabel->setTooltip(TRANS("Time Sig Numerator"));
-    numeratorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    numeratorLabel->setJustificationType(juce::Justification::centredRight);
-    numeratorLabel->setEditable(true, true, false);
-    numeratorLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    numeratorLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-    numeratorLabel->onTextChange = [this] {
-        handleNumeratorLabelTextChange();
-    };
-    numeratorLabel->setBounds(555, 64, 27, 18);
+    minTriggerNoteSlider->setBounds(18, 440, 64, 20);
 
-    denominatorLabel = std::make_unique<juce::Label>("new label",
-                                                TRANS("4"));
-    addAndMakeVisible(denominatorLabel.get());
-    denominatorLabel->setTooltip(TRANS("Time Sig Denominator"));
-    denominatorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    denominatorLabel->setJustificationType(juce::Justification::centredLeft);
-    denominatorLabel->setEditable(true, true, false);
-    denominatorLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    denominatorLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-    denominatorLabel->onTextChange = [this] {
-        handleDenominatorLabelChange();
-    };
+    minTriggerNoteLabel = std::make_unique<juce::Label>("new label",
+                                                        TRANS("Low Note"));
+    addAndMakeVisible(minTriggerNoteLabel.get());
+    minTriggerNoteLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    minTriggerNoteLabel->setJustificationType(juce::Justification::centred);
+    minTriggerNoteLabel->setEditable(false, false, false);
+    minTriggerNoteLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    minTriggerNoteLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    minTriggerNoteLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    denominatorLabel->setBounds(584, 64, 29, 18);
+    minTriggerNoteLabel->setBounds(18, 424, 64, 16);
 
-    b_UseScaleChannel = std::make_unique<juce::ToggleButton>("new toggle button");
-    addAndMakeVisible(b_UseScaleChannel.get());
-    b_UseScaleChannel->setTooltip(TRANS("When checked, input notes on \"Scale Ch\" will be used to define the scale"));
-    b_UseScaleChannel->setButtonText(TRANS("Use Scale Channel"));
-    b_UseScaleChannel->onClick = [this]
+    maxTriggerNoteSlider = std::make_unique<VSTSlider>("High Note");
+    addAndMakeVisible(maxTriggerNoteSlider.get());
+    maxTriggerNoteSlider->setTooltip(TRANS("Highest note to use for triggering"));
+    maxTriggerNoteSlider->setRange(-1, 127, 1);
+    maxTriggerNoteSlider->setSliderStyle(juce::Slider::LinearBar);
+    maxTriggerNoteSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    maxTriggerNoteSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    maxTriggerNoteSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    maxTriggerNoteSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    maxTriggerNoteSlider->onValueChange = [this]
     {
-        handleUseScaleChannelButtonClick();
-    };
-    b_UseScaleChannel->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-    b_UseScaleChannel->setBounds(11, 329, 129, 17);
-
-    s_ScaleChannel = std::make_unique<VSTSlider>("ScaleChannel");
-    addAndMakeVisible(s_ScaleChannel.get());
-    s_ScaleChannel->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Scale Ch\" is enabled"));
-    s_ScaleChannel->setRange(1, 16, 1);
-    s_ScaleChannel->setSliderStyle(juce::Slider::LinearBar);
-    s_ScaleChannel->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_ScaleChannel->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_ScaleChannel->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_ScaleChannel->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_ScaleChannel->onValueChange = [this] {
-        handleScaleChannelSliderChange();
+        handleHighSliderChange();
     };
 
-    s_ScaleChannel->setBounds(10, 283, 60, 20);
+    maxTriggerNoteSlider->setBounds(90, 440, 64, 20);
 
-    label25 = std::make_unique<juce::Label>("scale ch",
-                                            TRANS("Scale Ch"));
-    addAndMakeVisible(label25.get());
-    label25->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label25->setJustificationType(juce::Justification::centred);
-    label25->setEditable(false, false, false);
-    label25->setColour(juce::Label::textColourId, juce::Colours::white);
-    label25->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label25->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    maxTriggerNoteLabel = std::make_unique<juce::Label>("new label",
+                                                        TRANS("High Note"));
+    addAndMakeVisible(maxTriggerNoteLabel.get());
+    maxTriggerNoteLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    maxTriggerNoteLabel->setJustificationType(juce::Justification::centred);
+    maxTriggerNoteLabel->setEditable(false, false, false);
+    maxTriggerNoteLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    maxTriggerNoteLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    maxTriggerNoteLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    maxTriggerNoteLabel->setBounds(90, 424, 64, 16);
 
-    label25->setBounds(13, 267, 54, 16);
-
-    s_MasterTranspose = std::make_unique<VSTSlider>("MasterTranspose");
-    addAndMakeVisible(s_MasterTranspose.get());
-    s_MasterTranspose->setTooltip(TRANS("Global transposition applied to all played notes (after Force to Scale)"));
-    s_MasterTranspose->setRange(-12, 12, 1);
-    s_MasterTranspose->setSliderStyle(juce::Slider::LinearBar);
-    s_MasterTranspose->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_MasterTranspose->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
-    s_MasterTranspose->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_MasterTranspose->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_MasterTranspose->onValueChange = [this] {
-        handleMasterTransposeSliderChange();
-    };
-
-    s_MasterTranspose->setBounds(554, 36, 72, 16);
-
-    label26 = std::make_unique<juce::Label>("new label",
-                                            TRANS("Master Transpose:"));
-    addAndMakeVisible(label26.get());
-    label26->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label26->setJustificationType(juce::Justification::centredRight);
-    label26->setEditable(false, false, false);
-    label26->setColour(juce::Label::textColourId, juce::Colours::white);
-    label26->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label26->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label26->setBounds(452, 36, 102, 16);
-
-    b_WaitForBar = std::make_unique<juce::ToggleButton>("WaitForBar");
-    addAndMakeVisible(b_WaitForBar.get());
-    b_WaitForBar->setTooltip(TRANS("When checked, play/stop of this slot will happen at the start of the bar after"));
-    b_WaitForBar->setButtonText(TRANS("Wait for Next Bar"));
-    b_WaitForBar->onClick = [this]
+    triggerChannelSlider = std::make_unique<VSTSlider>("TriggerChannel");
+    addAndMakeVisible(triggerChannelSlider.get());
+    triggerChannelSlider->setTooltip(TRANS("Channel to use for trigger notes"));
+    triggerChannelSlider->setRange(1, 16, 1);
+    triggerChannelSlider->setSliderStyle(juce::Slider::LinearBar);
+    triggerChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    triggerChannelSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    triggerChannelSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    triggerChannelSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    triggerChannelSlider->onValueChange = [this]
     {
-        handleWaitForBarButtonClick();
-    };
-    b_WaitForBar->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-    b_WaitForBar->setBounds(175, 123, 107, 16);
-
-    midiOutDeviceBox = std::make_unique<juce::ComboBox>("midiOutDevice");
-    addAndMakeVisible(midiOutDeviceBox.get());
-    midiOutDeviceBox->setTooltip(TRANS("Send output to selected MIDI port in addition to VST host output"));
-    midiOutDeviceBox->setEditableText(false);
-    midiOutDeviceBox->setJustificationType(juce::Justification::centredLeft);
-    midiOutDeviceBox->setTextWhenNothingSelected(TRANS("--"));
-    midiOutDeviceBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    midiOutDeviceBox->onChange = [this] {
-        handleMidiOutDeviceComboBoxChange();
+        handleTrigChanSliderChange();
     };
 
-    midiOutDeviceBox->setBounds(633, 15, 158, 16);
+    triggerChannelSlider->setBounds(162, 440, 64, 20);
 
-    label27 = std::make_unique<juce::Label>("QuantizeLabel",
-                                            TRANS("MIDI Output Device"));
-    addAndMakeVisible(label27.get());
-    label27->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label27->setJustificationType(juce::Justification::centred);
-    label27->setEditable(false, false, false);
-    label27->setColour(juce::Label::textColourId, juce::Colours::white);
-    label27->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label27->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    triggerChannelLabel = std::make_unique<juce::Label>("Trigger Channel",
+                                                        TRANS("Channel"));
+    addAndMakeVisible(triggerChannelLabel.get());
+    triggerChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    triggerChannelLabel->setJustificationType(juce::Justification::centred);
+    triggerChannelLabel->setEditable(false, false, false);
+    triggerChannelLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    triggerChannelLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    triggerChannelLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label27->setBounds(627, 0, 117, 16);
+    triggerChannelLabel->setBounds(161, 424, 64, 16);
 
-    b_UseTrChannel = std::make_unique<juce::ToggleButton>("new toggle button");
-    addAndMakeVisible(b_UseTrChannel.get());
-    b_UseTrChannel->setTooltip(TRANS("When checked, notes on selected \"Transpose Ch\" will apply to \"Semitones\" and \"Octave\" settings, relative to \"Root Note\""));
-    b_UseTrChannel->setButtonText(TRANS("Use Transp Ch"));
-    b_UseTrChannel->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-    b_UseTrChannel->setBounds(148, 252, 130, 17);
-    b_UseTrChannel->onClick = [this]
+    velocitySensSlider = std::make_unique<VSTSlider>("Velocity Sensitivity");
+    addAndMakeVisible(velocitySensSlider.get());
+    velocitySensSlider->setTooltip(TRANS("Velocity Sensitivity (Input Velocity -> Output Velocity)"));
+    velocitySensSlider->setRange(0, 200, 1);
+    velocitySensSlider->setSliderStyle(juce::Slider::LinearBar);
+    velocitySensSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    velocitySensSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    velocitySensSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    velocitySensSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    velocitySensSlider->onValueChange = [this]
     {
-        handleUseTrChannelButtonClick();
+        handleVelocitySensSliderChange();
     };
 
-    b_ImmediateTranspose = std::make_unique<juce::ToggleButton>("new toggle button");
-    addAndMakeVisible(b_ImmediateTranspose.get());
-    b_ImmediateTranspose->setTooltip(TRANS("When checked, playing notes will be split and transposed immediately on changes to Semitones / Octave / Force to Scale / Master Transpose settings"));
-    b_ImmediateTranspose->setButtonText(TRANS("Split"));
-    b_ImmediateTranspose->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-    b_ImmediateTranspose->setBounds(247, 252, 48, 17);
-    b_ImmediateTranspose->onClick = [this]
+    velocitySensSlider->setBounds(234, 440, 64, 20);
+
+    velocitySenSlider = std::make_unique<juce::Label>("new label",
+                                                      TRANS("VeloSens"));
+    addAndMakeVisible(velocitySenSlider.get());
+    velocitySenSlider->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    velocitySenSlider->setJustificationType(juce::Justification::centred);
+    velocitySenSlider->setEditable(false, false, false);
+    velocitySenSlider->setColour(juce::Label::textColourId, juce::Colours::white);
+    velocitySenSlider->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    velocitySenSlider->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    velocitySenSlider->setBounds(225, 424, 80, 16);
+
+    slotIOChannelSlider = std::make_unique<VSTSlider>("Channel");
+    addAndMakeVisible(slotIOChannelSlider.get());
+    slotIOChannelSlider->setTooltip(TRANS("Input and output channel for the current slot"));
+    slotIOChannelSlider->setRange(0, 16, 1);
+    slotIOChannelSlider->setSliderStyle(juce::Slider::LinearBar);
+    slotIOChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    slotIOChannelSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    slotIOChannelSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    slotIOChannelSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    slotIOChannelSlider->onValueChange = [this]
     {
-        handleImmediateTransposeButtonClick();
+        handleChannelSliderChange();
     };
 
-    s_NumLoops = std::make_unique<VSTSlider>("NumLoops");
-    addAndMakeVisible(s_NumLoops.get());
-    s_NumLoops->setTooltip(TRANS("Number of times to loop playback"));
-    s_NumLoops->setRange(0, 64, 1);
-    s_NumLoops->setSliderStyle(juce::Slider::LinearBar);
-    s_NumLoops->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_NumLoops->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_NumLoops->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_NumLoops->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_NumLoops->onValueChange = [this] {
-        handleNumLoopsSliderChange();
-    };
+    slotIOChannelSlider->setBounds(314, 414, 64, 20);
 
-    s_NumLoops->setBounds(155, 174, 64, 20);
+    slotIOChannelLabel = std::make_unique<juce::Label>("I/O Channel",
+                                                       TRANS("I/O Channel"));
+    addAndMakeVisible(slotIOChannelLabel.get());
+    slotIOChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    slotIOChannelLabel->setJustificationType(juce::Justification::centred);
+    slotIOChannelLabel->setEditable(false, false, false);
+    slotIOChannelLabel->setColour(juce::Label::textColourId, juce::Colours::white);
+    slotIOChannelLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    slotIOChannelLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    s_NextSlot = std::make_unique<VSTSlider>("NextSlot");
-    addAndMakeVisible(s_NextSlot.get());
-    s_NextSlot->setTooltip(TRANS("What to do after the selected number of loops have played"));
-    s_NextSlot->setRange(0, 16, 1);
-    s_NextSlot->setSliderStyle(juce::Slider::LinearBar);
-    s_NextSlot->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_NextSlot->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_NextSlot->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_NextSlot->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_NextSlot->onValueChange = [this] {
-        handleNextSlotSliderChange();
-    };
+    slotIOChannelLabel->setBounds(309, 398, 74, 16);
 
-    s_NextSlot->setBounds(234, 174, 64, 20);
-
-    label16 = std::make_unique<juce::Label>("Sync:",
-                                            TRANS("Loop Settings"));
-    addAndMakeVisible(label16.get());
-    label16->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
-    label16->setJustificationType(juce::Justification::centred);
-    label16->setEditable(false, false, false);
-    label16->setColour(juce::Label::textColourId, juce::Colour(0xff9f9f9f));
-    label16->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label16->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label16->setBounds(12, 247, 125, 16);
-
-    forceModeBox = std::make_unique<juce::ComboBox>("Force To Scale Mode");
-    addAndMakeVisible(forceModeBox.get());
-    forceModeBox->setEditableText(false);
-    forceModeBox->setJustificationType(juce::Justification::centredLeft);
-    forceModeBox->setTextWhenNothingSelected(TRANS("Nearest"));
-    forceModeBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    forceModeBox->addItem(TRANS("Nearest"), 1);
-    forceModeBox->addItem(TRANS("Up"), 2);
-    forceModeBox->addItem(TRANS("Down"), 3);
-    forceModeBox->addItem(TRANS("Block"), 4);
-    forceModeBox->onChange = [this] {
-        handleForceModeComboBoxChange();
-    };
-
-    forceModeBox->setBounds(110, 313, 61, 16);
-
-    kbport = std::make_unique<juce::Viewport>("Keyboard View");
-    addAndMakeVisible(kbport.get());
-    kbport->setScrollBarsShown(false, false);
-    kbport->setScrollBarThickness(16);
-    kbport->setViewedComponent(new juce::MidiKeyboardComponent(ownerFilter->kbstate, juce::MidiKeyboardComponent::verticalKeyboardFacingRight));
-
-    b_RemoveBar = std::make_unique<juce::TextButton>("RemoveBar");
-    addAndMakeVisible(b_RemoveBar.get());
-    b_RemoveBar->setTooltip(TRANS("Remove bar"));
-    b_RemoveBar->setButtonText(TRANS("-"));
-    b_RemoveBar->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_RemoveBar->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-    b_RemoveBar->setBounds(706, 64, 18, 18);
-    b_RemoveBar->onClick = [this]
+    transformFilterButton = std::make_unique<juce::TextButton>("Transform/Filter");
+    addAndMakeVisible(transformFilterButton.get());
+    transformFilterButton->setTooltip(TRANS("Transform: all events in the pattern are channelized to the selected channel; Filter: only events with the selected channel will be output"));
+    transformFilterButton->setButtonText(TRANS("Transform"));
+    transformFilterButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
+    transformFilterButton->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+    transformFilterButton->setBounds(314, 440, 64, 20);
+    transformFilterButton->onClick = [this]
     {
-        handleRemoveBarButtonClick();
+        handleFiltButtonClick();
     };
 
-    b_AddBar = std::make_unique<juce::TextButton>("AddBar");
-    addAndMakeVisible(b_AddBar.get());
-    b_AddBar->setTooltip(TRANS("Add bar"));
-    b_AddBar->setButtonText(TRANS("+"));
-    b_AddBar->setConnectedEdges(juce::Button::ConnectedOnLeft);
-    b_AddBar->setRadioGroupId(2);
-    b_AddBar->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-    b_AddBar->setBounds(773, 64, 18, 18);
-    b_AddBar->onClick = [this]
-    {
-        handleAddBarButtonClick();
-    };
+    noteTriggeringLabel = std::make_unique<juce::Label>("Sync:",
+                                                        TRANS("Note Triggering"));
+    addAndMakeVisible(noteTriggeringLabel.get());
+    noteTriggeringLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
+    noteTriggeringLabel->setJustificationType(juce::Justification::centred);
+    noteTriggeringLabel->setEditable(false, false, false);
+    noteTriggeringLabel->setColour(juce::Label::textColourId, juce::Colour(0xff9f9f9f));
+    noteTriggeringLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    noteTriggeringLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    LengthLabel = std::make_unique<juce::Label>("Length",
-                                                TRANS("4"));
-    addAndMakeVisible(LengthLabel.get());
-    LengthLabel->setTooltip(TRANS("Pattern length in bars"));
-    LengthLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    LengthLabel->setJustificationType(juce::Justification::centred);
-    LengthLabel->setEditable(true, true, false);
-    LengthLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    LengthLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-    LengthLabel->onTextChange = [this] {
-        handleLengthLabelChange();
-    };
-
-    LengthLabel->setBounds(724, 65, 49, 16);
+    noteTriggeringLabel->setBounds(12, 469, 125, 16);
 
     textButton17 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton17.get());
@@ -2189,128 +2079,268 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton128->setBounds(767, -29, 28, 24);
 
-    b_Transpose10 = std::make_unique<juce::TextButton>("new button");
-    addAndMakeVisible(b_Transpose10.get());
-    b_Transpose10->setButtonText(TRANS("transpose channel 10"));
-    b_Transpose10->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-    b_Transpose10->setBounds(306, 252, 72, 13);
-    b_Transpose10->onClick = [this]
+    loopInfoLabel = std::make_unique<juce::Label>("Loop Info",
+                                                  TRANS("label text"));
+    addAndMakeVisible(loopInfoLabel.get());
+    loopInfoLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    loopInfoLabel->setJustificationType(juce::Justification::centredLeft);
+    loopInfoLabel->setEditable(false, false, false);
+    loopInfoLabel->setColour(juce::Label::textColourId, juce::Colours::black);
+    loopInfoLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    loopInfoLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    loopInfoLabel->setBounds(14, 205, 272, 16);
+
+    loopInfoLabel2 = std::make_unique<juce::Label>("Loop Info 2",
+                                                   TRANS("label text"));
+    addAndMakeVisible(loopInfoLabel2.get());
+    loopInfoLabel2->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    loopInfoLabel2->setJustificationType(juce::Justification::centredLeft);
+    loopInfoLabel2->setEditable(false, false, false);
+    loopInfoLabel2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    loopInfoLabel2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    loopInfoLabel2->setBounds(14, 225, 272, 16);
+
+    loopManipulationLabel = std::make_unique<juce::Label>("Sync:",
+                                                          TRANS("Loop Manipulation"));
+    addAndMakeVisible(loopManipulationLabel.get());
+    loopManipulationLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
+    loopManipulationLabel->setJustificationType(juce::Justification::centred);
+    loopManipulationLabel->setEditable(false, false, false);
+    loopManipulationLabel->setColour(juce::Label::textColourId, juce::Colour(0xff9f9f9f));
+    loopManipulationLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    loopManipulationLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    loopManipulationLabel->setBounds(14, 391, 125, 16);
+
+    snapButton = std::make_unique<juce::ToggleButton>("new toggle button");
+    addAndMakeVisible(snapButton.get());
+    snapButton->setTooltip(TRANS("Toggle Snap to Grid"));
+    snapButton->setButtonText(TRANS("Snap"));
+    snapButton->setBounds(392, 61, 59, 24);
+    snapButton->onClick = [this]
     {
-        handleTranspose10ButtonClick();
+        handleSnapButtonClick();
     };
 
-    b_KeepLength = std::make_unique<juce::ToggleButton>("OverdubMode");
-    addAndMakeVisible(b_KeepLength.get());
-    b_KeepLength->setTooltip(TRANS("When checked, overdubbing will loop record into existing loop length"));
-    b_KeepLength->setButtonText(TRANS("Keep Length"));
-    b_KeepLength->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-    b_KeepLength->setBounds(520, -2, 83, 16);
-    b_KeepLength->onClick = [this]
+    quantize2ComboBox = std::make_unique<juce::ComboBox>("PR Quantize Step");
+    addAndMakeVisible(quantize2ComboBox.get());
+    quantize2ComboBox->setTooltip(TRANS("Grid Size"));
+    quantize2ComboBox->setEditableText(false);
+    quantize2ComboBox->setJustificationType(juce::Justification::centredLeft);
+    quantize2ComboBox->setTextWhenNothingSelected(TRANS("32nd"));
+    quantize2ComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    quantize2ComboBox->addItem(TRANS("4th"), 1);
+    quantize2ComboBox->addItem(TRANS("8th"), 2);
+    quantize2ComboBox->addItem(TRANS("16th"), 3);
+    quantize2ComboBox->addItem(TRANS("32nd"), 4);
+    quantize2ComboBox->addItem(TRANS("64th"), 5);
+    quantize2ComboBox->onChange = [this]
+    {
+        handleQuantize2ComboBoxChange();
+    };
+
+    quantize2ComboBox->setBounds(453, 64, 50, 18);
+
+    tripletButton = std::make_unique<juce::TextButton>("Triplet");
+    addAndMakeVisible(tripletButton.get());
+    tripletButton->setTooltip(TRANS("Toggle Triplet Note Grid"));
+    tripletButton->setButtonText(TRANS("3"));
+    tripletButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
+    tripletButton->setRadioGroupId(2);
+    tripletButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
+    tripletButton->setBounds(506, 64, 18, 18);
+    tripletButton->onClick = [this]
+    {
+        handleTripletButtonClick();
+    };
+
+    dottedButton = std::make_unique<juce::TextButton>("Dotted");
+    addAndMakeVisible(dottedButton.get());
+    dottedButton->setTooltip(TRANS("Toggle Dotted Note Grid"));
+    dottedButton->setButtonText(TRANS("."));
+    dottedButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
+    dottedButton->setRadioGroupId(2);
+    dottedButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
+    dottedButton->setBounds(528, 64, 18, 18);
+    dottedButton->onClick = [this]
+    {
+        handleDottedButtonClick();
+    };
+
+    numeratorLabel = std::make_unique<juce::Label>("new label",
+                                                   TRANS("4"));
+    addAndMakeVisible(numeratorLabel.get());
+    numeratorLabel->setTooltip(TRANS("Time Sig Numerator"));
+    numeratorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    numeratorLabel->setJustificationType(juce::Justification::centredRight);
+    numeratorLabel->setEditable(true, true, false);
+    numeratorLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    numeratorLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    numeratorLabel->onTextChange = [this]
+    {
+        handleNumeratorLabelTextChange();
+    };
+    numeratorLabel->setBounds(555, 64, 27, 18);
+
+    denominatorLabel = std::make_unique<juce::Label>("new label",
+                                                     TRANS("4"));
+    addAndMakeVisible(denominatorLabel.get());
+    denominatorLabel->setTooltip(TRANS("Time Sig Denominator"));
+    denominatorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    denominatorLabel->setJustificationType(juce::Justification::centredLeft);
+    denominatorLabel->setEditable(true, true, false);
+    denominatorLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    denominatorLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    denominatorLabel->onTextChange = [this]
+    {
+        handleDenominatorLabelChange();
+    };
+
+    denominatorLabel->setBounds(584, 64, 29, 18);
+
+    keepLengthToggleButton = std::make_unique<juce::ToggleButton>("OverdubMode");
+    addAndMakeVisible(keepLengthToggleButton.get());
+    keepLengthToggleButton->setTooltip(TRANS("When checked, overdubbing will loop record into existing loop length"));
+    keepLengthToggleButton->setButtonText(TRANS("Keep Length"));
+    keepLengthToggleButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+    keepLengthToggleButton->setBounds(520, -2, 83, 16);
+    keepLengthToggleButton->onClick = [this]
     {
         handleKeepLengthButtonClick();
     };
 
-    s_RecCC = std::make_unique<VSTSlider>("recCC");
-    addAndMakeVisible(s_RecCC.get());
-    s_RecCC->setTooltip(TRANS("CC Number to toggle recording to active slot"));
-    s_RecCC->setRange(-2, 127, 1);
-    s_RecCC->setSliderStyle(juce::Slider::LinearBar);
-    s_RecCC->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_RecCC->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_RecCC->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_RecCC->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_RecCC->onValueChange = [this] {
+    zoomLabel = std::make_unique<juce::Label>("new label", TRANS("Zoom"));
+    addAndMakeVisible(zoomLabel.get());
+    zoomLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    zoomLabel->setJustificationType(juce::Justification::centredLeft);
+    zoomLabel->setEditable(false, false, false);
+    zoomLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    zoomLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+
+    zoomLabel->setBounds(613, 64, 46, 18);
+
+    zoomOutButton = std::make_unique<juce::TextButton>("ZoomOut");
+    addAndMakeVisible(zoomOutButton.get());
+    zoomOutButton->setTooltip(TRANS("Zoom Out (Ctrl-click for vertical)"));
+    zoomOutButton->setButtonText(TRANS("-"));
+    zoomOutButton->setConnectedEdges(juce::Button::ConnectedOnRight);
+    zoomOutButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
+    zoomOutButton->setBounds(656, 64, 18, 18);
+    zoomOutButton->onClick = [this]
+    {
+        handleZoomOutButtonClick();
+    };
+
+    zoomInButton = std::make_unique<juce::TextButton>("ZoomIn");
+    addAndMakeVisible(zoomInButton.get());
+    zoomInButton->setTooltip(TRANS("Zoom In (Ctrl-click for vertical)"));
+    zoomInButton->setButtonText(TRANS("+"));
+    zoomInButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
+    zoomInButton->setRadioGroupId(2);
+    zoomInButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
+    zoomInButton->setBounds(674, 64, 18, 18);
+    zoomInButton->onClick = [this]
+    {
+        handleZoomInButtonClick();
+    };
+
+    removeBarButton = std::make_unique<juce::TextButton>("RemoveBar");
+    addAndMakeVisible(removeBarButton.get());
+    removeBarButton->setTooltip(TRANS("Remove bar"));
+    removeBarButton->setButtonText(TRANS("-"));
+    removeBarButton->setConnectedEdges(juce::Button::ConnectedOnRight);
+    removeBarButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
+    removeBarButton->setBounds(706, 64, 18, 18);
+    removeBarButton->onClick = [this]
+    {
+        handleRemoveBarButtonClick();
+    };
+
+    patternLengthLabel = std::make_unique<juce::Label>("Length",
+                                                       TRANS("4"));
+    addAndMakeVisible(patternLengthLabel.get());
+    patternLengthLabel->setTooltip(TRANS("Pattern length in bars"));
+    patternLengthLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    patternLengthLabel->setJustificationType(juce::Justification::centred);
+    patternLengthLabel->setEditable(true, true, false);
+    patternLengthLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    patternLengthLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    patternLengthLabel->onTextChange = [this]
+    {
+        handleLengthLabelChange();
+    };
+
+    patternLengthLabel->setBounds(724, 65, 49, 16);
+
+    addBarButton = std::make_unique<juce::TextButton>("AddBar");
+    addAndMakeVisible(addBarButton.get());
+    addBarButton->setTooltip(TRANS("Add bar"));
+    addBarButton->setButtonText(TRANS("+"));
+    addBarButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
+    addBarButton->setRadioGroupId(2);
+    addBarButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
+    addBarButton->setBounds(773, 64, 18, 18);
+    addBarButton->onClick = [this]
+    {
+        handleAddBarButtonClick();
+    };
+
+    keyboardViewport = std::make_unique<juce::Viewport>("Keyboard View");
+    addAndMakeVisible(keyboardViewport.get());
+    keyboardViewport->setScrollBarsShown(false, false);
+    keyboardViewport->setScrollBarThickness(16);
+    keyboardViewport->setViewedComponent(new juce::MidiKeyboardComponent(ownerFilter->kbstate, juce::MidiKeyboardComponent::verticalKeyboardFacingRight));
+
+    timeline = std::make_unique<Timeline>();
+    addAndMakeVisible(timeline.get());
+    timeline->setName("timeline");
+
+    pianoRollViewport = std::make_unique<PianoRollViewport>("Piano Roll View");
+    addAndMakeVisible(pianoRollViewport.get());
+    pianoRollViewport->setScrollBarThickness(16);
+    pianoRollViewport->setViewedComponent(new PianoRoll(this->getFilter(), this, timeline.get()));
+
+    resizer = std::make_unique<juce::ResizableCornerComponent>(this, &resizeLimits);
+    addAndMakeVisible(resizer.get());
+
+    recCCSlider = std::make_unique<VSTSlider>("recCC");
+    addAndMakeVisible(recCCSlider.get());
+    recCCSlider->setTooltip(TRANS("CC Number to toggle recording to active slot"));
+    recCCSlider->setRange(-2, 127, 1);
+    recCCSlider->setSliderStyle(juce::Slider::LinearBar);
+    recCCSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    recCCSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    recCCSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    recCCSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    recCCSlider->onValueChange = [this]
+    {
         handleRecCCSliderChange();
     };
 
-    s_RecCC->setBounds(11, 149, 64, 20);
+    recCCSlider->setBounds(11, 149, 64, 20);
 
-    s_PlayCC = std::make_unique<VSTSlider>("playCC");
-    addAndMakeVisible(s_PlayCC.get());
-    s_PlayCC->setTooltip(TRANS("CC Number to toggle play for active slot"));
-    s_PlayCC->setRange(-2, 127, 1);
-    s_PlayCC->setSliderStyle(juce::Slider::LinearBar);
-    s_PlayCC->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_PlayCC->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_PlayCC->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_PlayCC->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_PlayCC->onValueChange = [this] {
+    playCCSlider = std::make_unique<VSTSlider>("playCC");
+    addAndMakeVisible(playCCSlider.get());
+    playCCSlider->setTooltip(TRANS("CC Number to toggle play for active slot"));
+    playCCSlider->setRange(-2, 127, 1);
+    playCCSlider->setSliderStyle(juce::Slider::LinearBar);
+    playCCSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
+    playCCSlider->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
+    playCCSlider->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    playCCSlider->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+    playCCSlider->onValueChange = [this]
+    {
         handlePlayCCSliderChange();
     };
 
-    s_PlayCC->setBounds(81, 149, 64, 20);
-
-    s_VelocitySens = std::make_unique<VSTSlider>("Velocity Sensitivity");
-    addAndMakeVisible(s_VelocitySens.get());
-    s_VelocitySens->setTooltip(TRANS("Velocity Sensitivity (Input Velocity -> Output Velocity)"));
-    s_VelocitySens->setRange(0, 200, 1);
-    s_VelocitySens->setSliderStyle(juce::Slider::LinearBar);
-    s_VelocitySens->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_VelocitySens->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_VelocitySens->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_VelocitySens->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_VelocitySens->onValueChange = [this] {
-      handleVelocitySensSliderChange();
-    };
-
-    s_VelocitySens->setBounds(234, 440, 64, 20);
-
-    label24 = std::make_unique<juce::Label>("new label",
-                                            TRANS("VeloSens"));
-    addAndMakeVisible(label24.get());
-    label24->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label24->setJustificationType(juce::Justification::centred);
-    label24->setEditable(false, false, false);
-    label24->setColour(juce::Label::textColourId, juce::Colours::white);
-    label24->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label24->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label24->setBounds(225, 424, 80, 16);
-
-    b_Monitor = std::make_unique<juce::TextButton>("MIDI_Monitor");
-    addAndMakeVisible(b_Monitor.get());
-    b_Monitor->setTooltip(TRANS("Monitor input MIDI through active slot\'s settings (Transpose, Scale, I/O Channel)"));
-    b_Monitor->setButtonText(TRANS("Monitor"));
-    b_Monitor->onClick = [this]
-    {
-        handleMonitorButtonClick();
-    };
-    b_Monitor->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-
-    b_Monitor->setBounds(678, 33, 55, 20);
-
-    s_TransposeChannel = std::make_unique<VSTSlider>("TransposeChannel");
-    addAndMakeVisible(s_TransposeChannel.get());
-    s_TransposeChannel->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Transp Ch\" is enabled"));
-    s_TransposeChannel->setRange(1, 16, 1);
-    s_TransposeChannel->setSliderStyle(juce::Slider::LinearBar);
-    s_TransposeChannel->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
-    s_TransposeChannel->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
-    s_TransposeChannel->setColour(juce::Slider::thumbColourId, juce::Colours::black);
-    s_TransposeChannel->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_TransposeChannel->onValueChange = [this] {
-        handleTransposeChannelSliderChange();
-    };
-
-    s_TransposeChannel->setBounds(76, 283, 60, 20);
-
-    label28 = std::make_unique<juce::Label>("tr ch",
-                                            TRANS("Transpose Ch"));
-    addAndMakeVisible(label28.get());
-    label28->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    label28->setJustificationType(juce::Justification::centred);
-    label28->setEditable(false, false, false);
-    label28->setColour(juce::Label::textColourId, juce::Colours::white);
-    label28->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    label28->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-
-    label28->setBounds(66, 267, 80, 16);
+    playCCSlider->setBounds(81, 149, 64, 20);
 
     cachedImage_piznew40_png_1 = juce::ImageCache::getFromMemory(piznew40_png, piznew40_pngSize);
 
-    aboutButton->setTooltip(L"Insert Piz Here-> midiLooper v" + juce::String(JucePlugin_VersionString) + " https://github.com/sleiner/pizmidi");
-    viewport->setTimeline(timeline.get());
-    viewport->setKeyboard(kbport.get());
+    pianoRollViewport->setTimeline(timeline.get());
+    pianoRollViewport->setKeyboard(keyboardViewport.get());
     this->setMouseClickGrabsKeyboardFocus(false);
     for (int slot = 0; slot < numSlots; slot++)
     {
@@ -2318,172 +2348,181 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
         getButtonForSlot(slot)->addMouseListener(this, false);
         getButtonForSlot(slot)->setMouseClickGrabsKeyboardFocus(false);
     }
-    s_PlayCC->setVisible(false);
-    s_RecCC->setVisible(false);
-    b_Play->setMouseClickGrabsKeyboardFocus(false);
-    b_Record->setMouseClickGrabsKeyboardFocus(false);
-    b_Overdub->setMouseClickGrabsKeyboardFocus(false);
-    b_Thru->setMouseClickGrabsKeyboardFocus(false);
-    b_Clear->setMouseClickGrabsKeyboardFocus(false);
-    s_FixedLength->setMouseClickGrabsKeyboardFocus(false);
-    stepsizeBox->setMouseClickGrabsKeyboardFocus(false);
-    s_Transpose->setMouseClickGrabsKeyboardFocus(false);
-    s_Octave->setMouseClickGrabsKeyboardFocus(false);
-    s_Velocity->setMouseClickGrabsKeyboardFocus(false);
-    label3->setMouseClickGrabsKeyboardFocus(false);
-    label4->setMouseClickGrabsKeyboardFocus(false);
-    label5->setMouseClickGrabsKeyboardFocus(false);
-    s_Start->setMouseClickGrabsKeyboardFocus(false);
-    label6->setMouseClickGrabsKeyboardFocus(false);
-    s_End->setMouseClickGrabsKeyboardFocus(false);
-    label7->setMouseClickGrabsKeyboardFocus(false);
-    s_Stretch->setMouseClickGrabsKeyboardFocus(false);
-    label8->setMouseClickGrabsKeyboardFocus(false);
-    loopmodeBox->setMouseClickGrabsKeyboardFocus(false);
-    notetriggerBox->setMouseClickGrabsKeyboardFocus(false);
-    syncmodeBox->setMouseClickGrabsKeyboardFocus(false);
-    s_Root->setMouseClickGrabsKeyboardFocus(false);
-    label9->setMouseClickGrabsKeyboardFocus(false);
-    s_Low->setMouseClickGrabsKeyboardFocus(false);
-    label10->setMouseClickGrabsKeyboardFocus(false);
-    s_High->setMouseClickGrabsKeyboardFocus(false);
-    label11->setMouseClickGrabsKeyboardFocus(false);
-    s_TrigChan->setMouseClickGrabsKeyboardFocus(false);
-    label12->setMouseClickGrabsKeyboardFocus(false);
-    b_Reload->setMouseClickGrabsKeyboardFocus(false);
-    quantizeBox->setMouseClickGrabsKeyboardFocus(false);
-    label13->setMouseClickGrabsKeyboardFocus(false);
-    s_Shift->setMouseClickGrabsKeyboardFocus(false);
-    label2->setMouseClickGrabsKeyboardFocus(false);
-    label14->setMouseClickGrabsKeyboardFocus(false);
-    nameLabel->setMouseClickGrabsKeyboardFocus(false);
-    b_Save->setMouseClickGrabsKeyboardFocus(false);
-    label22->setMouseClickGrabsKeyboardFocus(false);
-    label18->setMouseClickGrabsKeyboardFocus(false);
-    loopinfoLabel->setMouseClickGrabsKeyboardFocus(false);
-    loopinfoLabel2->setMouseClickGrabsKeyboardFocus(false);
-    label17->setMouseClickGrabsKeyboardFocus(false);
-    s_Channel->setMouseClickGrabsKeyboardFocus(false);
-    label19->setMouseClickGrabsKeyboardFocus(false);
-    b_Filt->setMouseClickGrabsKeyboardFocus(false);
-    b_SingleLoop->setMouseClickGrabsKeyboardFocus(false);
-    label15->setMouseClickGrabsKeyboardFocus(false);
-    b_Triplet->setMouseClickGrabsKeyboardFocus(false);
-    b_Dotted->setMouseClickGrabsKeyboardFocus(false);
-    label->setMouseClickGrabsKeyboardFocus(false);
-    b_ZoomIn->setMouseClickGrabsKeyboardFocus(false);
-    b_ZoomOut->setMouseClickGrabsKeyboardFocus(false);
-    b_UseScaleChannel->setMouseClickGrabsKeyboardFocus(false);
-    b_UseTrChannel->setMouseClickGrabsKeyboardFocus(false);
-    b_WaitForBar->setMouseClickGrabsKeyboardFocus(false);
-    b_ImmediateTranspose->setMouseClickGrabsKeyboardFocus(false);
-    b_ForceToKey->setMouseClickGrabsKeyboardFocus(false);
-    b_Snap->setMouseClickGrabsKeyboardFocus(false);
-    s_NextSlot->setMouseClickGrabsKeyboardFocus(false);
-    s_NumLoops->setMouseClickGrabsKeyboardFocus(false);
-    b_AddBar->setMouseClickGrabsKeyboardFocus(false);
-    b_RemoveBar->setMouseClickGrabsKeyboardFocus(false);
-    s_RecCC->setMouseClickGrabsKeyboardFocus(false);
-    s_PlayCC->setMouseClickGrabsKeyboardFocus(false);
-    s_VelocitySens->setMouseClickGrabsKeyboardFocus(false);
-    b_Monitor->setMouseClickGrabsKeyboardFocus(false);
 
-    s_Stretch->setOwner(getAudioProcessor(), kStretch);
-    s_High->setOwner(getAudioProcessor(), kNHigh);
-    s_Low->setOwner(getAudioProcessor(), kNLow);
-    s_Root->setOwner(getAudioProcessor(), kRoot);
-    s_Transpose->setOwner(getAudioProcessor(), kTranspose);
-    s_Octave->setOwner(getAudioProcessor(), kOctave);
-    s_Velocity->setOwner(getAudioProcessor(), kVelocity);
-    s_Start->setOwner(getAudioProcessor(), kLoopStart);
-    s_End->setOwner(getAudioProcessor(), kLoopEnd);
-    s_Shift->setOwner(getAudioProcessor(), kShift);
-    s_Channel->setOwner(getAudioProcessor(), kChannel);
-    s_TrigChan->setOwner(getAudioProcessor(), kTrigChan);
-    s_FixedLength->setOwner(getAudioProcessor(), kFixedLength);
-    s_PlayGroup->setOwner(getAudioProcessor(), kPlayGroup);
-    s_MuteGroup->setOwner(getAudioProcessor(), kMuteGroup);
-    s_MasterVelocity->setOwner(getAudioProcessor(), kMasterVelocity);
-    s_MasterTranspose->setOwner(getAudioProcessor(), kMasterTranspose);
-    s_ScaleChannel->setOwner(getAudioProcessor(), kScaleChannel);
-    s_TransposeChannel->setOwner(getAudioProcessor(), kTransposeChannel);
-    s_NumLoops->setOwner(getAudioProcessor(), kNumLoops);
-    s_NextSlot->setOwner(getAudioProcessor(), kNextSlot);
-    s_RecCC->setOwner(getAudioProcessor(), kRecCC);
-    s_PlayCC->setOwner(getAudioProcessor(), kPlayCC);
-    s_VelocitySens->setOwner(getAudioProcessor(), kVeloSens);
+    playCCSlider->setVisible(false);
+    recCCSlider->setVisible(false);
 
-    s_NumLoops->addMouseListener(this, true);
-    s_NextSlot->addMouseListener(this, true);
-    s_Channel->addMouseListener(this, true);
-    s_PlayGroup->addMouseListener(this, true);
-    s_MuteGroup->addMouseListener(this, true);
-    s_Stretch->addMouseListener(this, true);
-    s_Transpose->addMouseListener(this, true);
-    s_Octave->addMouseListener(this, true);
-    s_Start->addMouseListener(this, true);
-    s_End->addMouseListener(this, true);
-    s_Shift->addMouseListener(this, true);
-    s_Velocity->addMouseListener(this, true);
-    s_VelocitySens->addMouseListener(this, true);
-    s_MasterVelocity->addMouseListener(this, true);
-    s_MasterTranspose->addMouseListener(this, true);
-    s_NumLoops->setDoubleClickReturnValue(true, 0);
-    s_NextSlot->setDoubleClickReturnValue(true, 0);
-    s_Channel->setDoubleClickReturnValue(true, 0);
-    s_PlayGroup->setDoubleClickReturnValue(true, 0);
-    s_MuteGroup->setDoubleClickReturnValue(true, 0);
-    s_Stretch->setDoubleClickReturnValue(true, 0);
-    s_Transpose->setDoubleClickReturnValue(true, 0);
-    s_Octave->setDoubleClickReturnValue(true, 0);
-    s_Start->setDoubleClickReturnValue(true, 0);
-    s_End->setDoubleClickReturnValue(true, 0);
-    s_Shift->setDoubleClickReturnValue(true, 0);
-    s_Velocity->setDoubleClickReturnValue(true, 100);
-    s_VelocitySens->setDoubleClickReturnValue(true, 0);
-    s_MasterVelocity->setDoubleClickReturnValue(true, 0);
-    s_MasterTranspose->setDoubleClickReturnValue(true, 0);
+    playButton->setMouseClickGrabsKeyboardFocus(false);
+    recordButton->setMouseClickGrabsKeyboardFocus(false);
+    overdubButton->setMouseClickGrabsKeyboardFocus(false);
+    midiThruButton->setMouseClickGrabsKeyboardFocus(false);
+    clearButton->setMouseClickGrabsKeyboardFocus(false);
+    fixedLengthSlider->setMouseClickGrabsKeyboardFocus(false);
+    stepSizeComboBox->setMouseClickGrabsKeyboardFocus(false);
+    transposeSlider->setMouseClickGrabsKeyboardFocus(false);
+    octaveSlider->setMouseClickGrabsKeyboardFocus(false);
+    velocitySlider->setMouseClickGrabsKeyboardFocus(false);
+    transposeLabel->setMouseClickGrabsKeyboardFocus(false);
+    octaveLabel->setMouseClickGrabsKeyboardFocus(false);
+    velocityLabel->setMouseClickGrabsKeyboardFocus(false);
+    loopStartSlider->setMouseClickGrabsKeyboardFocus(false);
+    startOffsetLabel->setMouseClickGrabsKeyboardFocus(false);
+    loopEndOffsetSlider->setMouseClickGrabsKeyboardFocus(false);
+    loopEndOffsetLabel->setMouseClickGrabsKeyboardFocus(false);
+    stretchSlider->setMouseClickGrabsKeyboardFocus(false);
+    speedLabel->setMouseClickGrabsKeyboardFocus(false);
+    loopModeComboBox->setMouseClickGrabsKeyboardFocus(false);
+    noteTriggerComboBox->setMouseClickGrabsKeyboardFocus(false);
+    syncModeComboBox->setMouseClickGrabsKeyboardFocus(false);
+    rootNoteSlider->setMouseClickGrabsKeyboardFocus(false);
+    rootNoteLabel->setMouseClickGrabsKeyboardFocus(false);
+    minTriggerNoteSlider->setMouseClickGrabsKeyboardFocus(false);
+    minTriggerNoteLabel->setMouseClickGrabsKeyboardFocus(false);
+    maxTriggerNoteSlider->setMouseClickGrabsKeyboardFocus(false);
+    maxTriggerNoteLabel->setMouseClickGrabsKeyboardFocus(false);
+    triggerChannelSlider->setMouseClickGrabsKeyboardFocus(false);
+    triggerChannelLabel->setMouseClickGrabsKeyboardFocus(false);
+    reloadButton->setMouseClickGrabsKeyboardFocus(false);
+    quantizeComboBox->setMouseClickGrabsKeyboardFocus(false);
+    playGroupLabel->setMouseClickGrabsKeyboardFocus(false);
+    shiftPatternSlider->setMouseClickGrabsKeyboardFocus(false);
+    shiftPatternLabel->setMouseClickGrabsKeyboardFocus(false);
+    muteGroupLabel->setMouseClickGrabsKeyboardFocus(false);
+    patternNameLabel->setMouseClickGrabsKeyboardFocus(false);
+    saveButton->setMouseClickGrabsKeyboardFocus(false);
+    hostSyncModeLabel->setMouseClickGrabsKeyboardFocus(false);
+    noteTriggeringLabel->setMouseClickGrabsKeyboardFocus(false);
+    loopInfoLabel->setMouseClickGrabsKeyboardFocus(false);
+    loopInfoLabel2->setMouseClickGrabsKeyboardFocus(false);
+    loopManipulationLabel->setMouseClickGrabsKeyboardFocus(false);
+    slotIOChannelSlider->setMouseClickGrabsKeyboardFocus(false);
+    slotIOChannelLabel->setMouseClickGrabsKeyboardFocus(false);
+    transformFilterButton->setMouseClickGrabsKeyboardFocus(false);
+    singleLoopToggleButton->setMouseClickGrabsKeyboardFocus(false);
+    masterVelocityLabel->setMouseClickGrabsKeyboardFocus(false);
+    tripletButton->setMouseClickGrabsKeyboardFocus(false);
+    dottedButton->setMouseClickGrabsKeyboardFocus(false);
+    zoomLabel->setMouseClickGrabsKeyboardFocus(false);
+    zoomInButton->setMouseClickGrabsKeyboardFocus(false);
+    zoomOutButton->setMouseClickGrabsKeyboardFocus(false);
+    useScaleChannelButton->setMouseClickGrabsKeyboardFocus(false);
+    useTransposeChannelButton->setMouseClickGrabsKeyboardFocus(false);
+    waitForBarButton->setMouseClickGrabsKeyboardFocus(false);
+    immediateTransposeButton->setMouseClickGrabsKeyboardFocus(false);
+    forceToKeyButton->setMouseClickGrabsKeyboardFocus(false);
+    snapButton->setMouseClickGrabsKeyboardFocus(false);
+    nextSlotSlider->setMouseClickGrabsKeyboardFocus(false);
+    numLoopsSlider->setMouseClickGrabsKeyboardFocus(false);
+    addBarButton->setMouseClickGrabsKeyboardFocus(false);
+    removeBarButton->setMouseClickGrabsKeyboardFocus(false);
+    recCCSlider->setMouseClickGrabsKeyboardFocus(false);
+    playCCSlider->setMouseClickGrabsKeyboardFocus(false);
+    velocitySensSlider->setMouseClickGrabsKeyboardFocus(false);
+    monitorButton->setMouseClickGrabsKeyboardFocus(false);
 
-    b_Record->addMouseListener(this, false);
-    b_Play->addMouseListener(this, false);
-    s_PlayCC->addMouseListener(this, true);
-    s_PlayCC->setSliderSnapsToMousePosition(false);
-    s_PlayCC->setDoubleClickReturnValue(true, -1);
-    s_RecCC->addMouseListener(this, true);
-    s_RecCC->setSliderSnapsToMousePosition(false);
-    s_RecCC->setDoubleClickReturnValue(true, -1);
-    s_Low->setDoubleClickReturnValue(true, 0);
-    s_Low->setSliderSnapsToMousePosition(false);
-    s_Low->addMouseListener(this, true);
-    s_High->setDoubleClickReturnValue(true, 127);
-    s_High->setSliderSnapsToMousePosition(false);
-    s_High->addMouseListener(this, true);
-    s_Root->setDoubleClickReturnValue(true, 60);
-    s_Root->setSliderSnapsToMousePosition(false);
-    s_Root->addMouseListener(this, true);
+    stretchSlider->setOwner(getAudioProcessor(), kStretch);
+    maxTriggerNoteSlider->setOwner(getAudioProcessor(), kNHigh);
+    minTriggerNoteSlider->setOwner(getAudioProcessor(), kNLow);
+    rootNoteSlider->setOwner(getAudioProcessor(), kRoot);
+    transposeSlider->setOwner(getAudioProcessor(), kTranspose);
+    octaveSlider->setOwner(getAudioProcessor(), kOctave);
+    velocitySlider->setOwner(getAudioProcessor(), kVelocity);
+    loopStartSlider->setOwner(getAudioProcessor(), kLoopStart);
+    loopEndOffsetSlider->setOwner(getAudioProcessor(), kLoopEnd);
+    shiftPatternSlider->setOwner(getAudioProcessor(), kShift);
+    slotIOChannelSlider->setOwner(getAudioProcessor(), kChannel);
+    triggerChannelSlider->setOwner(getAudioProcessor(), kTrigChan);
+    fixedLengthSlider->setOwner(getAudioProcessor(), kFixedLength);
+    playGroupSlider->setOwner(getAudioProcessor(), kPlayGroup);
+    muteGroupSlider->setOwner(getAudioProcessor(), kMuteGroup);
+    masterVelocitySlider->setOwner(getAudioProcessor(), kMasterVelocity);
+    masterTransposeSlider->setOwner(getAudioProcessor(), kMasterTranspose);
+    scaleChannelSlider->setOwner(getAudioProcessor(), kScaleChannel);
+    transposeChannelSlider->setOwner(getAudioProcessor(), kTransposeChannel);
+    numLoopsSlider->setOwner(getAudioProcessor(), kNumLoops);
+    nextSlotSlider->setOwner(getAudioProcessor(), kNextSlot);
+    recCCSlider->setOwner(getAudioProcessor(), kRecCC);
+    playCCSlider->setOwner(getAudioProcessor(), kPlayCC);
+    velocitySensSlider->setOwner(getAudioProcessor(), kVeloSens);
+
+    numLoopsSlider->addMouseListener(this, true);
+    nextSlotSlider->addMouseListener(this, true);
+    slotIOChannelSlider->addMouseListener(this, true);
+    playGroupSlider->addMouseListener(this, true);
+    muteGroupSlider->addMouseListener(this, true);
+    stretchSlider->addMouseListener(this, true);
+    transposeSlider->addMouseListener(this, true);
+    octaveSlider->addMouseListener(this, true);
+    loopStartSlider->addMouseListener(this, true);
+    loopEndOffsetSlider->addMouseListener(this, true);
+    shiftPatternSlider->addMouseListener(this, true);
+    velocitySlider->addMouseListener(this, true);
+    velocitySensSlider->addMouseListener(this, true);
+    masterVelocitySlider->addMouseListener(this, true);
+    masterTransposeSlider->addMouseListener(this, true);
+    numLoopsSlider->setDoubleClickReturnValue(true, 0);
+    nextSlotSlider->setDoubleClickReturnValue(true, 0);
+    slotIOChannelSlider->setDoubleClickReturnValue(true, 0);
+    playGroupSlider->setDoubleClickReturnValue(true, 0);
+    muteGroupSlider->setDoubleClickReturnValue(true, 0);
+    stretchSlider->setDoubleClickReturnValue(true, 0);
+    transposeSlider->setDoubleClickReturnValue(true, 0);
+    octaveSlider->setDoubleClickReturnValue(true, 0);
+    loopStartSlider->setDoubleClickReturnValue(true, 0);
+    loopEndOffsetSlider->setDoubleClickReturnValue(true, 0);
+    shiftPatternSlider->setDoubleClickReturnValue(true, 0);
+    velocitySlider->setDoubleClickReturnValue(true, 100);
+    velocitySensSlider->setDoubleClickReturnValue(true, 0);
+    masterVelocitySlider->setDoubleClickReturnValue(true, 0);
+    masterTransposeSlider->setDoubleClickReturnValue(true, 0);
+
+    recordButton->addMouseListener(this, false);
+    playButton->addMouseListener(this, false);
+
+    playCCSlider->addMouseListener(this, true);
+    playCCSlider->setSliderSnapsToMousePosition(false);
+    playCCSlider->setDoubleClickReturnValue(true, -1);
+
+    recCCSlider->addMouseListener(this, true);
+    recCCSlider->setSliderSnapsToMousePosition(false);
+    recCCSlider->setDoubleClickReturnValue(true, -1);
+
+    minTriggerNoteSlider->setDoubleClickReturnValue(true, 0);
+    minTriggerNoteSlider->setSliderSnapsToMousePosition(false);
+    minTriggerNoteSlider->addMouseListener(this, true);
+
+    maxTriggerNoteSlider->setDoubleClickReturnValue(true, 127);
+    maxTriggerNoteSlider->setSliderSnapsToMousePosition(false);
+    maxTriggerNoteSlider->addMouseListener(this, true);
+
+    rootNoteSlider->setDoubleClickReturnValue(true, 60);
+    rootNoteSlider->setSliderSnapsToMousePosition(false);
+    rootNoteSlider->addMouseListener(this, true);
+
     resizer->setMouseClickGrabsKeyboardFocus(false);
-    timeline->addChangeListener(this);
-    viewport->addChangeListener(this);
 
-    midiOutDeviceBox->setMouseClickGrabsKeyboardFocus(false);
-    midiOutDeviceBox->addItem(juce::String("--"), 1);
+    timeline->addChangeListener(this);
+    pianoRollViewport->addChangeListener(this);
+
+    midiOutDeviceComboBox->setMouseClickGrabsKeyboardFocus(false);
+    midiOutDeviceComboBox->addItem(juce::String("--"), 1);
     for (int i = 0; i < ownerFilter->devices.size(); i++)
     {
-        midiOutDeviceBox->addItem(ownerFilter->devices[i].name, i + 2);
+        midiOutDeviceComboBox->addItem(ownerFilter->devices[i].name, i + 2);
     }
-    midiOutDeviceBox->setSelectedId(1);
+    midiOutDeviceComboBox->setSelectedId(1);
 
-    loopinfoLabel2->setText("Stopped", juce::dontSendNotification);
+    loopInfoLabel2->setText("Stopped", juce::dontSendNotification);
 
     resizeLimits.setSizeLimits(385, 248, 1600, 900);
     ownerFilter->addChangeListener(this);
     ownerFilter->info->addChangeListener(this);
-    pianoRoll = (PianoRoll*) viewport->getViewedComponent();
-    viewport->setPlayline(pianoRoll->getPlayline());
+    pianoRoll = (PianoRoll*) pianoRollViewport->getViewedComponent();
+    pianoRollViewport->setPlayline(pianoRoll->getPlayline());
     pianoRoll->setSize(500, 1200);
     pianoRoll->setSequence(ownerFilter->getActiveLoop());
     pianoRoll->addChangeListener(this);
-    keyboard = (juce::MidiKeyboardComponent*) kbport->getViewedComponent();
+    keyboard = (juce::MidiKeyboardComponent*) keyboardViewport->getViewedComponent();
     keyboard->setScrollButtonsVisible(false);
     keyboard->setBounds(0, 0, 25, pianoRoll->getHeight());
     keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
@@ -2496,7 +2535,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     //ownerFilter->setPRSetting("height",pianoRoll->getHeight());
     timeline->setPianoRoll(pianoRoll);
     noSnap = true;
-    nameLabel->setListener(this);
+    patternNameLabel->setListener(this);
     keySelector->setKeyWidth(22.f);
     keySelector->setAvailableRange(0, 11);
     keySelector->addChangeListener(this);
@@ -2516,233 +2555,233 @@ PizLooperEditor::~PizLooperEditor()
     getFilter()->info->removeChangeListener(this);
     getFilter()->keySelectorState.removeListener(this);
 
-    label                = nullptr;
-    timeline             = nullptr;
-    textButton1          = nullptr;
-    textButton2          = nullptr;
-    textButton3          = nullptr;
-    textButton4          = nullptr;
-    textButton5          = nullptr;
-    textButton6          = nullptr;
-    textButton7          = nullptr;
-    textButton8          = nullptr;
-    textButton9          = nullptr;
-    textButton10         = nullptr;
-    textButton11         = nullptr;
-    textButton12         = nullptr;
-    textButton13         = nullptr;
-    textButton14         = nullptr;
-    textButton15         = nullptr;
-    textButton16         = nullptr;
-    b_Play               = nullptr;
-    b_Record             = nullptr;
-    b_Overdub            = nullptr;
-    b_Thru               = nullptr;
-    b_Clear              = nullptr;
-    stepsizeBox          = nullptr;
-    s_Transpose          = nullptr;
-    s_Octave             = nullptr;
-    s_Velocity           = nullptr;
-    label3               = nullptr;
-    label4               = nullptr;
-    label5               = nullptr;
-    s_Start              = nullptr;
-    label6               = nullptr;
-    s_End                = nullptr;
-    label7               = nullptr;
-    s_Stretch            = nullptr;
-    label8               = nullptr;
-    loopmodeBox          = nullptr;
-    notetriggerBox       = nullptr;
-    syncmodeBox          = nullptr;
-    s_Root               = nullptr;
-    label9               = nullptr;
-    s_Low                = nullptr;
-    label10              = nullptr;
-    s_High               = nullptr;
-    label11              = nullptr;
-    s_TrigChan           = nullptr;
-    label12              = nullptr;
-    b_Reload             = nullptr;
-    quantizeBox          = nullptr;
-    label21              = nullptr;
-    s_Shift              = nullptr;
-    label2               = nullptr;
-    label23              = nullptr;
-    nameLabel            = nullptr;
-    b_Save               = nullptr;
-    label22              = nullptr;
-    label18              = nullptr;
-    loopinfoLabel        = nullptr;
-    loopinfoLabel2       = nullptr;
-    label17              = nullptr;
-    s_Channel            = nullptr;
-    label19              = nullptr;
-    label20              = nullptr;
-    s_FixedLength        = nullptr;
-    b_Filt               = nullptr;
-    viewport             = nullptr;
-    resizer              = nullptr;
-    b_NoteToggle         = nullptr;
-    s_PlayGroup          = nullptr;
-    label13              = nullptr;
-    s_MuteGroup          = nullptr;
-    label14              = nullptr;
-    b_Snap               = nullptr;
-    quantizeBox2         = nullptr;
-    b_ForceToKey         = nullptr;
-    keySelector          = nullptr;
-    b_ShiftUp            = nullptr;
-    b_ShiftDown          = nullptr;
-    b_SingleLoop         = nullptr;
-    s_MasterVelocity     = nullptr;
-    label15              = nullptr;
-    aboutButton          = nullptr;
-    b_Triplet            = nullptr;
-    b_Dotted             = nullptr;
-    b_ZoomOut            = nullptr;
-    b_ZoomIn             = nullptr;
-    numeratorLabel       = nullptr;
-    denominatorLabel     = nullptr;
-    b_UseScaleChannel    = nullptr;
-    s_ScaleChannel       = nullptr;
-    label25              = nullptr;
-    s_MasterTranspose    = nullptr;
-    label26              = nullptr;
-    b_WaitForBar         = nullptr;
-    midiOutDeviceBox     = nullptr;
-    label27              = nullptr;
-    b_UseTrChannel       = nullptr;
-    b_ImmediateTranspose = nullptr;
-    s_NumLoops           = nullptr;
-    s_NextSlot           = nullptr;
-    label16              = nullptr;
-    forceModeBox         = nullptr;
-    kbport               = nullptr;
-    b_RemoveBar          = nullptr;
-    b_AddBar             = nullptr;
-    LengthLabel          = nullptr;
-    textButton17         = nullptr;
-    textButton18         = nullptr;
-    textButton19         = nullptr;
-    textButton20         = nullptr;
-    textButton21         = nullptr;
-    textButton22         = nullptr;
-    textButton23         = nullptr;
-    textButton24         = nullptr;
-    textButton25         = nullptr;
-    textButton26         = nullptr;
-    textButton27         = nullptr;
-    textButton28         = nullptr;
-    textButton29         = nullptr;
-    textButton30         = nullptr;
-    textButton31         = nullptr;
-    textButton32         = nullptr;
-    textButton33         = nullptr;
-    textButton34         = nullptr;
-    textButton35         = nullptr;
-    textButton36         = nullptr;
-    textButton37         = nullptr;
-    textButton38         = nullptr;
-    textButton39         = nullptr;
-    textButton40         = nullptr;
-    textButton41         = nullptr;
-    textButton42         = nullptr;
-    textButton43         = nullptr;
-    textButton44         = nullptr;
-    textButton45         = nullptr;
-    textButton46         = nullptr;
-    textButton47         = nullptr;
-    textButton48         = nullptr;
-    textButton49         = nullptr;
-    textButton50         = nullptr;
-    textButton51         = nullptr;
-    textButton52         = nullptr;
-    textButton53         = nullptr;
-    textButton54         = nullptr;
-    textButton55         = nullptr;
-    textButton56         = nullptr;
-    textButton57         = nullptr;
-    textButton58         = nullptr;
-    textButton59         = nullptr;
-    textButton60         = nullptr;
-    textButton61         = nullptr;
-    textButton62         = nullptr;
-    textButton63         = nullptr;
-    textButton64         = nullptr;
-    textButton65         = nullptr;
-    textButton66         = nullptr;
-    textButton67         = nullptr;
-    textButton68         = nullptr;
-    textButton69         = nullptr;
-    textButton70         = nullptr;
-    textButton71         = nullptr;
-    textButton72         = nullptr;
-    textButton73         = nullptr;
-    textButton74         = nullptr;
-    textButton75         = nullptr;
-    textButton76         = nullptr;
-    textButton77         = nullptr;
-    textButton78         = nullptr;
-    textButton79         = nullptr;
-    textButton80         = nullptr;
-    textButton81         = nullptr;
-    textButton82         = nullptr;
-    textButton83         = nullptr;
-    textButton84         = nullptr;
-    textButton85         = nullptr;
-    textButton86         = nullptr;
-    textButton87         = nullptr;
-    textButton88         = nullptr;
-    textButton89         = nullptr;
-    textButton90         = nullptr;
-    textButton91         = nullptr;
-    textButton92         = nullptr;
-    textButton93         = nullptr;
-    textButton94         = nullptr;
-    textButton95         = nullptr;
-    textButton96         = nullptr;
-    textButton97         = nullptr;
-    textButton98         = nullptr;
-    textButton99         = nullptr;
-    textButton100        = nullptr;
-    textButton101        = nullptr;
-    textButton102        = nullptr;
-    textButton103        = nullptr;
-    textButton104        = nullptr;
-    textButton105        = nullptr;
-    textButton106        = nullptr;
-    textButton107        = nullptr;
-    textButton108        = nullptr;
-    textButton109        = nullptr;
-    textButton110        = nullptr;
-    textButton111        = nullptr;
-    textButton112        = nullptr;
-    textButton113        = nullptr;
-    textButton114        = nullptr;
-    textButton115        = nullptr;
-    textButton116        = nullptr;
-    textButton117        = nullptr;
-    textButton118        = nullptr;
-    textButton119        = nullptr;
-    textButton120        = nullptr;
-    textButton121        = nullptr;
-    textButton122        = nullptr;
-    textButton123        = nullptr;
-    textButton124        = nullptr;
-    textButton125        = nullptr;
-    textButton126        = nullptr;
-    textButton127        = nullptr;
-    textButton128        = nullptr;
-    b_Transpose10        = nullptr;
-    b_KeepLength         = nullptr;
-    s_RecCC              = nullptr;
-    s_PlayCC             = nullptr;
-    s_VelocitySens       = nullptr;
-    label24              = nullptr;
-    b_Monitor            = nullptr;
-    s_TransposeChannel   = nullptr;
-    label28              = nullptr;
+    zoomLabel                 = nullptr;
+    timeline                  = nullptr;
+    textButton1               = nullptr;
+    textButton2               = nullptr;
+    textButton3               = nullptr;
+    textButton4               = nullptr;
+    textButton5               = nullptr;
+    textButton6               = nullptr;
+    textButton7               = nullptr;
+    textButton8               = nullptr;
+    textButton9               = nullptr;
+    textButton10              = nullptr;
+    textButton11              = nullptr;
+    textButton12              = nullptr;
+    textButton13              = nullptr;
+    textButton14              = nullptr;
+    textButton15              = nullptr;
+    textButton16              = nullptr;
+    playButton                = nullptr;
+    recordButton              = nullptr;
+    overdubButton             = nullptr;
+    midiThruButton            = nullptr;
+    clearButton               = nullptr;
+    stepSizeComboBox          = nullptr;
+    transposeSlider           = nullptr;
+    octaveSlider              = nullptr;
+    velocitySlider            = nullptr;
+    transposeLabel            = nullptr;
+    octaveLabel               = nullptr;
+    velocityLabel             = nullptr;
+    loopStartSlider           = nullptr;
+    startOffsetLabel          = nullptr;
+    loopEndOffsetSlider       = nullptr;
+    loopEndOffsetLabel        = nullptr;
+    stretchSlider             = nullptr;
+    speedLabel                = nullptr;
+    loopModeComboBox          = nullptr;
+    noteTriggerComboBox       = nullptr;
+    syncModeComboBox          = nullptr;
+    rootNoteSlider            = nullptr;
+    rootNoteLabel             = nullptr;
+    minTriggerNoteSlider      = nullptr;
+    minTriggerNoteLabel       = nullptr;
+    maxTriggerNoteSlider      = nullptr;
+    maxTriggerNoteLabel       = nullptr;
+    triggerChannelSlider      = nullptr;
+    triggerChannelLabel       = nullptr;
+    reloadButton              = nullptr;
+    quantizeComboBox          = nullptr;
+    loopStepSizeLabel         = nullptr;
+    shiftPatternSlider        = nullptr;
+    shiftPatternLabel         = nullptr;
+    quantizeInputLabel        = nullptr;
+    patternNameLabel          = nullptr;
+    saveButton                = nullptr;
+    hostSyncModeLabel         = nullptr;
+    noteTriggeringLabel       = nullptr;
+    loopInfoLabel             = nullptr;
+    loopInfoLabel2            = nullptr;
+    loopManipulationLabel     = nullptr;
+    slotIOChannelSlider       = nullptr;
+    slotIOChannelLabel        = nullptr;
+    recordLengthLabel         = nullptr;
+    fixedLengthSlider         = nullptr;
+    transformFilterButton     = nullptr;
+    pianoRollViewport         = nullptr;
+    resizer                   = nullptr;
+    noteToggleButton          = nullptr;
+    playGroupSlider           = nullptr;
+    playGroupLabel            = nullptr;
+    muteGroupSlider           = nullptr;
+    muteGroupLabel            = nullptr;
+    snapButton                = nullptr;
+    quantize2ComboBox         = nullptr;
+    forceToKeyButton          = nullptr;
+    keySelector               = nullptr;
+    shiftUpButton             = nullptr;
+    shiftDownButton           = nullptr;
+    singleLoopToggleButton    = nullptr;
+    masterVelocitySlider      = nullptr;
+    masterVelocityLabel       = nullptr;
+    aboutButton               = nullptr;
+    tripletButton             = nullptr;
+    dottedButton              = nullptr;
+    zoomOutButton             = nullptr;
+    zoomInButton              = nullptr;
+    numeratorLabel            = nullptr;
+    denominatorLabel          = nullptr;
+    useScaleChannelButton     = nullptr;
+    scaleChannelSlider        = nullptr;
+    scaleChannelLabel         = nullptr;
+    masterTransposeSlider     = nullptr;
+    masterTransposeLabel      = nullptr;
+    waitForBarButton          = nullptr;
+    midiOutDeviceComboBox     = nullptr;
+    midiOutDeviceLabel        = nullptr;
+    useTransposeChannelButton = nullptr;
+    immediateTransposeButton  = nullptr;
+    numLoopsSlider            = nullptr;
+    nextSlotSlider            = nullptr;
+    loopSettingsLabel         = nullptr;
+    forceModeComboBox         = nullptr;
+    keyboardViewport          = nullptr;
+    removeBarButton           = nullptr;
+    addBarButton              = nullptr;
+    patternLengthLabel        = nullptr;
+    textButton17              = nullptr;
+    textButton18              = nullptr;
+    textButton19              = nullptr;
+    textButton20              = nullptr;
+    textButton21              = nullptr;
+    textButton22              = nullptr;
+    textButton23              = nullptr;
+    textButton24              = nullptr;
+    textButton25              = nullptr;
+    textButton26              = nullptr;
+    textButton27              = nullptr;
+    textButton28              = nullptr;
+    textButton29              = nullptr;
+    textButton30              = nullptr;
+    textButton31              = nullptr;
+    textButton32              = nullptr;
+    textButton33              = nullptr;
+    textButton34              = nullptr;
+    textButton35              = nullptr;
+    textButton36              = nullptr;
+    textButton37              = nullptr;
+    textButton38              = nullptr;
+    textButton39              = nullptr;
+    textButton40              = nullptr;
+    textButton41              = nullptr;
+    textButton42              = nullptr;
+    textButton43              = nullptr;
+    textButton44              = nullptr;
+    textButton45              = nullptr;
+    textButton46              = nullptr;
+    textButton47              = nullptr;
+    textButton48              = nullptr;
+    textButton49              = nullptr;
+    textButton50              = nullptr;
+    textButton51              = nullptr;
+    textButton52              = nullptr;
+    textButton53              = nullptr;
+    textButton54              = nullptr;
+    textButton55              = nullptr;
+    textButton56              = nullptr;
+    textButton57              = nullptr;
+    textButton58              = nullptr;
+    textButton59              = nullptr;
+    textButton60              = nullptr;
+    textButton61              = nullptr;
+    textButton62              = nullptr;
+    textButton63              = nullptr;
+    textButton64              = nullptr;
+    textButton65              = nullptr;
+    textButton66              = nullptr;
+    textButton67              = nullptr;
+    textButton68              = nullptr;
+    textButton69              = nullptr;
+    textButton70              = nullptr;
+    textButton71              = nullptr;
+    textButton72              = nullptr;
+    textButton73              = nullptr;
+    textButton74              = nullptr;
+    textButton75              = nullptr;
+    textButton76              = nullptr;
+    textButton77              = nullptr;
+    textButton78              = nullptr;
+    textButton79              = nullptr;
+    textButton80              = nullptr;
+    textButton81              = nullptr;
+    textButton82              = nullptr;
+    textButton83              = nullptr;
+    textButton84              = nullptr;
+    textButton85              = nullptr;
+    textButton86              = nullptr;
+    textButton87              = nullptr;
+    textButton88              = nullptr;
+    textButton89              = nullptr;
+    textButton90              = nullptr;
+    textButton91              = nullptr;
+    textButton92              = nullptr;
+    textButton93              = nullptr;
+    textButton94              = nullptr;
+    textButton95              = nullptr;
+    textButton96              = nullptr;
+    textButton97              = nullptr;
+    textButton98              = nullptr;
+    textButton99              = nullptr;
+    textButton100             = nullptr;
+    textButton101             = nullptr;
+    textButton102             = nullptr;
+    textButton103             = nullptr;
+    textButton104             = nullptr;
+    textButton105             = nullptr;
+    textButton106             = nullptr;
+    textButton107             = nullptr;
+    textButton108             = nullptr;
+    textButton109             = nullptr;
+    textButton110             = nullptr;
+    textButton111             = nullptr;
+    textButton112             = nullptr;
+    textButton113             = nullptr;
+    textButton114             = nullptr;
+    textButton115             = nullptr;
+    textButton116             = nullptr;
+    textButton117             = nullptr;
+    textButton118             = nullptr;
+    textButton119             = nullptr;
+    textButton120             = nullptr;
+    textButton121             = nullptr;
+    textButton122             = nullptr;
+    textButton123             = nullptr;
+    textButton124             = nullptr;
+    textButton125             = nullptr;
+    textButton126             = nullptr;
+    textButton127             = nullptr;
+    textButton128             = nullptr;
+    transpose10Button         = nullptr;
+    keepLengthToggleButton    = nullptr;
+    recCCSlider               = nullptr;
+    playCCSlider              = nullptr;
+    velocitySensSlider        = nullptr;
+    velocitySenSlider         = nullptr;
+    monitorButton             = nullptr;
+    transposeChannelSlider    = nullptr;
+    transposeChannelLabel     = nullptr;
 }
 
 //==============================================================================
@@ -3045,9 +3084,9 @@ void PizLooperEditor::paint(juce::Graphics& g)
 void PizLooperEditor::resized()
 {
     timeline->setBounds(415, 85, getWidth() - 430, 20);
-    viewport->setBounds(415, 105, getWidth() - 415, getHeight() - 105);
+    pianoRollViewport->setBounds(415, 105, getWidth() - 415, getHeight() - 105);
     resizer->setBounds(getWidth() - 16, getHeight() - 16, 16, 16);
-    kbport->setBounds(390, 105, 25, getHeight() - 121);
+    keyboardViewport->setBounds(390, 105, 25, getHeight() - 121);
 
     internalPath1.clear();
     internalPath1.startNewSubPath(141.0f, 294.0f);
@@ -3102,11 +3141,11 @@ void PizLooperEditor::mouseDrag(const juce::MouseEvent& e)
 void PizLooperEditor::mouseUp(const juce::MouseEvent& e)
 {
     Component* p = e.eventComponent->getParentComponent();
-    if (e.eventComponent == b_Play.get())
+    if (e.eventComponent == playButton.get())
     {
         if (e.mods.isPopupMenu())
         {
-            s_PlayCC->setVisible(! s_PlayCC->isVisible());
+            playCCSlider->setVisible(! playCCSlider->isVisible());
         }
         else if (e.mods.isMiddleButtonDown())
         {
@@ -3116,7 +3155,7 @@ void PizLooperEditor::mouseUp(const juce::MouseEvent& e)
         {
             for (int i = 0; i < numSlots; i++)
             {
-                getFilter()->notifyHost(kPlay, i, b_Play->getToggleState() ? 0.f : 1.f);
+                getFilter()->notifyHost(kPlay, i, playButton->getToggleState() ? 0.f : 1.f);
             }
         }
         else
@@ -3124,11 +3163,11 @@ void PizLooperEditor::mouseUp(const juce::MouseEvent& e)
             getFilter()->toggleSlotPlaying(getFilter()->getCurrentProgram());
         }
     }
-    else if (e.eventComponent == b_Record.get())
+    else if (e.eventComponent == recordButton.get())
     {
         if (e.mods.isPopupMenu())
         {
-            s_RecCC->setVisible(! s_RecCC->isVisible());
+            recCCSlider->setVisible(! recCCSlider->isVisible());
         }
         else if (e.mods.isMiddleButtonDown())
         {
@@ -3138,7 +3177,7 @@ void PizLooperEditor::mouseUp(const juce::MouseEvent& e)
         {
             for (int i = 0; i < numSlots; i++)
             {
-                getFilter()->notifyHost(kRecord, i, b_Record->getToggleState() ? 0.f : 1.f);
+                getFilter()->notifyHost(kRecord, i, recordButton->getToggleState() ? 0.f : 1.f);
             }
         }
         else
@@ -3153,7 +3192,7 @@ void PizLooperEditor::mouseUp(const juce::MouseEvent& e)
             }
         }
     }
-    else if (p == s_Root.get() || p == s_High.get() || p == s_Low.get())
+    else if (p == rootNoteSlider.get() || p == maxTriggerNoteSlider.get() || p == minTriggerNoteSlider.get())
     {
         auto* slider = (juce::Slider*) p;
         if (e.mods.isMiddleButtonDown())
@@ -3170,7 +3209,7 @@ void PizLooperEditor::mouseUp(const juce::MouseEvent& e)
             }
         }
     }
-    else if (p == s_PlayCC.get() || p == s_RecCC.get())
+    else if (p == playCCSlider.get() || p == recCCSlider.get())
     {
         auto* slider = (juce::Slider*) p;
         if (e.mods.isMiddleButtonDown())
@@ -3187,9 +3226,9 @@ void PizLooperEditor::mouseUp(const juce::MouseEvent& e)
             }
         }
     }
-    else if (p == s_Stretch.get() || p == s_Transpose.get() || p == s_Octave.get() || p == s_Start.get() || p == s_End.get()
-             || p == s_Shift.get() || p == s_Velocity.get() || p == s_VelocitySens.get() || p == s_MasterVelocity.get() || p == s_MasterTranspose.get()
-             || p == s_PlayGroup.get() || p == s_MuteGroup.get() || p == s_Channel.get() || p == s_NumLoops.get() || p == s_NextSlot.get())
+    else if (p == stretchSlider.get() || p == transposeSlider.get() || p == octaveSlider.get() || p == loopStartSlider.get() || p == loopEndOffsetSlider.get()
+             || p == shiftPatternSlider.get() || p == velocitySlider.get() || p == velocitySensSlider.get() || p == masterVelocitySlider.get() || p == masterTransposeSlider.get()
+             || p == playGroupSlider.get() || p == muteGroupSlider.get() || p == slotIOChannelSlider.get() || p == numLoopsSlider.get() || p == nextSlotSlider.get())
     {
         if (e.mods.isPopupMenu())
         {
@@ -3257,7 +3296,7 @@ void PizLooperEditor::changeListenerCallback(juce::ChangeBroadcaster* source)
     }
     else if (source == getFilter()->info)
     {
-        loopinfoLabel2->setText(getFilter()->info->s, juce::sendNotification);
+        loopInfoLabel2->setText(getFilter()->info->s, juce::sendNotification);
     }
     else if (source == keySelector.get())
     {
@@ -3276,7 +3315,7 @@ void PizLooperEditor::changeListenerCallback(juce::ChangeBroadcaster* source)
         getFilter()->updateLoopInfo();
         if (getFilter()->currentNumEvents == 0)
         {
-            loopinfoLabel->setText("No Loop", juce::dontSendNotification);
+            loopInfoLabel->setText("No Loop", juce::dontSendNotification);
             getButtonForSlot(lastActiveLoop)->setColour(juce::TextButton::textColourOffId, juce::Colour(0xff979797));
             getButtonForSlot(lastActiveLoop)->setColour(juce::TextButton::textColourOnId, juce::Colour(0xff555555));
         }
@@ -3292,15 +3331,15 @@ void PizLooperEditor::changeListenerCallback(juce::ChangeBroadcaster* source)
                 loopinfo << getFilter()->currentLength << " Beats (";
             }
             loopinfo << getFilter()->currentNumEvents << " Events)";
-            loopinfoLabel->setText(loopinfo, juce::dontSendNotification);
+            loopInfoLabel->setText(loopinfo, juce::dontSendNotification);
             getButtonForSlot(lastActiveLoop)->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
             getButtonForSlot(lastActiveLoop)->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
         }
     }
-    else if (source == viewport.get())
+    else if (source == pianoRollViewport.get())
     {
-        getFilter()->setPRSetting("x", viewport->getViewPositionX(), false);
-        getFilter()->setPRSetting("y", viewport->getViewPositionY(), false);
+        getFilter()->setPRSetting("x", pianoRollViewport->getViewPositionX(), false);
+        getFilter()->setPRSetting("y", pianoRollViewport->getViewPositionY(), false);
     }
 }
 
@@ -3318,179 +3357,179 @@ void PizLooperEditor::updateControls(int param, float value, bool forCurProgram)
     switch (param)
     {
         case kThru:
-            b_Thru->setToggleState(value >= 0.5f, juce::dontSendNotification);
-            b_Monitor->setEnabled(b_Thru->getToggleState());
+            midiThruButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            monitorButton->setEnabled(midiThruButton->getToggleState());
             break;
         case kMonitor:
-            b_Monitor->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            monitorButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kSync:
-            syncmodeBox->setText(getFilter()->getCurrentSlotParameterText(kSync), juce::dontSendNotification);
+            syncModeComboBox->setText(getFilter()->getCurrentSlotParameterText(kSync), juce::dontSendNotification);
             break;
         case kRecStep:
-            stepsizeBox->setText(getFilter()->getCurrentSlotParameterText(kRecStep), juce::dontSendNotification);
+            stepSizeComboBox->setText(getFilter()->getCurrentSlotParameterText(kRecStep), juce::dontSendNotification);
             break;
         case kQuantize:
-            quantizeBox->setText(getFilter()->getCurrentSlotParameterText(kQuantize), juce::dontSendNotification);
+            quantizeComboBox->setText(getFilter()->getCurrentSlotParameterText(kQuantize), juce::dontSendNotification);
             break;
         case kFixedLength:
-            s_FixedLength->setVSTSlider(value);
+            fixedLengthSlider->setVSTSlider(value);
             break;
         case kRecMode:
             if (value >= 0.8f)
             {
-                b_Overdub->setColour(juce::TextButton::buttonOnColourId, getLookAndFeel().findColour(juce::TextButton::buttonOnColourId));
-                b_KeepLength->setToggleState(false, juce::dontSendNotification);
+                overdubButton->setColour(juce::TextButton::buttonOnColourId, getLookAndFeel().findColour(juce::TextButton::buttonOnColourId));
+                keepLengthToggleButton->setToggleState(false, juce::dontSendNotification);
             }
             else
             {
-                b_Overdub->setColour(juce::TextButton::buttonOnColourId, juce::Colours::green);
-                b_KeepLength->setToggleState(true, juce::dontSendNotification);
+                overdubButton->setColour(juce::TextButton::buttonOnColourId, juce::Colours::green);
+                keepLengthToggleButton->setToggleState(true, juce::dontSendNotification);
             }
-            b_Overdub->setToggleState(value >= 0.5f, juce::dontSendNotification);
-            b_KeepLength->setVisible(value >= 0.5f);
+            overdubButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            keepLengthToggleButton->setVisible(value >= 0.5f);
             break;
         case kSingleLoop:
-            b_SingleLoop->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            singleLoopToggleButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kMasterVelocity:
-            s_MasterVelocity->setVSTSlider(value);
+            masterVelocitySlider->setVSTSlider(value);
             break;
         case kMasterTranspose:
-            s_MasterTranspose->setVSTSlider(value);
+            masterTransposeSlider->setVSTSlider(value);
             break;
         case kImmediateTranspose:
-            b_ImmediateTranspose->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            immediateTransposeButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kRecCC:
-            s_RecCC->setVSTSlider(value);
+            recCCSlider->setVSTSlider(value);
             break;
         case kPlayCC:
-            s_PlayCC->setVSTSlider(value);
+            playCCSlider->setVSTSlider(value);
             break;
 
         case kRecord:
-            b_Record->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            recordButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kPlay:
-            b_Play->setToggleState(value >= 0.5f, juce::dontSendNotification);
-            b_Play->setButtonText(value >= 0.5f ? "STOP" : "PLAY");
+            playButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            playButton->setButtonText(value >= 0.5f ? "STOP" : "PLAY");
             updateSlotButtons();
             break;
         case kTranspose:
-            s_Transpose->setIndex(lastActiveLoop * numParamsPerSlot + kTranspose);
-            s_Transpose->setVSTSlider(value);
+            transposeSlider->setIndex(lastActiveLoop * numParamsPerSlot + kTranspose);
+            transposeSlider->setVSTSlider(value);
             break;
         case kOctave:
-            s_Octave->setIndex(lastActiveLoop * numParamsPerSlot + kOctave);
-            s_Octave->setVSTSlider(value);
+            octaveSlider->setIndex(lastActiveLoop * numParamsPerSlot + kOctave);
+            octaveSlider->setVSTSlider(value);
             break;
         case kVelocity:
-            s_Velocity->setIndex(lastActiveLoop * numParamsPerSlot + kVelocity);
-            s_Velocity->setVSTSlider(value);
+            velocitySlider->setIndex(lastActiveLoop * numParamsPerSlot + kVelocity);
+            velocitySlider->setVSTSlider(value);
             break;
         case kVeloSens:
-            s_VelocitySens->setIndex(lastActiveLoop * numParamsPerSlot + kVeloSens);
-            s_VelocitySens->setVSTSlider(value);
+            velocitySensSlider->setIndex(lastActiveLoop * numParamsPerSlot + kVeloSens);
+            velocitySensSlider->setVSTSlider(value);
             break;
         case kShift:
-            s_Shift->setIndex(lastActiveLoop * numParamsPerSlot + kShift);
-            s_Shift->setVSTSlider(value);
+            shiftPatternSlider->setIndex(lastActiveLoop * numParamsPerSlot + kShift);
+            shiftPatternSlider->setVSTSlider(value);
             break;
         case kLoopStart:
-            s_Start->setIndex(lastActiveLoop * numParamsPerSlot + kLoopStart);
-            s_Start->setVSTSlider(value);
+            loopStartSlider->setIndex(lastActiveLoop * numParamsPerSlot + kLoopStart);
+            loopStartSlider->setVSTSlider(value);
             break;
         case kLoopEnd:
-            s_End->setIndex(lastActiveLoop * numParamsPerSlot + kLoopEnd);
-            s_End->setVSTSlider(value);
+            loopEndOffsetSlider->setIndex(lastActiveLoop * numParamsPerSlot + kLoopEnd);
+            loopEndOffsetSlider->setVSTSlider(value);
             break;
         case kStretch:
-            s_Stretch->setIndex(lastActiveLoop * numParamsPerSlot + kStretch);
-            s_Stretch->setVSTSlider(value);
+            stretchSlider->setIndex(lastActiveLoop * numParamsPerSlot + kStretch);
+            stretchSlider->setVSTSlider(value);
             break;
         case kTrigger:
-            loopmodeBox->setText(getFilter()->getCurrentSlotParameterText(kTrigger), juce::dontSendNotification);
+            loopModeComboBox->setText(getFilter()->getCurrentSlotParameterText(kTrigger), juce::dontSendNotification);
             break;
         case kNoteTrig:
-            notetriggerBox->setText(getFilter()->getCurrentSlotParameterText(kNoteTrig), juce::dontSendNotification);
+            noteTriggerComboBox->setText(getFilter()->getCurrentSlotParameterText(kNoteTrig), juce::dontSendNotification);
             break;
         case kRoot:
-            s_Root->setIndex(lastActiveLoop * numParamsPerSlot + kRoot);
-            s_Root->setVSTSlider(value);
+            rootNoteSlider->setIndex(lastActiveLoop * numParamsPerSlot + kRoot);
+            rootNoteSlider->setVSTSlider(value);
             break;
         case kNLow:
-            s_Low->setIndex(lastActiveLoop * numParamsPerSlot + kNLow);
-            s_Low->setVSTSlider(value);
+            minTriggerNoteSlider->setIndex(lastActiveLoop * numParamsPerSlot + kNLow);
+            minTriggerNoteSlider->setVSTSlider(value);
             break;
         case kNHigh:
-            s_High->setIndex(lastActiveLoop * numParamsPerSlot + kNHigh);
-            s_High->setVSTSlider(value);
+            maxTriggerNoteSlider->setIndex(lastActiveLoop * numParamsPerSlot + kNHigh);
+            maxTriggerNoteSlider->setVSTSlider(value);
             break;
         case kChannel:
-            s_Channel->setIndex(lastActiveLoop * numParamsPerSlot + kChannel);
-            s_Channel->setVSTSlider(value);
+            slotIOChannelSlider->setIndex(lastActiveLoop * numParamsPerSlot + kChannel);
+            slotIOChannelSlider->setVSTSlider(value);
             pianoRoll->defaultChannel = jmax(0, roundToInt(value * 16.f) - 1);
             keyboard->setMidiChannel(jmax(1, roundToInt(value * 16.f)));
             break;
         case kTrigChan:
-            s_TrigChan->setIndex(lastActiveLoop * numParamsPerSlot + kTrigChan);
-            s_TrigChan->setVSTSlider(value);
+            triggerChannelSlider->setIndex(lastActiveLoop * numParamsPerSlot + kTrigChan);
+            triggerChannelSlider->setVSTSlider(value);
             break;
         case kFiltChan:
             if (value < 0.5f)
             {
-                b_Filt->setButtonText("Transform");
+                transformFilterButton->setButtonText("Transform");
             }
             else
             {
-                b_Filt->setButtonText("Filter");
+                transformFilterButton->setButtonText("Filter");
             }
             break;
         case kWaitForBar:
-            b_WaitForBar->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            waitForBarButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kNumLoops:
-            s_NumLoops->setIndex(lastActiveLoop * numParamsPerSlot + kNumLoops);
-            s_NumLoops->setVSTSlider(value);
+            numLoopsSlider->setIndex(lastActiveLoop * numParamsPerSlot + kNumLoops);
+            numLoopsSlider->setVSTSlider(value);
             break;
         case kNextSlot:
-            s_NextSlot->setIndex(lastActiveLoop * numParamsPerSlot + kNextSlot);
-            s_NextSlot->setVSTSlider(value);
+            nextSlotSlider->setIndex(lastActiveLoop * numParamsPerSlot + kNextSlot);
+            nextSlotSlider->setVSTSlider(value);
             break;
         case kPlayGroup:
-            s_PlayGroup->setIndex(lastActiveLoop * numParamsPerSlot + kPlayGroup);
-            s_PlayGroup->setVSTSlider(value);
+            playGroupSlider->setIndex(lastActiveLoop * numParamsPerSlot + kPlayGroup);
+            playGroupSlider->setVSTSlider(value);
             break;
         case kMuteGroup:
-            s_MuteGroup->setIndex(lastActiveLoop * numParamsPerSlot + kMuteGroup);
-            s_MuteGroup->setVSTSlider(value);
+            muteGroupSlider->setIndex(lastActiveLoop * numParamsPerSlot + kMuteGroup);
+            muteGroupSlider->setVSTSlider(value);
             break;
         case kForceToKey:
-            b_ForceToKey->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            forceToKeyButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kScaleChannel:
-            s_ScaleChannel->setIndex(lastActiveLoop * numParamsPerSlot + kScaleChannel);
-            s_ScaleChannel->setVSTSlider(value);
+            scaleChannelSlider->setIndex(lastActiveLoop * numParamsPerSlot + kScaleChannel);
+            scaleChannelSlider->setVSTSlider(value);
             break;
         case kTransposeChannel:
-            s_TransposeChannel->setIndex(lastActiveLoop * numParamsPerSlot + kTransposeChannel);
-            s_TransposeChannel->setVSTSlider(value);
+            transposeChannelSlider->setIndex(lastActiveLoop * numParamsPerSlot + kTransposeChannel);
+            transposeChannelSlider->setVSTSlider(value);
             break;
         case kUseScaleChannel:
-            b_UseScaleChannel->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            useScaleChannelButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kUseTrChannel:
-            b_UseTrChannel->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            useTransposeChannelButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kNoteToggle:
-            b_NoteToggle->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            noteToggleButton->setToggleState(value >= 0.5f, juce::dontSendNotification);
             break;
         case kForceToScaleMode:
-            forceModeBox->setText(getFilter()->getCurrentSlotParameterText(kForceToScaleMode), juce::dontSendNotification);
+            forceModeComboBox->setText(getFilter()->getCurrentSlotParameterText(kForceToScaleMode), juce::dontSendNotification);
             break;
         case kTranspose10:
-            b_Transpose10->setToggleState(value >= 0.5f, juce::dontSendNotification);
+            transpose10Button->setToggleState(value >= 0.5f, juce::dontSendNotification);
         default:
             break;
     }
@@ -3558,31 +3597,31 @@ void PizLooperEditor::updateParametersFromFilter()
 
     // and after releasing the lock, we're free to do the time-consuming UI stuff
     {
-        b_Snap->setToggleState(filter->getPRSetting("snap"), juce::dontSendNotification);
-        pianoRoll->setSnap(b_Snap->getToggleState());
+        snapButton->setToggleState(filter->getPRSetting("snap"), juce::dontSendNotification);
+        pianoRoll->setSnap(snapButton->getToggleState());
         float q = filter->getPRSetting("stepsize");
         if (q == 0.0)
         {
-            quantizeBox2->setText("4th", juce::dontSendNotification);
+            quantize2ComboBox->setText("4th", juce::dontSendNotification);
         }
         else if (q < 0.3)
         {
-            quantizeBox2->setText("8th", juce::dontSendNotification);
+            quantize2ComboBox->setText("8th", juce::dontSendNotification);
         }
         else if (q < 0.6)
         {
-            quantizeBox2->setText("16th", juce::dontSendNotification);
+            quantize2ComboBox->setText("16th", juce::dontSendNotification);
         }
         else if (q < 0.9)
         {
-            quantizeBox2->setText("32nd", juce::dontSendNotification);
+            quantize2ComboBox->setText("32nd", juce::dontSendNotification);
         }
         else
         {
-            quantizeBox2->setText("64th", juce::dontSendNotification);
+            quantize2ComboBox->setText("64th", juce::dontSendNotification);
         }
-        b_Dotted->setToggleState(filter->getPRSetting("dotted"), juce::dontSendNotification);
-        b_Triplet->setToggleState(filter->getPRSetting("triplet"), juce::dontSendNotification);
+        dottedButton->setToggleState(filter->getPRSetting("dotted"), juce::dontSendNotification);
+        tripletButton->setToggleState(filter->getPRSetting("triplet"), juce::dontSendNotification);
         float tord = (filter->getPRSetting("triplet")) ? 1.5f : 1.f;
         if (filter->getPRSetting("dotted"))
         {
@@ -3612,14 +3651,14 @@ void PizLooperEditor::updateParametersFromFilter()
         pianoRoll->setSize(filter->getPRSetting("width"), filter->getPRSetting("height"));
         keyboard->setSize(25, pianoRoll->getHeight());
         keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
-        viewport->setViewPosition(filter->getPRSetting("x"),
-                                  filter->getPRSetting("y"));
+        pianoRollViewport->setViewPosition(filter->getPRSetting("x"),
+                                           filter->getPRSetting("y"));
     }
     pianoRoll->setTimeSig(n, d);
     numeratorLabel->setText(juce::String(n), juce::dontSendNotification);
     denominatorLabel->setText(juce::String(d), juce::dontSendNotification);
 
-    midiOutDeviceBox->setSelectedItemIndex(newDevice + 1, juce::dontSendNotification);
+    midiOutDeviceComboBox->setSelectedItemIndex(newDevice + 1, juce::dontSendNotification);
 
     for (int i = 0; i < numParamsPerSlot + numGlobalParams; i++)
     {
@@ -3654,11 +3693,11 @@ void PizLooperEditor::updateParametersFromFilter()
     }
     getButtonForSlot(lastActiveLoop)->setToggleState(true, juce::dontSendNotification);
 
-    nameLabel->setText(filter->getProgramName(lastActiveLoop), juce::dontSendNotification);
+    patternNameLabel->setText(filter->getProgramName(lastActiveLoop), juce::dontSendNotification);
 
     if (filter->currentNumEvents == 0)
     {
-        loopinfoLabel->setText("No Loop", juce::dontSendNotification);
+        loopInfoLabel->setText("No Loop", juce::dontSendNotification);
     }
     else
     {
@@ -3672,20 +3711,20 @@ void PizLooperEditor::updateParametersFromFilter()
             loopinfo << filter->currentLength << " Beats (";
         }
         loopinfo << filter->currentNumEvents << " Events)";
-        loopinfoLabel->setText(loopinfo, juce::dontSendNotification);
+        loopInfoLabel->setText(loopinfo, juce::dontSendNotification);
     }
     noSnap = true;
     timeline->setLoop(filter->getLoopStart(lastActiveLoop), filter->getLoopLength(lastActiveLoop));
     noSnap = false;
 
-    loopinfoLabel2->setText(filter->info->s, juce::dontSendNotification);
+    loopInfoLabel2->setText(filter->info->s, juce::dontSendNotification);
 
     if (newloop)
     {
         pianoRoll->setSequence(filter->getActiveLoop());
         filter->newLoop = false;
     }
-    LengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
+    patternLengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
     setSize(w, h);
 }
 
@@ -4483,7 +4522,7 @@ void PizLooperEditor::clickableLabelMouseDown(ClickableLabel* label, const juce:
 
 void PizLooperEditor::clickableLabelMouseDoubleClick(ClickableLabel* label, const juce::MouseEvent& e)
 {
-    if (label == nameLabel.get())
+    if (label == patternNameLabel.get())
     {
         label->edit();
     }
@@ -4519,7 +4558,7 @@ void PizLooperEditor::handleTranspose10ButtonClick() const
     {
         for (int i = 0; i < numSlots; i++)
         {
-            getFilter()->notifyHost(kTranspose10, i, b_Transpose10->getToggleState() ? 0.f : 1.f);
+            getFilter()->notifyHost(kTranspose10, i, transpose10Button->getToggleState() ? 0.f : 1.f);
         }
     }
     else
@@ -4538,7 +4577,7 @@ void PizLooperEditor::handleTranspose10ButtonClick() const
 void PizLooperEditor::handleAddBarButtonClick()
 {
     pianoRoll->addBar();
-    LengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
+    patternLengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
     getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
     getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
 }
@@ -4546,7 +4585,7 @@ void PizLooperEditor::handleAddBarButtonClick()
 void PizLooperEditor::handleRemoveBarButtonClick()
 {
     pianoRoll->removeBar();
-    LengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
+    patternLengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
     getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
     getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
 }
@@ -4557,7 +4596,7 @@ void PizLooperEditor::handleImmediateTransposeButtonClick() const
     {
         for (int i = 0; i < numSlots; i++)
         {
-            getFilter()->notifyHost(kImmediateTranspose, i, b_ImmediateTranspose->getToggleState() ? 1.f : 0.f);
+            getFilter()->notifyHost(kImmediateTranspose, i, immediateTransposeButton->getToggleState() ? 1.f : 0.f);
         }
     }
     else
@@ -4579,7 +4618,7 @@ void PizLooperEditor::handleUseTrChannelButtonClick()
     {
         for (int i = 0; i < numSlots; i++)
         {
-            getFilter()->notifyHost(kUseTrChannel, i, b_UseTrChannel->getToggleState() ? 1.f : 0.f);
+            getFilter()->notifyHost(kUseTrChannel, i, useTransposeChannelButton->getToggleState() ? 1.f : 0.f);
         }
     }
     else
@@ -4602,7 +4641,7 @@ void PizLooperEditor::handleWaitForBarButtonClick() const
     {
         for (int i = 0; i < numSlots; i++)
         {
-            getFilter()->notifyHost(kWaitForBar, i, b_WaitForBar->getToggleState() ? 1.f : 0.f);
+            getFilter()->notifyHost(kWaitForBar, i, waitForBarButton->getToggleState() ? 1.f : 0.f);
         }
     }
     else
@@ -4624,7 +4663,7 @@ void PizLooperEditor::handleUseScaleChannelButtonClick()
     {
         for (int i = 0; i < numSlots; i++)
         {
-            getFilter()->notifyHost(kUseScaleChannel, i, b_UseScaleChannel->getToggleState() ? 1.f : 0.f);
+            getFilter()->notifyHost(kUseScaleChannel, i, useScaleChannelButton->getToggleState() ? 1.f : 0.f);
         }
     }
     else
@@ -4643,59 +4682,59 @@ void PizLooperEditor::handleUseScaleChannelButtonClick()
 
 void PizLooperEditor::handleZoomInButtonClick()
 {
-    double y = (double) viewport->getViewPositionY() / ((double) pianoRoll->getHeight() - viewport->getHeight());
-    double x = (double) viewport->getViewPositionX() / ((double) pianoRoll->getWidth() - viewport->getWidth());
+    double y = (double) pianoRollViewport->getViewPositionY() / ((double) pianoRoll->getHeight() - pianoRollViewport->getHeight());
+    double x = (double) pianoRollViewport->getViewPositionX() / ((double) pianoRoll->getWidth() - pianoRollViewport->getWidth());
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         pianoRoll->setSize(pianoRoll->getWidth(), jmin(25600, (int) (pianoRoll->getHeight() * 1.33333333333)));
         keyboard->setSize(25, pianoRoll->getHeight());
         keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
-        viewport->setViewPositionProportionately(x, y);
+        pianoRollViewport->setViewPositionProportionately(x, y);
         getFilter()->setPRSetting("height", pianoRoll->getHeight(), false);
-        getFilter()->setPRSetting("y", viewport->getViewPositionY(), false);
+        getFilter()->setPRSetting("y", pianoRollViewport->getViewPositionY(), false);
     }
     else
     {
         pianoRoll->setSize((int) (pianoRoll->getWidth() * 1.33333333333), pianoRoll->getHeight());
-        viewport->setViewPositionProportionately(x, y);
+        pianoRollViewport->setViewPositionProportionately(x, y);
         getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
-        getFilter()->setPRSetting("x", viewport->getViewPositionX(), false);
+        getFilter()->setPRSetting("x", pianoRollViewport->getViewPositionX(), false);
     }
 }
 
 void PizLooperEditor::handleZoomOutButtonClick()
 {
-    double y = (double) viewport->getViewPositionY() / ((double) pianoRoll->getHeight() - viewport->getHeight());
-    double x = (double) viewport->getViewPositionX() / ((double) pianoRoll->getWidth() - viewport->getWidth());
+    double y = (double) pianoRollViewport->getViewPositionY() / ((double) pianoRoll->getHeight() - pianoRollViewport->getHeight());
+    double x = (double) pianoRollViewport->getViewPositionX() / ((double) pianoRoll->getWidth() - pianoRollViewport->getWidth());
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         pianoRoll->setSize(pianoRoll->getWidth(), jmax(366, (int) (pianoRoll->getHeight() * 0.75)));
         keyboard->setSize(25, pianoRoll->getHeight());
         keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
-        viewport->setViewPositionProportionately(x, y);
+        pianoRollViewport->setViewPositionProportionately(x, y);
         getFilter()->setPRSetting("height", pianoRoll->getHeight(), false);
-        getFilter()->setPRSetting("y", viewport->getViewPositionY(), false);
+        getFilter()->setPRSetting("y", pianoRollViewport->getViewPositionY(), false);
     }
     else
     {
         pianoRoll->setSize(jmax(100, (int) (pianoRoll->getWidth() * 0.75)), pianoRoll->getHeight());
-        viewport->setViewPositionProportionately(x, y);
+        pianoRollViewport->setViewPositionProportionately(x, y);
         getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
-        getFilter()->setPRSetting("x", viewport->getViewPositionX(), false);
+        getFilter()->setPRSetting("x", pianoRollViewport->getViewPositionX(), false);
     }
 }
 
 void PizLooperEditor::handleDottedButtonClick()
 {
-    b_Dotted->setToggleState(! getFilter()->getPRSetting("dotted"), juce::dontSendNotification);
-    getFilter()->setPRSetting("dotted", b_Dotted->getToggleState());
+    dottedButton->setToggleState(! getFilter()->getPRSetting("dotted"), juce::dontSendNotification);
+    getFilter()->setPRSetting("dotted", dottedButton->getToggleState());
     pianoRoll->repaintBG();
 }
 
 void PizLooperEditor::handleTripletButtonClick()
 {
-    b_Triplet->setToggleState(! getFilter()->getPRSetting("triplet"), juce::dontSendNotification);
-    getFilter()->setPRSetting("triplet", b_Triplet->getToggleState());
+    tripletButton->setToggleState(! getFilter()->getPRSetting("triplet"), juce::dontSendNotification);
+    getFilter()->setPRSetting("triplet", tripletButton->getToggleState());
     pianoRoll->repaintBG();
 }
 
@@ -4795,7 +4834,7 @@ void PizLooperEditor::handleForceToKeyButtonClick() const
     {
         for (int i = 0; i < numSlots; i++)
         {
-            getFilter()->notifyHost(kForceToKey, i, b_ForceToKey->getToggleState() ? 1.f : 0.f);
+            getFilter()->notifyHost(kForceToKey, i, forceToKeyButton->getToggleState() ? 1.f : 0.f);
         }
     }
     else
@@ -4813,8 +4852,8 @@ void PizLooperEditor::handleForceToKeyButtonClick() const
 
 void PizLooperEditor::handleSnapButtonClick()
 {
-    b_Snap->setToggleState(! getFilter()->getPRSetting("snap"), juce::dontSendNotification);
-    getFilter()->setPRSetting("snap", b_Snap->getToggleState());
+    snapButton->setToggleState(! getFilter()->getPRSetting("snap"), juce::dontSendNotification);
+    getFilter()->setPRSetting("snap", snapButton->getToggleState());
     pianoRoll->repaintBG();
 }
 
@@ -4824,7 +4863,7 @@ void PizLooperEditor::handleNoteToggleButtonClick() const
     {
         for (int i = 0; i < numSlots; i++)
         {
-            getFilter()->notifyHost(kNoteToggle, i, b_NoteToggle->getToggleState() ? 0.f : 1.f);
+            getFilter()->notifyHost(kNoteToggle, i, noteToggleButton->getToggleState() ? 0.f : 1.f);
         }
     }
     else
@@ -4866,7 +4905,7 @@ void PizLooperEditor::handleSaveButtonClick() const
     else
     {
         juce::FileChooser myChooser("Save MIDI File...",
-                                    juce::File(getFilter()->loopDir + juce::File::getSeparatorString() + nameLabel->getText()),
+                                    juce::File(getFilter()->loopDir + juce::File::getSeparatorString() + patternNameLabel->getText()),
                                     "*.mid");
 
         if (myChooser.browseForFileToSave(true))
@@ -4938,10 +4977,9 @@ void PizLooperEditor::handleOverdubButtonClick() const
     }
 }
 
-
 void PizLooperEditor::handleForceModeComboBoxChange() const
 {
-    auto selection = forceModeBox->getText();
+    auto selection = forceModeComboBox->getText();
 
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
@@ -4988,14 +5026,14 @@ void PizLooperEditor::handleForceModeComboBoxChange() const
 
 void PizLooperEditor::handleMidiOutDeviceComboBoxChange() const
 {
-    if (midiOutDeviceBox->getSelectedItemIndex() == 0)
+    if (midiOutDeviceComboBox->getSelectedItemIndex() == 0)
     {
         getFilter()->setParameter(kMidiOutDevice, 0.0f);
-        getFilter()->setActiveDevice(midiOutDeviceBox->getText());
+        getFilter()->setActiveDevice(midiOutDeviceComboBox->getText());
     }
     else
     {
-        getFilter()->setActiveDevice(midiOutDeviceBox->getText());
+        getFilter()->setActiveDevice(midiOutDeviceComboBox->getText());
         getFilter()->setParameter(kMidiOutDevice, 1.0f);
         //getFilter()->setParameter(0,float(comboBox->getSelectedItemIndex()-1)/float(getFilter()->devices.size()-1)+0.00001f);
     }
@@ -5003,7 +5041,7 @@ void PizLooperEditor::handleMidiOutDeviceComboBoxChange() const
 
 void PizLooperEditor::handleQuantize2ComboBoxChange()
 {
-    auto selection = quantizeBox2->getText();
+    auto selection = quantize2ComboBox->getText();
     if (selection == "4th")
     {
         getFilter()->setPRSetting("stepsize", 0.f);
@@ -5029,7 +5067,7 @@ void PizLooperEditor::handleQuantize2ComboBoxChange()
 
 void PizLooperEditor::handleQuantizeComboBoxChange() const
 {
-    auto selection = quantizeBox->getText();
+    auto selection = quantizeComboBox->getText();
     if (selection == "Off")
     {
         getFilter()->notifyHostForActiveSlot(kQuantize, 0.f);
@@ -5054,7 +5092,7 @@ void PizLooperEditor::handleQuantizeComboBoxChange() const
 
 void PizLooperEditor::handleSyncModeComboBoxChange() const
 {
-    auto selection = syncmodeBox->getText();
+    auto selection = syncModeComboBox->getText();
     if (selection == "PPQ (Host 0)")
     {
         getFilter()->notifyHostForActiveSlot(kSync, 0.f);
@@ -5071,7 +5109,7 @@ void PizLooperEditor::handleSyncModeComboBoxChange() const
 
 void PizLooperEditor::handleNoteTriggerComboBoxChange() const
 {
-    auto selection = notetriggerBox->getText();
+    auto selection = noteTriggerComboBox->getText();
 
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
@@ -5118,7 +5156,7 @@ void PizLooperEditor::handleNoteTriggerComboBoxChange() const
 
 void PizLooperEditor::handleLoopModeComboBoxChange() const
 {
-    auto selection = loopmodeBox->getText();
+    auto selection = loopModeComboBox->getText();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5164,7 +5202,7 @@ void PizLooperEditor::handleLoopModeComboBoxChange() const
 
 void PizLooperEditor::handleStepsizeComboBoxChange() const
 {
-    auto selection = stepsizeBox->getText();
+    auto selection = stepSizeComboBox->getText();
     if (selection == "1 Bar")
     {
         getFilter()->notifyHostForActiveSlot(kRecStep, 0.f);
@@ -5195,10 +5233,9 @@ void PizLooperEditor::handleStepsizeComboBoxChange() const
     }
 }
 
-
 void PizLooperEditor::handleTransposeChannelSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_TransposeChannel.get();
+    auto* slider = (VSTSlider*) transposeChannelSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
@@ -5229,7 +5266,7 @@ void PizLooperEditor::handleTransposeChannelSliderChange() const
 
 void PizLooperEditor::handleVelocitySensSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_VelocitySens.get();
+    auto* slider = (VSTSlider*) velocitySensSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5245,19 +5282,19 @@ void PizLooperEditor::handleVelocitySensSliderChange() const
 
 void PizLooperEditor::handlePlayCCSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_PlayCC.get();
+    auto* slider = (VSTSlider*) playCCSlider.get();
     getFilter()->notifyHostForActiveSlot(kPlayCC, slider->mapToVSTRange());
 }
 
 void PizLooperEditor::handleRecCCSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_RecCC.get();
+    auto* slider = (VSTSlider*) recCCSlider.get();
     getFilter()->notifyHostForActiveSlot(kRecCC, slider->mapToVSTRange());
 }
 
 void PizLooperEditor::handleNextSlotSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_NextSlot.get();
+    auto* slider = (VSTSlider*) nextSlotSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5273,7 +5310,7 @@ void PizLooperEditor::handleNextSlotSliderChange() const
 
 void PizLooperEditor::handleNumLoopsSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_NumLoops.get();
+    auto* slider = (VSTSlider*) numLoopsSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5289,13 +5326,13 @@ void PizLooperEditor::handleNumLoopsSliderChange() const
 
 void PizLooperEditor::handleMasterTransposeSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_MasterTranspose.get();
+    auto* slider = (VSTSlider*) masterTransposeSlider.get();
     getFilter()->setParameterNotifyingHost(kMasterTranspose, slider->mapToVSTRange());
 }
 
 void PizLooperEditor::handleScaleChannelSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_ScaleChannel.get();
+    auto* slider = (VSTSlider*) scaleChannelSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
@@ -5326,13 +5363,13 @@ void PizLooperEditor::handleScaleChannelSliderChange() const
 
 void PizLooperEditor::handleMasterVelocitySliderChange() const
 {
-    auto* slider = (VSTSlider*) s_MasterVelocity.get();
+    auto* slider = (VSTSlider*) masterVelocitySlider.get();
     getFilter()->setParameterNotifyingHost(kMasterVelocity, slider->mapToVSTRange());
 }
 
 void PizLooperEditor::handleMuteGroupSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_MuteGroup.get();
+    auto* slider = (VSTSlider*) muteGroupSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5348,7 +5385,7 @@ void PizLooperEditor::handleMuteGroupSliderChange() const
 
 void PizLooperEditor::handlePlayGroupSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_PlayGroup.get();
+    auto* slider = (VSTSlider*) playGroupSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5364,13 +5401,13 @@ void PizLooperEditor::handlePlayGroupSliderChange() const
 
 void PizLooperEditor::handleFixedLengthSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_FixedLength.get();
+    auto* slider = (VSTSlider*) fixedLengthSlider.get();
     getFilter()->notifyHostForActiveSlot(kFixedLength, slider->mapToVSTRange());
 }
 
 void PizLooperEditor::handleChannelSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Channel.get();
+    auto* slider = (VSTSlider*) slotIOChannelSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5386,7 +5423,7 @@ void PizLooperEditor::handleChannelSliderChange() const
 
 void PizLooperEditor::handleShiftSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Shift.get();
+    auto* slider = (VSTSlider*) shiftPatternSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5402,7 +5439,7 @@ void PizLooperEditor::handleShiftSliderChange() const
 
 void PizLooperEditor::handleTrigChanSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_TrigChan.get();
+    auto* slider = (VSTSlider*) triggerChannelSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5418,7 +5455,7 @@ void PizLooperEditor::handleTrigChanSliderChange() const
 
 void PizLooperEditor::handleHighSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_High.get();
+    auto* slider = (VSTSlider*) maxTriggerNoteSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5443,7 +5480,7 @@ void PizLooperEditor::handleHighSliderChange() const
 
 void PizLooperEditor::handleLowSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Low.get();
+    auto* slider = (VSTSlider*) minTriggerNoteSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5468,7 +5505,7 @@ void PizLooperEditor::handleLowSliderChange() const
 
 void PizLooperEditor::handleRootSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Root.get();
+    auto* slider = (VSTSlider*) rootNoteSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5484,7 +5521,7 @@ void PizLooperEditor::handleRootSliderChange() const
 
 void PizLooperEditor::handleStretchSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Stretch.get();
+    auto* slider = (VSTSlider*) stretchSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5500,7 +5537,7 @@ void PizLooperEditor::handleStretchSliderChange() const
 
 void PizLooperEditor::handleEndSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_End.get();
+    auto* slider = (VSTSlider*) loopEndOffsetSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5514,9 +5551,9 @@ void PizLooperEditor::handleEndSliderChange() const
     }
 }
 
-void PizLooperEditor::handleStartSliderChange() const
+void PizLooperEditor::handleLoopStartSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Start.get();
+    auto* slider = (VSTSlider*) loopStartSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5532,7 +5569,7 @@ void PizLooperEditor::handleStartSliderChange() const
 
 void PizLooperEditor::handleVelocitySliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Velocity.get();
+    auto* slider = (VSTSlider*) velocitySlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5548,7 +5585,7 @@ void PizLooperEditor::handleVelocitySliderChange() const
 
 void PizLooperEditor::handleOctaveSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Octave.get();
+    auto* slider = (VSTSlider*) octaveSlider.get();
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
         for (int i = 0; i < numSlots; i++)
@@ -5564,7 +5601,7 @@ void PizLooperEditor::handleOctaveSliderChange() const
 
 void PizLooperEditor::handleTransposeSliderChange() const
 {
-    auto* slider = (VSTSlider*) s_Transpose.get();
+    auto* slider = (VSTSlider*) transposeSlider.get();
 
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
@@ -5579,11 +5616,9 @@ void PizLooperEditor::handleTransposeSliderChange() const
     }
 }
 
-
-
 void PizLooperEditor::handleNameLabelTextChange() const
 {
-    getFilter()->changeProgramName(getFilter()->getCurrentProgram(), nameLabel->getText());
+    getFilter()->changeProgramName(getFilter()->getCurrentProgram(), patternNameLabel->getText());
 }
 
 void PizLooperEditor::handleNumeratorLabelTextChange()
@@ -5603,7 +5638,7 @@ void PizLooperEditor::handleNumeratorLabelTextChange()
 
 void PizLooperEditor::handleLengthLabelChange()
 {
-    pianoRoll->setDisplayLength(LengthLabel->getText().getIntValue());
+    pianoRoll->setDisplayLength(patternLengthLabel->getText().getIntValue());
     getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
     getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
 }
@@ -5621,4 +5656,9 @@ void PizLooperEditor::handleDenominatorLabelChange()
     {
         denominatorLabel->setText(juce::String(getFilter()->getDenominator(lastActiveLoop)), juce::dontSendNotification);
     }
+}
+
+PizLooper* PizLooperEditor::getFilter() const noexcept
+{
+    return (PizLooper*) getAudioProcessor();
 }

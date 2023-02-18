@@ -62,14 +62,41 @@ private:
 
     // handy wrapper method to avoid having to cast the filter to a PizLooper
     // every time we need it
-    PizLooper* getFilter() const noexcept
-    {
-        return (PizLooper*) getAudioProcessor();
-    }
+    PizLooper* getFilter() const noexcept;
 
     //==============================================================================
-    std::unique_ptr<juce::Label> label;
-    std::unique_ptr<Timeline> timeline;
+    std::unique_ptr<juce::ImageButton> aboutButton;
+
+    // global plugin settings
+    std::unique_ptr<juce::Label> hostSyncModeLabel;
+    std::unique_ptr<juce::ComboBox> syncModeComboBox;
+
+    std::unique_ptr<juce::Label> loopStepSizeLabel;
+    std::unique_ptr<juce::ComboBox> stepSizeComboBox;
+
+    std::unique_ptr<juce::Label> recordLengthLabel;
+    std::unique_ptr<VSTSlider> fixedLengthSlider;
+
+    std::unique_ptr<juce::Label> quantizeInputLabel;
+    std::unique_ptr<juce::ComboBox> quantizeComboBox;
+
+    std::unique_ptr<juce::TextButton> overdubButton;
+
+    std::unique_ptr<juce::ComboBox> midiOutDeviceComboBox;
+    std::unique_ptr<juce::Label> midiOutDeviceLabel;
+
+    std::unique_ptr<juce::ToggleButton> singleLoopToggleButton;
+
+    std::unique_ptr<VSTSlider> masterVelocitySlider;
+    std::unique_ptr<juce::Label> masterVelocityLabel;
+
+    std::unique_ptr<VSTSlider> masterTransposeSlider;
+    std::unique_ptr<juce::Label> masterTransposeLabel;
+
+    std::unique_ptr<juce::TextButton> midiThruButton;
+    std::unique_ptr<juce::TextButton> monitorButton;
+
+    // slot buttons
     std::unique_ptr<juce::TextButton> textButton1;
     std::unique_ptr<juce::TextButton> textButton2;
     std::unique_ptr<juce::TextButton> textButton3;
@@ -86,94 +113,130 @@ private:
     std::unique_ptr<juce::TextButton> textButton14;
     std::unique_ptr<juce::TextButton> textButton15;
     std::unique_ptr<juce::TextButton> textButton16;
-    std::unique_ptr<juce::TextButton> b_Play;
-    std::unique_ptr<juce::TextButton> b_Record;
-    std::unique_ptr<juce::TextButton> b_Overdub;
-    std::unique_ptr<juce::TextButton> b_Thru;
-    std::unique_ptr<juce::TextButton> b_Clear;
-    std::unique_ptr<juce::ComboBox> stepsizeBox;
-    std::unique_ptr<VSTSlider> s_Transpose;
-    std::unique_ptr<VSTSlider> s_Octave;
-    std::unique_ptr<VSTSlider> s_Velocity;
-    std::unique_ptr<juce::Label> label3;
-    std::unique_ptr<juce::Label> label4;
-    std::unique_ptr<juce::Label> label5;
-    std::unique_ptr<VSTSlider> s_Start;
-    std::unique_ptr<juce::Label> label6;
-    std::unique_ptr<VSTSlider> s_End;
-    std::unique_ptr<juce::Label> label7;
-    std::unique_ptr<VSTSlider> s_Stretch;
-    std::unique_ptr<juce::Label> label8;
-    std::unique_ptr<juce::ComboBox> loopmodeBox;
-    std::unique_ptr<juce::ComboBox> notetriggerBox;
-    std::unique_ptr<juce::ComboBox> syncmodeBox;
-    std::unique_ptr<VSTSlider> s_Root;
-    std::unique_ptr<juce::Label> label9;
-    std::unique_ptr<VSTSlider> s_Low;
-    std::unique_ptr<juce::Label> label10;
-    std::unique_ptr<VSTSlider> s_High;
-    std::unique_ptr<juce::Label> label11;
-    std::unique_ptr<VSTSlider> s_TrigChan;
-    std::unique_ptr<juce::Label> label12;
-    std::unique_ptr<juce::TextButton> b_Reload;
-    std::unique_ptr<juce::ComboBox> quantizeBox;
-    std::unique_ptr<juce::Label> label21;
-    std::unique_ptr<VSTSlider> s_Shift;
-    std::unique_ptr<juce::Label> label2;
-    std::unique_ptr<juce::Label> label23;
-    std::unique_ptr<ClickableLabel> nameLabel;
-    std::unique_ptr<juce::TextButton> b_Save;
-    std::unique_ptr<juce::Label> label22;
-    std::unique_ptr<juce::Label> label18;
-    std::unique_ptr<juce::Label> loopinfoLabel;
-    std::unique_ptr<juce::Label> loopinfoLabel2;
-    std::unique_ptr<juce::Label> label17;
-    std::unique_ptr<VSTSlider> s_Channel;
-    std::unique_ptr<juce::Label> label19;
-    std::unique_ptr<juce::Label> label20;
-    std::unique_ptr<VSTSlider> s_FixedLength;
-    std::unique_ptr<juce::TextButton> b_Filt;
-    std::unique_ptr<PianoRollViewport> viewport;
-    std::unique_ptr<juce::ResizableCornerComponent> resizer;
-    std::unique_ptr<juce::TextButton> b_NoteToggle;
-    std::unique_ptr<VSTSlider> s_PlayGroup;
-    std::unique_ptr<juce::Label> label13;
-    std::unique_ptr<VSTSlider> s_MuteGroup;
-    std::unique_ptr<juce::Label> label14;
-    std::unique_ptr<juce::ToggleButton> b_Snap;
-    std::unique_ptr<juce::ComboBox> quantizeBox2;
-    std::unique_ptr<juce::ToggleButton> b_ForceToKey;
+
+    // slot title
+    std::unique_ptr<ClickableLabel> patternNameLabel;
+    std::unique_ptr<juce::TextButton> clearButton;
+    std::unique_ptr<juce::TextButton> saveButton;
+    std::unique_ptr<juce::TextButton> reloadButton;
+
+    // loop settings
+    std::unique_ptr<juce::TextButton> recordButton;
+    std::unique_ptr<juce::TextButton> playButton;
+    std::unique_ptr<juce::ToggleButton> waitForBarButton;
+
+    std::unique_ptr<juce::ComboBox> loopModeComboBox;
+
+    std::unique_ptr<VSTSlider> playGroupSlider;
+    std::unique_ptr<juce::Label> playGroupLabel;
+
+    std::unique_ptr<VSTSlider> rootNoteSlider;
+    std::unique_ptr<juce::Label> rootNoteLabel;
+
+    std::unique_ptr<VSTSlider> numLoopsSlider;
+    std::unique_ptr<VSTSlider> nextSlotSlider;
+
+    std::unique_ptr<VSTSlider> muteGroupSlider;
+    std::unique_ptr<juce::Label> muteGroupLabel;
+
+    std::unique_ptr<juce::Label> loopInfoLabel;
+    std::unique_ptr<juce::Label> loopInfoLabel2;
+
+    std::unique_ptr<juce::Label> loopSettingsLabel;
+
+    // loop manipulation
+    std::unique_ptr<juce::ToggleButton> useTransposeChannelButton;
+    std::unique_ptr<juce::ToggleButton> immediateTransposeButton;
+    std::unique_ptr<juce::TextButton> transpose10Button;
+
+    std::unique_ptr<VSTSlider> scaleChannelSlider;
+    std::unique_ptr<juce::Label> scaleChannelLabel;
+
+    std::unique_ptr<VSTSlider> transposeChannelSlider;
+    std::unique_ptr<juce::Label> transposeChannelLabel;
+
+    std::unique_ptr<VSTSlider> transposeSlider;
+    std::unique_ptr<juce::Label> transposeLabel;
+    std::unique_ptr<VSTSlider> octaveSlider;
+    std::unique_ptr<juce::Label> octaveLabel;
+    std::unique_ptr<VSTSlider> velocitySlider;
+    std::unique_ptr<juce::Label> velocityLabel;
+
+    std::unique_ptr<juce::ToggleButton> forceToKeyButton;
+    std::unique_ptr<juce::ComboBox> forceModeComboBox;
+
+    std::unique_ptr<juce::ToggleButton> useScaleChannelButton;
+
+    std::unique_ptr<juce::TextButton> shiftDownButton;
     std::unique_ptr<KeySelector> keySelector;
-    std::unique_ptr<juce::TextButton> b_ShiftUp;
-    std::unique_ptr<juce::TextButton> b_ShiftDown;
-    std::unique_ptr<juce::ToggleButton> b_SingleLoop;
-    std::unique_ptr<VSTSlider> s_MasterVelocity;
-    std::unique_ptr<juce::Label> label15;
-    std::unique_ptr<juce::ImageButton> aboutButton;
-    std::unique_ptr<juce::TextButton> b_Triplet;
-    std::unique_ptr<juce::TextButton> b_Dotted;
-    std::unique_ptr<juce::TextButton> b_ZoomOut;
-    std::unique_ptr<juce::TextButton> b_ZoomIn;
+    std::unique_ptr<juce::TextButton> shiftUpButton;
+
+    std::unique_ptr<VSTSlider> loopStartSlider;
+    std::unique_ptr<juce::Label> startOffsetLabel;
+
+    std::unique_ptr<VSTSlider> loopEndOffsetSlider;
+    std::unique_ptr<juce::Label> loopEndOffsetLabel;
+
+    std::unique_ptr<VSTSlider> shiftPatternSlider;
+    std::unique_ptr<juce::Label> shiftPatternLabel;
+
+    std::unique_ptr<VSTSlider> stretchSlider;
+    std::unique_ptr<juce::Label> speedLabel;
+
+    std::unique_ptr<juce::Label> loopManipulationLabel;
+
+    // Note Triggering
+    std::unique_ptr<juce::ComboBox> noteTriggerComboBox;
+
+    std::unique_ptr<juce::TextButton> noteToggleButton;
+
+    std::unique_ptr<VSTSlider> minTriggerNoteSlider;
+    std::unique_ptr<juce::Label> minTriggerNoteLabel;
+
+    std::unique_ptr<VSTSlider> maxTriggerNoteSlider;
+    std::unique_ptr<juce::Label> maxTriggerNoteLabel;
+
+    std::unique_ptr<VSTSlider> triggerChannelSlider;
+    std::unique_ptr<juce::Label> triggerChannelLabel;
+
+    std::unique_ptr<VSTSlider> velocitySensSlider;
+    std::unique_ptr<juce::Label> velocitySenSlider;
+
+    std::unique_ptr<juce::Label> noteTriggeringLabel;
+
+    std::unique_ptr<VSTSlider> slotIOChannelSlider;
+    std::unique_ptr<juce::Label> slotIOChannelLabel;
+
+    std::unique_ptr<juce::TextButton> transformFilterButton;
+
+    // piano roll
+    std::unique_ptr<juce::ToggleButton> snapButton;
+    std::unique_ptr<juce::ComboBox> quantize2ComboBox;
+
+    std::unique_ptr<juce::TextButton> tripletButton;
+    std::unique_ptr<juce::TextButton> dottedButton;
+
     std::unique_ptr<juce::Label> numeratorLabel;
     std::unique_ptr<juce::Label> denominatorLabel;
-    std::unique_ptr<juce::ToggleButton> b_UseScaleChannel;
-    std::unique_ptr<VSTSlider> s_ScaleChannel;
-    std::unique_ptr<juce::Label> label25;
-    std::unique_ptr<VSTSlider> s_MasterTranspose;
-    std::unique_ptr<juce::Label> label26;
-    std::unique_ptr<juce::ToggleButton> b_WaitForBar;
-    std::unique_ptr<juce::ComboBox> midiOutDeviceBox;
-    std::unique_ptr<juce::Label> label27;
-    std::unique_ptr<juce::ToggleButton> b_UseTrChannel;
-    std::unique_ptr<juce::ToggleButton> b_ImmediateTranspose;
-    std::unique_ptr<VSTSlider> s_NumLoops;
-    std::unique_ptr<VSTSlider> s_NextSlot;
-    std::unique_ptr<juce::Label> label16;
-    std::unique_ptr<juce::ComboBox> forceModeBox;
-    std::unique_ptr<juce::Viewport> kbport;
-    std::unique_ptr<juce::TextButton> b_RemoveBar;
-    std::unique_ptr<juce::TextButton> b_AddBar;
-    std::unique_ptr<juce::Label> LengthLabel;
+
+    std::unique_ptr<juce::Label> zoomLabel;
+    std::unique_ptr<juce::TextButton> zoomOutButton;
+    std::unique_ptr<juce::TextButton> zoomInButton;
+
+    std::unique_ptr<juce::TextButton> addBarButton;
+    std::unique_ptr<juce::Label> patternLengthLabel;
+    std::unique_ptr<juce::TextButton> removeBarButton;
+
+    std::unique_ptr<juce::Viewport> keyboardViewport;
+    std::unique_ptr<Timeline> timeline;
+    std::unique_ptr<PianoRollViewport> pianoRollViewport;
+
+    std::unique_ptr<juce::ResizableCornerComponent> resizer;
+
+    std::unique_ptr<juce::ToggleButton> keepLengthToggleButton;
+    std::unique_ptr<VSTSlider> recCCSlider;
+    std::unique_ptr<VSTSlider> playCCSlider;
+
     std::unique_ptr<juce::TextButton> textButton17;
     std::unique_ptr<juce::TextButton> textButton18;
     std::unique_ptr<juce::TextButton> textButton19;
@@ -286,15 +349,7 @@ private:
     std::unique_ptr<juce::TextButton> textButton126;
     std::unique_ptr<juce::TextButton> textButton127;
     std::unique_ptr<juce::TextButton> textButton128;
-    std::unique_ptr<juce::TextButton> b_Transpose10;
-    std::unique_ptr<juce::ToggleButton> b_KeepLength;
-    std::unique_ptr<VSTSlider> s_RecCC;
-    std::unique_ptr<VSTSlider> s_PlayCC;
-    std::unique_ptr<VSTSlider> s_VelocitySens;
-    std::unique_ptr<juce::Label> label24;
-    std::unique_ptr<juce::TextButton> b_Monitor;
-    std::unique_ptr<VSTSlider> s_TransposeChannel;
-    std::unique_ptr<juce::Label> label28;
+
     juce::Image cachedImage_piznew40_png_1;
 
     void handleOverdubButtonClick() const;
@@ -336,7 +391,7 @@ private:
     void handleTransposeSliderChange() const;
     void handleOctaveSliderChange() const;
     void handleVelocitySliderChange() const;
-    void handleStartSliderChange() const;
+    void handleLoopStartSliderChange() const;
     void handleEndSliderChange() const;
     void handleStretchSliderChange() const;
     void handleRootSliderChange() const;
