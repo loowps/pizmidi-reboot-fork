@@ -29,41 +29,38 @@ void PianoRollNotes::paint(juce::Graphics& g)
                     //	g.setColour(Colours::blue);
                     //else
 
+                    const auto originalNoteRect = juce::Rectangle<float>(std::round((float) getWidth() * (float) (roll->sequence->getEventTime(i) / roll->seqLengthInPpq)),
+                                                                         std::round((float) getHeight() - (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber()) * roll->yinc - roll->yinc),
+                                                                         std::round(noteLength),
+                                                                         std::round(roll->yinc));
+
                     if (roll->selectedNotes.contains(roll->sequence->getEventPointer(i)))
                     {
                         //outline of original note position
                         g.setColour(juce::Colours::blue);
-                        g.drawRect((float) getWidth() * (float) (roll->sequence->getEventTime(i) / roll->seqLengthInPpq),
-                                   (float) getHeight() - (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber()) * roll->yinc - roll->yinc,
-                                   noteLength,
-                                   roll->yinc);
+                        g.drawRect(originalNoteRect);
 
                         //dragging note position
                         const double newTime = (float) ((roll->sequence->getEventTime(i) + roll->draggingNoteTimeDelta));
                         const float newNote  = (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber() + roll->draggingNoteTransposition);
-                        g.setColour(juce::Colours::darkgoldenrod.withAlpha(roll->sequence->getEventPointer(i)->message.getFloatVelocity()));
-                        g.fillRect((float) getWidth() * (float) (newTime / roll->seqLengthInPpq),
-                                   (float) getHeight() - newNote * roll->yinc - roll->yinc,
-                                   noteLength,
-                                   roll->yinc);
+
+                        const auto rect = juce::Rectangle<float>(std::round((float) getWidth() * (float) (newTime / roll->seqLengthInPpq)),
+                                                                 std::round((float) getHeight() - newNote * roll->yinc - roll->yinc),
+                                                                 std::round(noteLength),
+                                                                 std::round(roll->yinc));
                         g.setColour(juce::Colours::red);
-                        g.drawRect((float) getWidth() * (float) (newTime / roll->seqLengthInPpq),
-                                   (float) getHeight() - newNote * roll->yinc - roll->yinc,
-                                   noteLength,
-                                   roll->yinc);
+                        g.fillRect(rect);
+
+                        g.setColour(juce::Colours::darkgoldenrod.withAlpha(roll->sequence->getEventPointer(i)->message.getFloatVelocity()));
+                        g.fillRect(rect.reduced(1.0f));
                     }
                     else
                     {
-                        g.setColour(juce::Colours::darkgoldenrod.withAlpha(roll->sequence->getEventPointer(i)->message.getFloatVelocity()));
-                        g.fillRect((float) getWidth() * (float) (roll->sequence->getEventTime(i) / roll->seqLengthInPpq),
-                                   (float) getHeight() - (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber()) * roll->yinc - roll->yinc,
-                                   noteLength,
-                                   roll->yinc);
-                        g.setColour(juce::Colours::black);
-                        g.drawRect((float) getWidth() * (float) (roll->sequence->getEventTime(i) / roll->seqLengthInPpq),
-                                   (float) getHeight() - (float) (roll->sequence->getEventPointer(i)->message.getNoteNumber()) * roll->yinc - roll->yinc,
-                                   noteLength,
-                                   roll->yinc);
+                        g.setColour(juce::Colour::fromString("ff222222"));
+                        g.fillRect(originalNoteRect);
+
+                        g.setColour(juce::Colours::goldenrod.withAlpha(roll->sequence->getEventPointer(i)->message.getFloatVelocity()));
+                        g.fillRect(originalNoteRect.reduced(1.0f));
                     }
                 }
             }

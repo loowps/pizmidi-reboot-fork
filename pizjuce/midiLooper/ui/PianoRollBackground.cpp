@@ -16,11 +16,14 @@ void PianoRollBackground::paint(juce::Graphics& g)
     auto y                = (float) getHeight();
     float yinc            = (float) getHeight() / 128.f;
 
+    g.setColour(juce::Colours::white);
+    g.fillRect(getBounds());
+
     while (y > 0)
     {
         if (getNoteNameWithoutOctave(n).contains("#"))
         {
-            g.setColour(juce::Colours::lightgrey);
+            g.setColour(juce::Colour::fromString("ffe1e1e1"));
         }
         else if (n == 60)
         {
@@ -31,18 +34,18 @@ void PianoRollBackground::paint(juce::Graphics& g)
             g.setColour(juce::Colours::white);
         }
 
-        g.fillRect(0.f, y - yinc, (float) getWidth(), yinc);
+        g.fillRect(0.f, std::round(y - yinc), (float) getWidth(), std::round(yinc));
 
         if (getNoteNameWithoutOctave(n).contains("F") && ! getNoteNameWithoutOctave(n).contains("#"))
         {
-            g.setColour(juce::Colours::grey);
-            g.drawLine(0.f, y, (float) getWidth(), y, 1);
+            g.setColour(juce::Colour::fromString("ffb3b3b3"));
+            g.drawHorizontalLine(y, 0.f, (float) getWidth());
         }
 
         if (getNoteNameWithoutOctave(n).contains("C") && ! getNoteNameWithoutOctave(n).contains("#"))
         {
-            g.setColour(juce::Colours::black);
-            g.drawLine(0.f, y, (float) getWidth(), y, 1);
+            g.setColour(juce::Colour::fromString("ff808080"));
+            g.drawHorizontalLine(y, 0.f, (float) getWidth());
         }
 
         n++;
@@ -56,7 +59,7 @@ void PianoRollBackground::paint(juce::Graphics& g)
         if (fmod(x, roll->barSize) >= 0.0001 && fmod(x, roll->beatSize) >= 0.0001)
         {
             g.setColour(juce::Colours::lightgrey);
-            g.drawLine(x, 0.f, x, (float) getHeight());
+            g.drawVerticalLine(x, 0.f, (float) getHeight());
         }
         x += roll->gridSize;
     }
@@ -67,8 +70,8 @@ void PianoRollBackground::paint(juce::Graphics& g)
         //draw beats
         if (fmod(x, roll->barSize) >= 0.0001)
         {
-            g.setColour(juce::Colours::grey);
-            g.drawLine(x, 0.f, x, (float) getHeight());
+            g.setColour(juce::Colour::fromString("ffb3b3b3"));
+            g.drawVerticalLine(x, 0.f, (float) getHeight());
         }
         x += roll->beatSize;
     }
@@ -77,8 +80,8 @@ void PianoRollBackground::paint(juce::Graphics& g)
     while (x < getWidth())
     {
         //draw bars
-        g.setColour(juce::Colours::black);
-        g.drawLine(x, 0.f, x, (float) getHeight());
+        g.setColour(juce::Colour::fromString("ff808080"));
+        g.drawVerticalLine(x, 0.f, (float) getHeight());
         x += roll->barSize;
     }
 }

@@ -325,6 +325,8 @@ void PianoRoll::paintOverChildren(juce::Graphics& g)
     {
         g.setColour(juce::Colours::green.withAlpha(0.3f));
         g.fillRect(lasso);
+        g.setColour(juce::Colours::green.withAlpha(0.5f));
+        g.drawRect(lasso.reduced(1.0f));
     }
 }
 
@@ -336,7 +338,7 @@ void PianoRoll::resized()
     gridSize = (float) noteLayer->getWidth() / seqLength;
     beatSize = ppqToPixels(timebase * 4.0 / (double) timeSigD);
     barSize  = ppqToPixels(timebase * quarterNotesPerBar);
-    yinc = (float) getHeight() / 128.f;
+    yinc     = (float) getHeight() / 128.f;
 }
 
 void PianoRoll::sequenceChanged()
