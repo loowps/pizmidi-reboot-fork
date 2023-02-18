@@ -1,25 +1,5 @@
-/*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 6.1.4
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library.
-  Copyright (c) 2020 - Raw Material Software Limited.
-
-  ==============================================================================
-*/
-
 #pragma once
 
-//[Headers]     -- You can add your own extra header files here --
 #include "../_common/ClickableLabel.h"
 #include "../_common/VSTSlider.h"
 #include "PianoRoll.h"
@@ -59,16 +39,7 @@ private:
     juce::MidiKeyboardState* s;
 };
 
-//[/Headers]
-
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Jucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class PizLooperEditor : public juce::AudioProcessorEditor,
                         public juce::ChangeListener,
                         public juce::FileDragAndDropTarget,
@@ -86,12 +57,11 @@ public:
     ~PizLooperEditor() override;
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
+
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     bool isInterestedInFileDrag(const juce::StringArray& files) override;
     void filesDropped(const juce::StringArray& filenames, int mouseX, int mouseY) override;
-    //    void sliderDragStarted (Slider* slider); //slider mousedown
-    //    void sliderDragEnded (Slider* slider); //slider mouseup
+
     void timerCallback() override;
     void buttonStateChanged(juce::Button* button) override;
     void mouseDrag(const juce::MouseEvent& e) override;
@@ -112,7 +82,6 @@ public:
 
     void handleNoteOn(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
-    //[/UserMethods]
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -126,7 +95,6 @@ public:
     static const int piznew40_pngSize;
 
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
     juce::TooltipWindow tooltipWindow;
     void updateParametersFromFilter();
     void updateControls(int param, float value, bool forCurProgram);
@@ -144,13 +112,11 @@ private:
     juce::Path internalPath2;
 
     // handy wrapper method to avoid having to cast the filter to a PizLooper
-    // every time we need it..
-    PizLooper* getFilter() const throw()
+    // every time we need it
+    PizLooper* getFilter() const noexcept
     {
         return (PizLooper*) getAudioProcessor();
     }
-
-    //[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<juce::Label> label;
@@ -385,6 +351,3 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PizLooperEditor)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

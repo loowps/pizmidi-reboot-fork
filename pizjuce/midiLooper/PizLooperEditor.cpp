@@ -1,43 +1,16 @@
-/*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 6.1.4
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library.
-  Copyright (c) 2020 - Raw Material Software Limited.
-
-  ==============================================================================
-*/
-
-//[Headers] You can add your own extra header files here...
-//[/Headers]
-
 #include "PizLooperEditor.h"
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
+#include <memory>
+
 using juce::jmax;
 using juce::jmin;
 using juce::roundToInt;
-
-//[/MiscUserDefs]
 
 //==============================================================================
 PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     : AudioProcessorEditor(ownerFilter)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-    //[/Constructor_pre]
-
-    label.reset(new juce::Label("new label",
-                                TRANS("Zoom")));
+    label = std::make_unique<juce::Label>("new label", TRANS("Zoom"));
     addAndMakeVisible(label.get());
     label->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label->setJustificationType(juce::Justification::centredLeft);
@@ -47,11 +20,11 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label->setBounds(613, 64, 46, 18);
 
-    timeline.reset(new Timeline());
+    timeline = std::make_unique<Timeline>();
     addAndMakeVisible(timeline.get());
     timeline->setName("timeline");
 
-    textButton1.reset(new juce::TextButton("new button"));
+    textButton1 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton1.get());
     textButton1->setButtonText(TRANS("1"));
     textButton1->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -59,7 +32,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton1->setBounds(0, 61, 25, 24);
 
-    textButton2.reset(new juce::TextButton("new button"));
+    textButton2 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton2.get());
     textButton2->setButtonText(TRANS("2"));
     textButton2->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -68,7 +41,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton2->setBounds(25, 61, 23, 24);
 
-    textButton3.reset(new juce::TextButton("new button"));
+    textButton3 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton3.get());
     textButton3->setButtonText(TRANS("3"));
     textButton3->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -76,7 +49,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton3->setBounds(48, 61, 23, 24);
 
-    textButton4.reset(new juce::TextButton("new button"));
+    textButton4 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton4.get());
     textButton4->setButtonText(TRANS("4"));
     textButton4->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -84,7 +57,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton4->setBounds(71, 61, 23, 24);
 
-    textButton5.reset(new juce::TextButton("new button"));
+    textButton5 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton5.get());
     textButton5->setButtonText(TRANS("5"));
     textButton5->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -92,7 +65,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton5->setBounds(94, 61, 23, 24);
 
-    textButton6.reset(new juce::TextButton("new button"));
+    textButton6 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton6.get());
     textButton6->setButtonText(TRANS("6"));
     textButton6->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -100,7 +73,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton6->setBounds(117, 61, 23, 24);
 
-    textButton7.reset(new juce::TextButton("new button"));
+    textButton7 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton7.get());
     textButton7->setButtonText(TRANS("7"));
     textButton7->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -108,7 +81,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton7->setBounds(140, 61, 23, 24);
 
-    textButton8.reset(new juce::TextButton("new button"));
+    textButton8 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton8.get());
     textButton8->setButtonText(TRANS("8"));
     textButton8->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -116,7 +89,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton8->setBounds(163, 61, 23, 24);
 
-    textButton9.reset(new juce::TextButton("new button"));
+    textButton9 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton9.get());
     textButton9->setButtonText(TRANS("9"));
     textButton9->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -124,7 +97,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton9->setBounds(186, 61, 23, 24);
 
-    textButton10.reset(new juce::TextButton("new button"));
+    textButton10 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton10.get());
     textButton10->setButtonText(TRANS("10"));
     textButton10->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -132,7 +105,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton10->setBounds(209, 61, 25, 24);
 
-    textButton11.reset(new juce::TextButton("new button"));
+    textButton11 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton11.get());
     textButton11->setButtonText(TRANS("11"));
     textButton11->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -140,7 +113,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton11->setBounds(234, 61, 25, 24);
 
-    textButton12.reset(new juce::TextButton("new button"));
+    textButton12 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton12.get());
     textButton12->setButtonText(TRANS("12"));
     textButton12->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -148,7 +121,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton12->setBounds(259, 61, 25, 24);
 
-    textButton13.reset(new juce::TextButton("new button"));
+    textButton13 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton13.get());
     textButton13->setButtonText(TRANS("13"));
     textButton13->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -156,7 +129,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton13->setBounds(284, 61, 25, 24);
 
-    textButton14.reset(new juce::TextButton("new button"));
+    textButton14 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton14.get());
     textButton14->setButtonText(TRANS("14"));
     textButton14->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -164,7 +137,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton14->setBounds(309, 61, 25, 24);
 
-    textButton15.reset(new juce::TextButton("new button"));
+    textButton15 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton15.get());
     textButton15->setButtonText(TRANS("15"));
     textButton15->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -172,7 +145,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton15->setBounds(334, 61, 25, 24);
 
-    textButton16.reset(new juce::TextButton("new button"));
+    textButton16 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton16.get());
     textButton16->setButtonText(TRANS("16"));
     textButton16->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -180,7 +153,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton16->setBounds(359, 61, 28, 24);
 
-    b_Play.reset(new juce::TextButton("Play"));
+    b_Play = std::make_unique<juce::TextButton>("Play");
     addAndMakeVisible(b_Play.get());
     b_Play->setTooltip(TRANS("Toggle playback of current slot"));
     b_Play->setButtonText(TRANS("PLAY"));
@@ -192,7 +165,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Play->setBounds(78, 117, 72, 50);
 
-    b_Record.reset(new juce::TextButton("Record"));
+    b_Record = std::make_unique<juce::TextButton>("Record");
     addAndMakeVisible(b_Record.get());
     b_Record->setTooltip(TRANS("Toggle recording to current slot"));
     b_Record->setButtonText(TRANS("RECORD "));
@@ -204,7 +177,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Record->setBounds(6, 117, 72, 50);
 
-    b_Overdub.reset(new juce::TextButton("Overdub"));
+    b_Overdub = std::make_unique<juce::TextButton>("Overdub");
     addAndMakeVisible(b_Overdub.get());
     b_Overdub->setTooltip(TRANS("Toggle overdub recording"));
     b_Overdub->addListener(this);
@@ -214,7 +187,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Overdub->setBounds(523, 12, 80, 20);
 
-    b_Thru.reset(new juce::TextButton("MIDI Thru"));
+    b_Thru = std::make_unique<juce::TextButton>("MIDI Thru");
     addAndMakeVisible(b_Thru.get());
     b_Thru->setTooltip(TRANS("Toggle MIDI Thru (Notes selected for Note Triggering and Scale Channel are always blocked)"));
     b_Thru->setButtonText(TRANS("Thru"));
@@ -223,7 +196,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Thru->setBounds(634, 33, 40, 20);
 
-    b_Clear.reset(new juce::TextButton("Clear"));
+    b_Clear = std::make_unique<juce::TextButton>("Clear");
     addAndMakeVisible(b_Clear.get());
     b_Clear->setTooltip(TRANS("Erase MIDI data from the current slot"));
     b_Clear->setConnectedEdges(juce::Button::ConnectedOnRight);
@@ -234,7 +207,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Clear->setBounds(264, 90, 39, 22);
 
-    stepsizeBox.reset(new juce::ComboBox("Loop Step Size"));
+    stepsizeBox = std::make_unique<juce::ComboBox>("Loop Step Size");
     addAndMakeVisible(stepsizeBox.get());
     stepsizeBox->setTooltip(TRANS("Recording length will be quantized to this step size."));
     stepsizeBox->setEditableText(false);
@@ -251,7 +224,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     stepsizeBox->setBounds(264, 15, 77, 16);
 
-    s_Transpose.reset(new VSTSlider("Transpose"));
+    s_Transpose = std::make_unique<VSTSlider>("Transpose");
     addAndMakeVisible(s_Transpose.get());
     s_Transpose->setTooltip(TRANS("Transposition applied to the current slot"));
     s_Transpose->setRange(-12, 12, 1);
@@ -264,7 +237,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Transpose->setBounds(146, 283, 72, 20);
 
-    s_Octave.reset(new VSTSlider("Octave Shift"));
+    s_Octave = std::make_unique<VSTSlider>("Octave Shift");
     addAndMakeVisible(s_Octave.get());
     s_Octave->setTooltip(TRANS("Transposition by octave for the current slot"));
     s_Octave->setRange(-4, 4, 1);
@@ -277,7 +250,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Octave->setBounds(226, 283, 72, 20);
 
-    s_Velocity.reset(new VSTSlider("Velocity Offset"));
+    s_Velocity = std::make_unique<VSTSlider>("Velocity Offset");
     addAndMakeVisible(s_Velocity.get());
     s_Velocity->setTooltip(TRANS("Velocity adjustment for the current slot"));
     s_Velocity->setRange(0, 200, 1);
@@ -290,8 +263,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Velocity->setBounds(306, 283, 72, 20);
 
-    label3.reset(new juce::Label("new label",
-                                 TRANS("Semitones")));
+    label3 = std::make_unique<juce::Label>("new label",
+                                 TRANS("Semitones"));
     addAndMakeVisible(label3.get());
     label3->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label3->setJustificationType(juce::Justification::centred);
@@ -302,8 +275,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label3->setBounds(146, 267, 72, 16);
 
-    label4.reset(new juce::Label("new label",
-                                 TRANS("Octave")));
+    label4 = std::make_unique<juce::Label>("new label",
+                                 TRANS("Octave"));
     addAndMakeVisible(label4.get());
     label4->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label4->setJustificationType(juce::Justification::centred);
@@ -314,8 +287,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label4->setBounds(226, 267, 72, 16);
 
-    label5.reset(new juce::Label("new label",
-                                 TRANS("Velocity")));
+    label5 = std::make_unique<juce::Label>("new label",
+                                 TRANS("Velocity"));
     addAndMakeVisible(label5.get());
     label5->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label5->setJustificationType(juce::Justification::centred);
@@ -326,7 +299,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label5->setBounds(301, 267, 80, 16);
 
-    s_Start.reset(new VSTSlider("Loop Start"));
+    s_Start = std::make_unique<VSTSlider>("Loop Start");
     addAndMakeVisible(s_Start.get());
     s_Start->setTooltip(TRANS("Offsets the loop start time by this number of beats"));
     s_Start->setRange(-8, 8, 1);
@@ -339,8 +312,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Start->setBounds(66, 367, 72, 20);
 
-    label6.reset(new juce::Label("new label",
-                                 TRANS("Start Offset")));
+    label6 = std::make_unique<juce::Label>("new label",
+                                 TRANS("Start Offset"));
     addAndMakeVisible(label6.get());
     label6->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label6->setJustificationType(juce::Justification::centred);
@@ -351,7 +324,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label6->setBounds(66, 351, 72, 16);
 
-    s_End.reset(new VSTSlider("Loop End"));
+    s_End = std::make_unique<VSTSlider>("Loop End");
     addAndMakeVisible(s_End.get());
     s_End->setTooltip(TRANS("Offsets the loop end time by this number of beats"));
     s_End->setRange(-8, 8, 1);
@@ -364,8 +337,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_End->setBounds(146, 367, 72, 20);
 
-    label7.reset(new juce::Label("new label",
-                                 TRANS("End Offset")));
+    label7 = std::make_unique<juce::Label>("new label",
+                                 TRANS("End Offset"));
     addAndMakeVisible(label7.get());
     label7->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label7->setJustificationType(juce::Justification::centred);
@@ -376,7 +349,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label7->setBounds(146, 351, 72, 16);
 
-    s_Stretch.reset(new VSTSlider("Loop Stretch"));
+    s_Stretch = std::make_unique<VSTSlider>("Loop Stretch");
     addAndMakeVisible(s_Stretch.get());
     s_Stretch->setTooltip(TRANS("Playback speed, relative to host tempo"));
     s_Stretch->setRange(-10, 10, 1);
@@ -389,8 +362,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Stretch->setBounds(306, 367, 72, 20);
 
-    label8.reset(new juce::Label("new label",
-                                 TRANS("Speed")));
+    label8 = std::make_unique<juce::Label>("new label",
+                                 TRANS("Speed"));
     addAndMakeVisible(label8.get());
     label8->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label8->setJustificationType(juce::Justification::centred);
@@ -401,7 +374,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label8->setBounds(306, 351, 72, 16);
 
-    loopmodeBox.reset(new juce::ComboBox("Loop Mode"));
+    loopmodeBox = std::make_unique<juce::ComboBox>("Loop Mode");
     addAndMakeVisible(loopmodeBox.get());
     loopmodeBox->setTooltip(TRANS("Playback Mode: \"Sync Loop\" follows the host timeline. \"Loop after rec\" is the same but also plays automatically as soon as recording ends. \"Unsync\" modes play the pattern from the beginning as soon as playback is started."));
     loopmodeBox->setEditableText(false);
@@ -416,7 +389,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopmodeBox->setBounds(175, 144, 110, 16);
 
-    notetriggerBox.reset(new juce::ComboBox("Note Trigger"));
+    notetriggerBox = std::make_unique<juce::ComboBox>("Note Trigger");
     addAndMakeVisible(notetriggerBox.get());
     notetriggerBox->setTooltip(TRANS("For \"Transpose\" modes, pattern will be transposed relative to \"Root Note\""));
     notetriggerBox->setEditableText(false);
@@ -432,7 +405,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     notetriggerBox->setBounds(146, 402, 106, 16);
 
-    syncmodeBox.reset(new juce::ComboBox("Sync"));
+    syncmodeBox = std::make_unique<juce::ComboBox>("Sync");
     addAndMakeVisible(syncmodeBox.get());
     syncmodeBox->setTooltip(TRANS("\"PPQ\" modes always follow host timeline, which may not work in all hosts. \"Sample\" mode ignores the host\'s timeline, but the host\'s tempo is still followed."));
     syncmodeBox->setEditableText(false);
@@ -446,7 +419,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     syncmodeBox->setBounds(159, 15, 99, 16);
 
-    s_Root.reset(new VSTSlider("Root Note"));
+    s_Root = std::make_unique<VSTSlider>("Root Note");
     addAndMakeVisible(s_Root.get());
     s_Root->setTooltip(TRANS("Transposed note triggering and Scale Channel input will transpose the pattern relative to this note"));
     s_Root->setRange(-1, 127, 1);
@@ -459,8 +432,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Root->setBounds(76, 174, 64, 20);
 
-    label9.reset(new juce::Label("new label",
-                                 TRANS("Root Note:")));
+    label9 = std::make_unique<juce::Label>("new label",
+                                 TRANS("Root Note:"));
     addAndMakeVisible(label9.get());
     label9->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label9->setJustificationType(juce::Justification::centred);
@@ -471,7 +444,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label9->setBounds(15, 176, 64, 16);
 
-    s_Low.reset(new VSTSlider("Low Note"));
+    s_Low = std::make_unique<VSTSlider>("Low Note");
     addAndMakeVisible(s_Low.get());
     s_Low->setTooltip(TRANS("Lowest note to use for triggering"));
     s_Low->setRange(-1, 127, 1);
@@ -484,8 +457,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Low->setBounds(18, 440, 64, 20);
 
-    label10.reset(new juce::Label("new label",
-                                  TRANS("Low Note")));
+    label10 = std::make_unique<juce::Label>("new label",
+                                  TRANS("Low Note"));
     addAndMakeVisible(label10.get());
     label10->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label10->setJustificationType(juce::Justification::centred);
@@ -496,7 +469,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label10->setBounds(18, 424, 64, 16);
 
-    s_High.reset(new VSTSlider("High Note"));
+    s_High = std::make_unique<VSTSlider>("High Note");
     addAndMakeVisible(s_High.get());
     s_High->setTooltip(TRANS("Highest note to use for triggering"));
     s_High->setRange(-1, 127, 1);
@@ -509,8 +482,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_High->setBounds(90, 440, 64, 20);
 
-    label11.reset(new juce::Label("new label",
-                                  TRANS("High Note")));
+    label11 = std::make_unique<juce::Label>("new label",
+                                  TRANS("High Note"));
     addAndMakeVisible(label11.get());
     label11->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label11->setJustificationType(juce::Justification::centred);
@@ -521,7 +494,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label11->setBounds(90, 424, 64, 16);
 
-    s_TrigChan.reset(new VSTSlider("TriggerChannel"));
+    s_TrigChan = std::make_unique<VSTSlider>("TriggerChannel");
     addAndMakeVisible(s_TrigChan.get());
     s_TrigChan->setTooltip(TRANS("Channel to use for trigger notes"));
     s_TrigChan->setRange(1, 16, 1);
@@ -534,8 +507,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_TrigChan->setBounds(162, 440, 64, 20);
 
-    label12.reset(new juce::Label("Trigger Channel",
-                                  TRANS("Channel")));
+    label12 = std::make_unique<juce::Label>("Trigger Channel",
+                                  TRANS("Channel"));
     addAndMakeVisible(label12.get());
     label12->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label12->setJustificationType(juce::Justification::centred);
@@ -546,7 +519,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label12->setBounds(161, 424, 64, 16);
 
-    b_Reload.reset(new juce::TextButton("Load"));
+    b_Reload = std::make_unique<juce::TextButton>("Load");
     addAndMakeVisible(b_Reload.get());
     b_Reload->setTooltip(TRANS("Load MIDI file (Ctrl-click: load MIDI file with the current pattern name from the \"midiloops\" folder)"));
     b_Reload->setConnectedEdges(juce::Button::ConnectedOnLeft);
@@ -557,7 +530,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Reload->setBounds(344, 90, 39, 22);
 
-    quantizeBox.reset(new juce::ComboBox("Input Quantize Step"));
+    quantizeBox = std::make_unique<juce::ComboBox>("Input Quantize Step");
     addAndMakeVisible(quantizeBox.get());
     quantizeBox->setTooltip(TRANS("Recorded events will be quantized to this step size"));
     quantizeBox->setEditableText(false);
@@ -573,8 +546,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     quantizeBox->setBounds(439, 15, 77, 16);
 
-    label21.reset(new juce::Label("LoopStepSize",
-                                  TRANS("Loop Step Size")));
+    label21 = std::make_unique<juce::Label>("LoopStepSize",
+                                  TRANS("Loop Step Size"));
     addAndMakeVisible(label21.get());
     label21->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label21->setJustificationType(juce::Justification::centred);
@@ -585,7 +558,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label21->setBounds(261, 0, 84, 16);
 
-    s_Shift.reset(new VSTSlider("Shift"));
+    s_Shift = std::make_unique<VSTSlider>("Shift");
     addAndMakeVisible(s_Shift.get());
     s_Shift->setTooltip(TRANS("Shifts the pattern by this number of beats, with wraparound"));
     s_Shift->setRange(-8, 8, 1);
@@ -598,8 +571,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Shift->setBounds(226, 367, 72, 20);
 
-    label2.reset(new juce::Label("Shift",
-                                 TRANS("Beat Shift")));
+    label2 = std::make_unique<juce::Label>("Shift",
+                                 TRANS("Beat Shift"));
     addAndMakeVisible(label2.get());
     label2->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label2->setJustificationType(juce::Justification::centred);
@@ -610,8 +583,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label2->setBounds(226, 351, 72, 16);
 
-    label23.reset(new juce::Label("QuantizeLabel",
-                                  TRANS("Quantize Input")));
+    label23 = std::make_unique<juce::Label>("QuantizeLabel",
+                                  TRANS("Quantize Input"));
     addAndMakeVisible(label23.get());
     label23->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label23->setJustificationType(juce::Justification::centred);
@@ -622,8 +595,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label23->setBounds(433, 0, 87, 16);
 
-    nameLabel.reset(new ClickableLabel("Name",
-                                       TRANS("Bassline (4 bars)")));
+    nameLabel = std::make_unique<ClickableLabel>("Name",
+                                       TRANS("Bassline (4 bars)"));
     addAndMakeVisible(nameLabel.get());
     nameLabel->setTooltip(TRANS("Current pattern name (double-click to edit)"));
     nameLabel->setFont(juce::Font(26.30f, juce::Font::plain).withTypefaceStyle("Bold"));
@@ -635,7 +608,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     nameLabel->setBounds(4, 87, 256, 27);
 
-    b_Save.reset(new juce::TextButton("Save"));
+    b_Save = std::make_unique<juce::TextButton>("Save");
     addAndMakeVisible(b_Save.get());
     b_Save->setTooltip(TRANS("Save a MIDI file of the current pattern (Ctrl-click: save to the \"midiloops\" folder with the current name)"));
     b_Save->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
@@ -646,8 +619,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Save->setBounds(304, 90, 39, 22);
 
-    label22.reset(new juce::Label("Sync",
-                                  TRANS("Host Sync Mode")));
+    label22 = std::make_unique<juce::Label>("Sync",
+                                  TRANS("Host Sync Mode"));
     addAndMakeVisible(label22.get());
     label22->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label22->setJustificationType(juce::Justification::centred);
@@ -658,8 +631,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label22->setBounds(162, 0, 95, 16);
 
-    label18.reset(new juce::Label("Sync:",
-                                  TRANS("Note Triggering")));
+    label18 = std::make_unique<juce::Label>("Sync:",
+                                  TRANS("Note Triggering"));
     addAndMakeVisible(label18.get());
     label18->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     label18->setJustificationType(juce::Justification::centred);
@@ -670,8 +643,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label18->setBounds(12, 469, 125, 16);
 
-    loopinfoLabel.reset(new juce::Label("Loop Info",
-                                        TRANS("label text")));
+    loopinfoLabel = std::make_unique<juce::Label>("Loop Info",
+                                        TRANS("label text"));
     addAndMakeVisible(loopinfoLabel.get());
     loopinfoLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopinfoLabel->setJustificationType(juce::Justification::centredLeft);
@@ -682,8 +655,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopinfoLabel->setBounds(14, 205, 272, 16);
 
-    loopinfoLabel2.reset(new juce::Label("Loop Info 2",
-                                         TRANS("label text")));
+    loopinfoLabel2 = std::make_unique<juce::Label>("Loop Info 2",
+                                         TRANS("label text"));
     addAndMakeVisible(loopinfoLabel2.get());
     loopinfoLabel2->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopinfoLabel2->setJustificationType(juce::Justification::centredLeft);
@@ -693,8 +666,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopinfoLabel2->setBounds(14, 225, 272, 16);
 
-    label17.reset(new juce::Label("Sync:",
-                                  TRANS("Loop Manipulation")));
+    label17 = std::make_unique<juce::Label>("Sync:",
+                                  TRANS("Loop Manipulation"));
     addAndMakeVisible(label17.get());
     label17->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     label17->setJustificationType(juce::Justification::centred);
@@ -705,7 +678,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label17->setBounds(14, 391, 125, 16);
 
-    s_Channel.reset(new VSTSlider("Channel"));
+    s_Channel = std::make_unique<VSTSlider>("Channel");
     addAndMakeVisible(s_Channel.get());
     s_Channel->setTooltip(TRANS("Input and output channel for the current slot"));
     s_Channel->setRange(0, 16, 1);
@@ -718,8 +691,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_Channel->setBounds(314, 414, 64, 20);
 
-    label19.reset(new juce::Label("I/O Channel",
-                                  TRANS("I/O Channel")));
+    label19 = std::make_unique<juce::Label>("I/O Channel",
+                                  TRANS("I/O Channel"));
     addAndMakeVisible(label19.get());
     label19->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label19->setJustificationType(juce::Justification::centred);
@@ -730,8 +703,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label19->setBounds(309, 398, 74, 16);
 
-    label20.reset(new juce::Label("RecordLengthLabel",
-                                  TRANS("Record Length")));
+    label20 = std::make_unique<juce::Label>("RecordLengthLabel",
+                                  TRANS("Record Length"));
     addAndMakeVisible(label20.get());
     label20->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label20->setJustificationType(juce::Justification::centred);
@@ -742,7 +715,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label20->setBounds(347, 0, 83, 16);
 
-    s_FixedLength.reset(new VSTSlider("Recording Length"));
+    s_FixedLength = std::make_unique<VSTSlider>("Recording Length");
     addAndMakeVisible(s_FixedLength.get());
     s_FixedLength->setTooltip(TRANS("If set to \"Manual\", recording will go on as long as the record button is on. Otherwise, length will be limited to this number of steps (based on \"Loop Step Size\" setting)."));
     s_FixedLength->setRange(0, 32, 1);
@@ -755,7 +728,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_FixedLength->setBounds(347, 15, 86, 16);
 
-    b_Filt.reset(new juce::TextButton("Transform/Filter"));
+    b_Filt = std::make_unique<juce::TextButton>("Transform/Filter");
     addAndMakeVisible(b_Filt.get());
     b_Filt->setTooltip(TRANS("Transform: all events in the pattern are channelized to the sected channel; Filter: only events with the selected channel will be output"));
     b_Filt->setButtonText(TRANS("Transform"));
@@ -765,15 +738,15 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Filt->setBounds(314, 440, 64, 20);
 
-    viewport.reset(new PianoPort("Piano Roll View"));
+    viewport = std::make_unique<PianoPort>("Piano Roll View");
     addAndMakeVisible(viewport.get());
     viewport->setScrollBarThickness(16);
     viewport->setViewedComponent(new PianoRoll(this->getFilter(), this, timeline.get()));
 
-    resizer.reset(new juce::ResizableCornerComponent(this, &resizeLimits));
+    resizer = std::make_unique<juce::ResizableCornerComponent>(this, &resizeLimits);
     addAndMakeVisible(resizer.get());
 
-    b_NoteToggle.reset(new juce::TextButton("new button"));
+    b_NoteToggle = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(b_NoteToggle.get());
     b_NoteToggle->setTooltip(TRANS("When enabled, Note On events will toggle playback, ignoring Note Off events; otherwise Note Off will stop playback"));
     b_NoteToggle->setButtonText(TRANS("Toggle"));
@@ -782,7 +755,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_NoteToggle->setBounds(257, 402, 40, 16);
 
-    s_PlayGroup.reset(new VSTSlider("TriggerChannel"));
+    s_PlayGroup = std::make_unique<VSTSlider>("TriggerChannel");
     addAndMakeVisible(s_PlayGroup.get());
     s_PlayGroup->setTooltip(TRANS("Slots with the same Play Group number will all start/stop at the same time"));
     s_PlayGroup->setRange(0, 16, 1);
@@ -795,8 +768,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_PlayGroup->setBounds(312, 136, 64, 20);
 
-    label13.reset(new juce::Label("Trigger Channel",
-                                  TRANS("Play Group")));
+    label13 = std::make_unique<juce::Label>("Trigger Channel",
+                                  TRANS("Play Group"));
     addAndMakeVisible(label13.get());
     label13->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label13->setJustificationType(juce::Justification::centred);
@@ -807,7 +780,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label13->setBounds(313, 119, 64, 16);
 
-    s_MuteGroup.reset(new VSTSlider("TriggerChannel"));
+    s_MuteGroup = std::make_unique<VSTSlider>("TriggerChannel");
     addAndMakeVisible(s_MuteGroup.get());
     s_MuteGroup->setTooltip(TRANS("Only one slot with the same Mute Group number can be played at the same time"));
     s_MuteGroup->setRange(0, 16, 1);
@@ -820,8 +793,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_MuteGroup->setBounds(312, 174, 64, 20);
 
-    label14.reset(new juce::Label("Trigger Channel",
-                                  TRANS("Mute Group")));
+    label14 = std::make_unique<juce::Label>("Trigger Channel",
+                                  TRANS("Mute Group"));
     addAndMakeVisible(label14.get());
     label14->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label14->setJustificationType(juce::Justification::centred);
@@ -832,7 +805,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label14->setBounds(307, 157, 74, 16);
 
-    b_Snap.reset(new juce::ToggleButton("new toggle button"));
+    b_Snap = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(b_Snap.get());
     b_Snap->setTooltip(TRANS("Toggle Snap to Grid"));
     b_Snap->setButtonText(TRANS("Snap"));
@@ -840,7 +813,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Snap->setBounds(392, 61, 59, 24);
 
-    quantizeBox2.reset(new juce::ComboBox("PR Quantize Step"));
+    quantizeBox2 = std::make_unique<juce::ComboBox>("PR Quantize Step");
     addAndMakeVisible(quantizeBox2.get());
     quantizeBox2->setTooltip(TRANS("Grid Size"));
     quantizeBox2->setEditableText(false);
@@ -856,7 +829,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     quantizeBox2->setBounds(453, 64, 50, 18);
 
-    b_ForceToKey.reset(new juce::ToggleButton("new toggle button"));
+    b_ForceToKey = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(b_ForceToKey.get());
     b_ForceToKey->setTooltip(TRANS("When checked, played notes will be fitted to the defined scale"));
     b_ForceToKey->setButtonText(TRANS("Force to Scale"));
@@ -865,13 +838,13 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_ForceToKey->setBounds(11, 312, 99, 17);
 
-    keySelector.reset(new KeySelector(ownerFilter->keySelectorState));
+    keySelector = std::make_unique<KeySelector>(ownerFilter->keySelectorState);
     addAndMakeVisible(keySelector.get());
     keySelector->setName("new component");
 
     keySelector->setBounds(199, 315, 154, 28);
 
-    b_ShiftUp.reset(new juce::TextButton("new button"));
+    b_ShiftUp = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(b_ShiftUp.get());
     b_ShiftUp->setTooltip(TRANS("Shift selected notes one semitone up"));
     b_ShiftUp->setButtonText(TRANS(">"));
@@ -881,7 +854,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_ShiftUp->setBounds(353, 314, 21, 30);
 
-    b_ShiftDown.reset(new juce::TextButton("new button"));
+    b_ShiftDown = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(b_ShiftDown.get());
     b_ShiftDown->setTooltip(TRANS("Shift selected notes one semitone down"));
     b_ShiftDown->setButtonText(TRANS("<"));
@@ -891,7 +864,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_ShiftDown->setBounds(178, 314, 21, 30);
 
-    b_SingleLoop.reset(new juce::ToggleButton("Single Loop"));
+    b_SingleLoop = std::make_unique<juce::ToggleButton>("Single Loop");
     addAndMakeVisible(b_SingleLoop.get());
     b_SingleLoop->setTooltip(TRANS("When checked, switching from a playing slot to another slot will automatically play the new slot and stop the previous one"));
     b_SingleLoop->setButtonText(TRANS("Play active slot only"));
@@ -900,7 +873,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_SingleLoop->setBounds(155, 36, 122, 16);
 
-    s_MasterVelocity.reset(new VSTSlider("VMasterVelocity"));
+    s_MasterVelocity = std::make_unique<VSTSlider>("VMasterVelocity");
     addAndMakeVisible(s_MasterVelocity.get());
     s_MasterVelocity->setTooltip(TRANS("Global velocity adjustment applied to all played notes"));
     s_MasterVelocity->setRange(0, 200, 1);
@@ -913,8 +886,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_MasterVelocity->setBounds(371, 36, 72, 16);
 
-    label15.reset(new juce::Label("new label",
-                                  TRANS("Master Velocity:")));
+    label15 = std::make_unique<juce::Label>("new label",
+                                  TRANS("Master Velocity:"));
     addAndMakeVisible(label15.get());
     label15->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label15->setJustificationType(juce::Justification::centredRight);
@@ -925,7 +898,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label15->setBounds(283, 36, 88, 16);
 
-    aboutButton.reset(new juce::ImageButton("new button"));
+    aboutButton = std::make_unique<juce::ImageButton>("new button");
     addAndMakeVisible(aboutButton.get());
     aboutButton->setTooltip(TRANS("Insert Piz Here-> midiLooper v1.3  https://github.com/sleiner/pizmidi"));
     aboutButton->setButtonText(juce::String());
@@ -934,7 +907,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     aboutButton->setImages(false, true, true, juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000));
     aboutButton->setBounds(9, 1, 136, 47);
 
-    b_Triplet.reset(new juce::TextButton("Triplet"));
+    b_Triplet = std::make_unique<juce::TextButton>("Triplet");
     addAndMakeVisible(b_Triplet.get());
     b_Triplet->setTooltip(TRANS("Toggle Triplet Note Grid"));
     b_Triplet->setButtonText(TRANS("3"));
@@ -945,7 +918,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Triplet->setBounds(506, 64, 18, 18);
 
-    b_Dotted.reset(new juce::TextButton("Dotted"));
+    b_Dotted = std::make_unique<juce::TextButton>("Dotted");
     addAndMakeVisible(b_Dotted.get());
     b_Dotted->setTooltip(TRANS("Toggle Dotted Note Grid"));
     b_Dotted->setButtonText(TRANS("."));
@@ -956,7 +929,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Dotted->setBounds(528, 64, 18, 18);
 
-    b_ZoomOut.reset(new juce::TextButton("ZoomOut"));
+    b_ZoomOut = std::make_unique<juce::TextButton>("ZoomOut");
     addAndMakeVisible(b_ZoomOut.get());
     b_ZoomOut->setTooltip(TRANS("Zoom Out (Ctrl-click for vertical)"));
     b_ZoomOut->setButtonText(TRANS("-"));
@@ -966,7 +939,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_ZoomOut->setBounds(656, 64, 18, 18);
 
-    b_ZoomIn.reset(new juce::TextButton("ZoomIn"));
+    b_ZoomIn = std::make_unique<juce::TextButton>("ZoomIn");
     addAndMakeVisible(b_ZoomIn.get());
     b_ZoomIn->setTooltip(TRANS("Zoom In (Ctrl-click for vertical)"));
     b_ZoomIn->setButtonText(TRANS("+"));
@@ -977,8 +950,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_ZoomIn->setBounds(674, 64, 18, 18);
 
-    numerator.reset(new juce::Label("new label",
-                                    TRANS("4")));
+    numerator = std::make_unique<juce::Label>("new label",
+                                    TRANS("4"));
     addAndMakeVisible(numerator.get());
     numerator->setTooltip(TRANS("Time Sig Numerator"));
     numerator->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
@@ -990,8 +963,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     numerator->setBounds(555, 64, 27, 18);
 
-    denominator.reset(new juce::Label("new label",
-                                      TRANS("4")));
+    denominator = std::make_unique<juce::Label>("new label",
+                                      TRANS("4"));
     addAndMakeVisible(denominator.get());
     denominator->setTooltip(TRANS("Time Sig Denominator"));
     denominator->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
@@ -1003,7 +976,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     denominator->setBounds(584, 64, 29, 18);
 
-    b_UseScaleChannel.reset(new juce::ToggleButton("new toggle button"));
+    b_UseScaleChannel = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(b_UseScaleChannel.get());
     b_UseScaleChannel->setTooltip(TRANS("When checked, input notes on \"Scale Ch\" will be used to define the scale"));
     b_UseScaleChannel->setButtonText(TRANS("Use Scale Channel"));
@@ -1012,7 +985,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_UseScaleChannel->setBounds(11, 329, 129, 17);
 
-    s_ScaleChannel.reset(new VSTSlider("ScaleChannel"));
+    s_ScaleChannel = std::make_unique<VSTSlider>("ScaleChannel");
     addAndMakeVisible(s_ScaleChannel.get());
     s_ScaleChannel->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Scale Ch\" is enabled"));
     s_ScaleChannel->setRange(1, 16, 1);
@@ -1025,8 +998,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_ScaleChannel->setBounds(10, 283, 60, 20);
 
-    label25.reset(new juce::Label("scale ch",
-                                  TRANS("Scale Ch")));
+    label25 = std::make_unique<juce::Label>("scale ch",
+                                  TRANS("Scale Ch"));
     addAndMakeVisible(label25.get());
     label25->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label25->setJustificationType(juce::Justification::centred);
@@ -1037,7 +1010,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label25->setBounds(13, 267, 54, 16);
 
-    s_MasterTranspose.reset(new VSTSlider("MasterTranspose"));
+    s_MasterTranspose = std::make_unique<VSTSlider>("MasterTranspose");
     addAndMakeVisible(s_MasterTranspose.get());
     s_MasterTranspose->setTooltip(TRANS("Global transposition applied to all played notes (after Force to Scale)"));
     s_MasterTranspose->setRange(-12, 12, 1);
@@ -1050,8 +1023,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_MasterTranspose->setBounds(554, 36, 72, 16);
 
-    label26.reset(new juce::Label("new label",
-                                  TRANS("Master Transpose:")));
+    label26 = std::make_unique<juce::Label>("new label",
+                                  TRANS("Master Transpose:"));
     addAndMakeVisible(label26.get());
     label26->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label26->setJustificationType(juce::Justification::centredRight);
@@ -1062,7 +1035,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label26->setBounds(452, 36, 102, 16);
 
-    b_WaitForBar.reset(new juce::ToggleButton("WaitForBar"));
+    b_WaitForBar = std::make_unique<juce::ToggleButton>("WaitForBar");
     addAndMakeVisible(b_WaitForBar.get());
     b_WaitForBar->setTooltip(TRANS("When checked, play/stop of this slot will happen at the start of the bar after"));
     b_WaitForBar->setButtonText(TRANS("Wait for Next Bar"));
@@ -1071,7 +1044,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_WaitForBar->setBounds(175, 123, 107, 16);
 
-    midiOutDeviceBox.reset(new juce::ComboBox("midiOutDevice"));
+    midiOutDeviceBox = std::make_unique<juce::ComboBox>("midiOutDevice");
     addAndMakeVisible(midiOutDeviceBox.get());
     midiOutDeviceBox->setTooltip(TRANS("Send ouput to selected MIDI port in addition to VST host output"));
     midiOutDeviceBox->setEditableText(false);
@@ -1082,8 +1055,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     midiOutDeviceBox->setBounds(633, 15, 158, 16);
 
-    label27.reset(new juce::Label("QuantizeLabel",
-                                  TRANS("MIDI Output Device")));
+    label27 = std::make_unique<juce::Label>("QuantizeLabel",
+                                  TRANS("MIDI Output Device"));
     addAndMakeVisible(label27.get());
     label27->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label27->setJustificationType(juce::Justification::centred);
@@ -1094,7 +1067,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label27->setBounds(627, 0, 117, 16);
 
-    b_UseTrChannel.reset(new juce::ToggleButton("new toggle button"));
+    b_UseTrChannel = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(b_UseTrChannel.get());
     b_UseTrChannel->setTooltip(TRANS("When checked, notes on selected \"Transpose Ch\" will apply to \"Semitones\" and \"Octave\" settings, relative to \"Root Note\""));
     b_UseTrChannel->setButtonText(TRANS("Use Transp Ch"));
@@ -1103,7 +1076,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_UseTrChannel->setBounds(148, 252, 130, 17);
 
-    b_ImmediateTranspose.reset(new juce::ToggleButton("new toggle button"));
+    b_ImmediateTranspose = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(b_ImmediateTranspose.get());
     b_ImmediateTranspose->setTooltip(TRANS("When checked, playing notes will be split and transposed immediately on changes to Semitones / Octave / Force to Scale / Master Transpose settings"));
     b_ImmediateTranspose->setButtonText(TRANS("Split"));
@@ -1112,7 +1085,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_ImmediateTranspose->setBounds(247, 252, 48, 17);
 
-    s_NumLoops.reset(new VSTSlider("NumLoops"));
+    s_NumLoops = std::make_unique<VSTSlider>("NumLoops");
     addAndMakeVisible(s_NumLoops.get());
     s_NumLoops->setTooltip(TRANS("Number of times to loop playback"));
     s_NumLoops->setRange(0, 64, 1);
@@ -1125,7 +1098,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_NumLoops->setBounds(155, 174, 64, 20);
 
-    s_NextSlot.reset(new VSTSlider("NextSlot"));
+    s_NextSlot = std::make_unique<VSTSlider>("NextSlot");
     addAndMakeVisible(s_NextSlot.get());
     s_NextSlot->setTooltip(TRANS("What to do after the selected number of loops have played"));
     s_NextSlot->setRange(0, 16, 1);
@@ -1138,8 +1111,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_NextSlot->setBounds(234, 174, 64, 20);
 
-    label16.reset(new juce::Label("Sync:",
-                                  TRANS("Loop Settings")));
+    label16 = std::make_unique<juce::Label>("Sync:",
+                                  TRANS("Loop Settings"));
     addAndMakeVisible(label16.get());
     label16->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     label16->setJustificationType(juce::Justification::centred);
@@ -1150,7 +1123,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label16->setBounds(12, 247, 125, 16);
 
-    forceModeBox.reset(new juce::ComboBox("Force To Scale Mode"));
+    forceModeBox = std::make_unique<juce::ComboBox>("Force To Scale Mode");
     addAndMakeVisible(forceModeBox.get());
     forceModeBox->setEditableText(false);
     forceModeBox->setJustificationType(juce::Justification::centredLeft);
@@ -1164,13 +1137,13 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     forceModeBox->setBounds(110, 313, 61, 16);
 
-    kbport.reset(new juce::Viewport("Keyboard View"));
+    kbport = std::make_unique<juce::Viewport>("Keyboard View");
     addAndMakeVisible(kbport.get());
     kbport->setScrollBarsShown(false, false);
     kbport->setScrollBarThickness(16);
     kbport->setViewedComponent(new juce::MidiKeyboardComponent(ownerFilter->kbstate, juce::MidiKeyboardComponent::verticalKeyboardFacingRight));
 
-    b_RemoveBar.reset(new juce::TextButton("RemoveBar"));
+    b_RemoveBar = std::make_unique<juce::TextButton>("RemoveBar");
     addAndMakeVisible(b_RemoveBar.get());
     b_RemoveBar->setTooltip(TRANS("Remove bar"));
     b_RemoveBar->setButtonText(TRANS("-"));
@@ -1180,7 +1153,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_RemoveBar->setBounds(706, 64, 18, 18);
 
-    b_AddBar.reset(new juce::TextButton("AddBar"));
+    b_AddBar = std::make_unique<juce::TextButton>("AddBar");
     addAndMakeVisible(b_AddBar.get());
     b_AddBar->setTooltip(TRANS("Add bar"));
     b_AddBar->setButtonText(TRANS("+"));
@@ -1191,8 +1164,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_AddBar->setBounds(773, 64, 18, 18);
 
-    LengthLabel.reset(new juce::Label("Length",
-                                      TRANS("4")));
+    LengthLabel = std::make_unique<juce::Label>("Length",
+                                      TRANS("4"));
     addAndMakeVisible(LengthLabel.get());
     LengthLabel->setTooltip(TRANS("Pattern length in bars"));
     LengthLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
@@ -1204,7 +1177,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     LengthLabel->setBounds(724, 65, 49, 16);
 
-    textButton17.reset(new juce::TextButton("new button"));
+    textButton17 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton17.get());
     textButton17->setButtonText(TRANS("1"));
     textButton17->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1212,7 +1185,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton17->setBounds(4, -97, 25, 24);
 
-    textButton18.reset(new juce::TextButton("new button"));
+    textButton18 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton18.get());
     textButton18->setButtonText(TRANS("2"));
     textButton18->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1221,7 +1194,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton18->setBounds(29, -97, 23, 24);
 
-    textButton19.reset(new juce::TextButton("new button"));
+    textButton19 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton19.get());
     textButton19->setButtonText(TRANS("3"));
     textButton19->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1229,7 +1202,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton19->setBounds(52, -97, 23, 24);
 
-    textButton20.reset(new juce::TextButton("new button"));
+    textButton20 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton20.get());
     textButton20->setButtonText(TRANS("4"));
     textButton20->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1237,7 +1210,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton20->setBounds(75, -97, 23, 24);
 
-    textButton21.reset(new juce::TextButton("new button"));
+    textButton21 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton21.get());
     textButton21->setButtonText(TRANS("5"));
     textButton21->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1245,7 +1218,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton21->setBounds(98, -97, 23, 24);
 
-    textButton22.reset(new juce::TextButton("new button"));
+    textButton22 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton22.get());
     textButton22->setButtonText(TRANS("6"));
     textButton22->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1253,7 +1226,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton22->setBounds(121, -97, 23, 24);
 
-    textButton23.reset(new juce::TextButton("new button"));
+    textButton23 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton23.get());
     textButton23->setButtonText(TRANS("7"));
     textButton23->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1261,7 +1234,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton23->setBounds(144, -97, 23, 24);
 
-    textButton24.reset(new juce::TextButton("new button"));
+    textButton24 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton24.get());
     textButton24->setButtonText(TRANS("8"));
     textButton24->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1269,7 +1242,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton24->setBounds(167, -97, 23, 24);
 
-    textButton25.reset(new juce::TextButton("new button"));
+    textButton25 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton25.get());
     textButton25->setButtonText(TRANS("9"));
     textButton25->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1277,7 +1250,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton25->setBounds(190, -97, 23, 24);
 
-    textButton26.reset(new juce::TextButton("new button"));
+    textButton26 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton26.get());
     textButton26->setButtonText(TRANS("10"));
     textButton26->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1285,7 +1258,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton26->setBounds(213, -97, 25, 24);
 
-    textButton27.reset(new juce::TextButton("new button"));
+    textButton27 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton27.get());
     textButton27->setButtonText(TRANS("11"));
     textButton27->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1293,7 +1266,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton27->setBounds(238, -97, 25, 24);
 
-    textButton28.reset(new juce::TextButton("new button"));
+    textButton28 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton28.get());
     textButton28->setButtonText(TRANS("12"));
     textButton28->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1301,7 +1274,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton28->setBounds(263, -97, 25, 24);
 
-    textButton29.reset(new juce::TextButton("new button"));
+    textButton29 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton29.get());
     textButton29->setButtonText(TRANS("13"));
     textButton29->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1309,7 +1282,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton29->setBounds(288, -97, 25, 24);
 
-    textButton30.reset(new juce::TextButton("new button"));
+    textButton30 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton30.get());
     textButton30->setButtonText(TRANS("14"));
     textButton30->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1317,7 +1290,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton30->setBounds(313, -97, 25, 24);
 
-    textButton31.reset(new juce::TextButton("new button"));
+    textButton31 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton31.get());
     textButton31->setButtonText(TRANS("15"));
     textButton31->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1325,7 +1298,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton31->setBounds(338, -97, 25, 24);
 
-    textButton32.reset(new juce::TextButton("new button"));
+    textButton32 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton32.get());
     textButton32->setButtonText(TRANS("16"));
     textButton32->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -1333,7 +1306,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton32->setBounds(363, -97, 28, 24);
 
-    textButton33.reset(new juce::TextButton("new button"));
+    textButton33 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton33.get());
     textButton33->setButtonText(TRANS("1"));
     textButton33->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1341,7 +1314,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton33->setBounds(1, -73, 25, 24);
 
-    textButton34.reset(new juce::TextButton("new button"));
+    textButton34 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton34.get());
     textButton34->setButtonText(TRANS("2"));
     textButton34->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1350,7 +1323,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton34->setBounds(26, -73, 23, 24);
 
-    textButton35.reset(new juce::TextButton("new button"));
+    textButton35 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton35.get());
     textButton35->setButtonText(TRANS("3"));
     textButton35->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1358,7 +1331,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton35->setBounds(49, -73, 23, 24);
 
-    textButton36.reset(new juce::TextButton("new button"));
+    textButton36 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton36.get());
     textButton36->setButtonText(TRANS("4"));
     textButton36->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1366,7 +1339,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton36->setBounds(72, -73, 23, 24);
 
-    textButton37.reset(new juce::TextButton("new button"));
+    textButton37 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton37.get());
     textButton37->setButtonText(TRANS("5"));
     textButton37->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1374,7 +1347,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton37->setBounds(95, -73, 23, 24);
 
-    textButton38.reset(new juce::TextButton("new button"));
+    textButton38 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton38.get());
     textButton38->setButtonText(TRANS("6"));
     textButton38->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1382,7 +1355,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton38->setBounds(118, -73, 23, 24);
 
-    textButton39.reset(new juce::TextButton("new button"));
+    textButton39 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton39.get());
     textButton39->setButtonText(TRANS("7"));
     textButton39->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1390,7 +1363,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton39->setBounds(141, -73, 23, 24);
 
-    textButton40.reset(new juce::TextButton("new button"));
+    textButton40 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton40.get());
     textButton40->setButtonText(TRANS("8"));
     textButton40->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1398,7 +1371,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton40->setBounds(164, -73, 23, 24);
 
-    textButton41.reset(new juce::TextButton("new button"));
+    textButton41 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton41.get());
     textButton41->setButtonText(TRANS("9"));
     textButton41->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1406,7 +1379,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton41->setBounds(187, -73, 23, 24);
 
-    textButton42.reset(new juce::TextButton("new button"));
+    textButton42 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton42.get());
     textButton42->setButtonText(TRANS("10"));
     textButton42->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1414,7 +1387,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton42->setBounds(210, -73, 25, 24);
 
-    textButton43.reset(new juce::TextButton("new button"));
+    textButton43 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton43.get());
     textButton43->setButtonText(TRANS("11"));
     textButton43->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1422,7 +1395,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton43->setBounds(235, -73, 25, 24);
 
-    textButton44.reset(new juce::TextButton("new button"));
+    textButton44 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton44.get());
     textButton44->setButtonText(TRANS("12"));
     textButton44->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1430,7 +1403,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton44->setBounds(260, -73, 25, 24);
 
-    textButton45.reset(new juce::TextButton("new button"));
+    textButton45 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton45.get());
     textButton45->setButtonText(TRANS("13"));
     textButton45->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1438,7 +1411,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton45->setBounds(285, -73, 25, 24);
 
-    textButton46.reset(new juce::TextButton("new button"));
+    textButton46 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton46.get());
     textButton46->setButtonText(TRANS("14"));
     textButton46->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1446,7 +1419,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton46->setBounds(310, -73, 25, 24);
 
-    textButton47.reset(new juce::TextButton("new button"));
+    textButton47 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton47.get());
     textButton47->setButtonText(TRANS("15"));
     textButton47->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1454,7 +1427,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton47->setBounds(335, -73, 25, 24);
 
-    textButton48.reset(new juce::TextButton("new button"));
+    textButton48 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton48.get());
     textButton48->setButtonText(TRANS("16"));
     textButton48->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -1462,7 +1435,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton48->setBounds(360, -73, 28, 24);
 
-    textButton49.reset(new juce::TextButton("new button"));
+    textButton49 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton49.get());
     textButton49->setButtonText(TRANS("1"));
     textButton49->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1470,7 +1443,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton49->setBounds(-2, -40, 25, 24);
 
-    textButton50.reset(new juce::TextButton("new button"));
+    textButton50 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton50.get());
     textButton50->setButtonText(TRANS("2"));
     textButton50->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1479,7 +1452,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton50->setBounds(23, -40, 23, 24);
 
-    textButton51.reset(new juce::TextButton("new button"));
+    textButton51 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton51.get());
     textButton51->setButtonText(TRANS("3"));
     textButton51->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1487,7 +1460,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton51->setBounds(46, -40, 23, 24);
 
-    textButton52.reset(new juce::TextButton("new button"));
+    textButton52 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton52.get());
     textButton52->setButtonText(TRANS("4"));
     textButton52->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1495,7 +1468,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton52->setBounds(69, -40, 23, 24);
 
-    textButton53.reset(new juce::TextButton("new button"));
+    textButton53 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton53.get());
     textButton53->setButtonText(TRANS("5"));
     textButton53->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1503,7 +1476,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton53->setBounds(92, -40, 23, 24);
 
-    textButton54.reset(new juce::TextButton("new button"));
+    textButton54 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton54.get());
     textButton54->setButtonText(TRANS("6"));
     textButton54->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1511,7 +1484,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton54->setBounds(115, -40, 23, 24);
 
-    textButton55.reset(new juce::TextButton("new button"));
+    textButton55 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton55.get());
     textButton55->setButtonText(TRANS("7"));
     textButton55->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1519,7 +1492,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton55->setBounds(138, -40, 23, 24);
 
-    textButton56.reset(new juce::TextButton("new button"));
+    textButton56 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton56.get());
     textButton56->setButtonText(TRANS("8"));
     textButton56->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1527,7 +1500,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton56->setBounds(161, -40, 23, 24);
 
-    textButton57.reset(new juce::TextButton("new button"));
+    textButton57 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton57.get());
     textButton57->setButtonText(TRANS("9"));
     textButton57->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1535,7 +1508,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton57->setBounds(184, -40, 23, 24);
 
-    textButton58.reset(new juce::TextButton("new button"));
+    textButton58 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton58.get());
     textButton58->setButtonText(TRANS("10"));
     textButton58->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1543,7 +1516,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton58->setBounds(207, -40, 25, 24);
 
-    textButton59.reset(new juce::TextButton("new button"));
+    textButton59 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton59.get());
     textButton59->setButtonText(TRANS("11"));
     textButton59->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1551,7 +1524,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton59->setBounds(232, -40, 25, 24);
 
-    textButton60.reset(new juce::TextButton("new button"));
+    textButton60 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton60.get());
     textButton60->setButtonText(TRANS("12"));
     textButton60->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1559,7 +1532,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton60->setBounds(257, -40, 25, 24);
 
-    textButton61.reset(new juce::TextButton("new button"));
+    textButton61 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton61.get());
     textButton61->setButtonText(TRANS("13"));
     textButton61->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1567,7 +1540,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton61->setBounds(282, -40, 25, 24);
 
-    textButton62.reset(new juce::TextButton("new button"));
+    textButton62 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton62.get());
     textButton62->setButtonText(TRANS("14"));
     textButton62->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1575,7 +1548,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton62->setBounds(307, -40, 25, 24);
 
-    textButton63.reset(new juce::TextButton("new button"));
+    textButton63 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton63.get());
     textButton63->setButtonText(TRANS("15"));
     textButton63->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1583,7 +1556,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton63->setBounds(332, -40, 25, 24);
 
-    textButton64.reset(new juce::TextButton("new button"));
+    textButton64 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton64.get());
     textButton64->setButtonText(TRANS("16"));
     textButton64->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -1591,7 +1564,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton64->setBounds(357, -40, 28, 24);
 
-    textButton65.reset(new juce::TextButton("new button"));
+    textButton65 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton65.get());
     textButton65->setButtonText(TRANS("1"));
     textButton65->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1599,7 +1572,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton65->setBounds(383, -93, 25, 24);
 
-    textButton66.reset(new juce::TextButton("new button"));
+    textButton66 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton66.get());
     textButton66->setButtonText(TRANS("2"));
     textButton66->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1608,7 +1581,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton66->setBounds(408, -93, 23, 24);
 
-    textButton67.reset(new juce::TextButton("new button"));
+    textButton67 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton67.get());
     textButton67->setButtonText(TRANS("3"));
     textButton67->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1616,7 +1589,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton67->setBounds(431, -93, 23, 24);
 
-    textButton68.reset(new juce::TextButton("new button"));
+    textButton68 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton68.get());
     textButton68->setButtonText(TRANS("4"));
     textButton68->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1624,7 +1597,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton68->setBounds(454, -93, 23, 24);
 
-    textButton69.reset(new juce::TextButton("new button"));
+    textButton69 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton69.get());
     textButton69->setButtonText(TRANS("5"));
     textButton69->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1632,7 +1605,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton69->setBounds(477, -93, 23, 24);
 
-    textButton70.reset(new juce::TextButton("new button"));
+    textButton70 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton70.get());
     textButton70->setButtonText(TRANS("6"));
     textButton70->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1640,7 +1613,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton70->setBounds(500, -93, 23, 24);
 
-    textButton71.reset(new juce::TextButton("new button"));
+    textButton71 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton71.get());
     textButton71->setButtonText(TRANS("7"));
     textButton71->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1648,7 +1621,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton71->setBounds(523, -93, 23, 24);
 
-    textButton72.reset(new juce::TextButton("new button"));
+    textButton72 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton72.get());
     textButton72->setButtonText(TRANS("8"));
     textButton72->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1656,7 +1629,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton72->setBounds(546, -93, 23, 24);
 
-    textButton73.reset(new juce::TextButton("new button"));
+    textButton73 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton73.get());
     textButton73->setButtonText(TRANS("9"));
     textButton73->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1664,7 +1637,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton73->setBounds(569, -93, 23, 24);
 
-    textButton74.reset(new juce::TextButton("new button"));
+    textButton74 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton74.get());
     textButton74->setButtonText(TRANS("10"));
     textButton74->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1672,7 +1645,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton74->setBounds(592, -93, 25, 24);
 
-    textButton75.reset(new juce::TextButton("new button"));
+    textButton75 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton75.get());
     textButton75->setButtonText(TRANS("11"));
     textButton75->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1680,7 +1653,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton75->setBounds(617, -93, 25, 24);
 
-    textButton76.reset(new juce::TextButton("new button"));
+    textButton76 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton76.get());
     textButton76->setButtonText(TRANS("12"));
     textButton76->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1688,7 +1661,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton76->setBounds(642, -93, 25, 24);
 
-    textButton77.reset(new juce::TextButton("new button"));
+    textButton77 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton77.get());
     textButton77->setButtonText(TRANS("13"));
     textButton77->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1696,7 +1669,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton77->setBounds(667, -93, 25, 24);
 
-    textButton78.reset(new juce::TextButton("new button"));
+    textButton78 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton78.get());
     textButton78->setButtonText(TRANS("14"));
     textButton78->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1704,7 +1677,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton78->setBounds(692, -93, 25, 24);
 
-    textButton79.reset(new juce::TextButton("new button"));
+    textButton79 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton79.get());
     textButton79->setButtonText(TRANS("15"));
     textButton79->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1712,7 +1685,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton79->setBounds(717, -93, 25, 24);
 
-    textButton80.reset(new juce::TextButton("new button"));
+    textButton80 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton80.get());
     textButton80->setButtonText(TRANS("16"));
     textButton80->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -1720,7 +1693,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton80->setBounds(742, -93, 28, 24);
 
-    textButton81.reset(new juce::TextButton("new button"));
+    textButton81 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton81.get());
     textButton81->setButtonText(TRANS("1"));
     textButton81->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1728,7 +1701,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton81->setBounds(371, -76, 25, 24);
 
-    textButton82.reset(new juce::TextButton("new button"));
+    textButton82 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton82.get());
     textButton82->setButtonText(TRANS("2"));
     textButton82->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1737,7 +1710,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton82->setBounds(396, -76, 23, 24);
 
-    textButton83.reset(new juce::TextButton("new button"));
+    textButton83 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton83.get());
     textButton83->setButtonText(TRANS("3"));
     textButton83->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1745,7 +1718,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton83->setBounds(419, -76, 23, 24);
 
-    textButton84.reset(new juce::TextButton("new button"));
+    textButton84 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton84.get());
     textButton84->setButtonText(TRANS("4"));
     textButton84->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1753,7 +1726,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton84->setBounds(442, -76, 23, 24);
 
-    textButton85.reset(new juce::TextButton("new button"));
+    textButton85 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton85.get());
     textButton85->setButtonText(TRANS("5"));
     textButton85->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1761,7 +1734,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton85->setBounds(465, -76, 23, 24);
 
-    textButton86.reset(new juce::TextButton("new button"));
+    textButton86 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton86.get());
     textButton86->setButtonText(TRANS("6"));
     textButton86->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1769,7 +1742,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton86->setBounds(488, -76, 23, 24);
 
-    textButton87.reset(new juce::TextButton("new button"));
+    textButton87 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton87.get());
     textButton87->setButtonText(TRANS("7"));
     textButton87->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1777,7 +1750,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton87->setBounds(511, -76, 23, 24);
 
-    textButton88.reset(new juce::TextButton("new button"));
+    textButton88 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton88.get());
     textButton88->setButtonText(TRANS("8"));
     textButton88->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1785,7 +1758,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton88->setBounds(534, -76, 23, 24);
 
-    textButton89.reset(new juce::TextButton("new button"));
+    textButton89 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton89.get());
     textButton89->setButtonText(TRANS("9"));
     textButton89->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1793,7 +1766,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton89->setBounds(557, -76, 23, 24);
 
-    textButton90.reset(new juce::TextButton("new button"));
+    textButton90 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton90.get());
     textButton90->setButtonText(TRANS("10"));
     textButton90->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1801,7 +1774,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton90->setBounds(580, -76, 25, 24);
 
-    textButton91.reset(new juce::TextButton("new button"));
+    textButton91 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton91.get());
     textButton91->setButtonText(TRANS("11"));
     textButton91->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1809,7 +1782,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton91->setBounds(605, -76, 25, 24);
 
-    textButton92.reset(new juce::TextButton("new button"));
+    textButton92 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton92.get());
     textButton92->setButtonText(TRANS("12"));
     textButton92->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1817,7 +1790,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton92->setBounds(630, -76, 25, 24);
 
-    textButton93.reset(new juce::TextButton("new button"));
+    textButton93 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton93.get());
     textButton93->setButtonText(TRANS("13"));
     textButton93->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1825,7 +1798,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton93->setBounds(655, -76, 25, 24);
 
-    textButton94.reset(new juce::TextButton("new button"));
+    textButton94 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton94.get());
     textButton94->setButtonText(TRANS("14"));
     textButton94->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1833,7 +1806,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton94->setBounds(680, -76, 25, 24);
 
-    textButton95.reset(new juce::TextButton("new button"));
+    textButton95 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton95.get());
     textButton95->setButtonText(TRANS("15"));
     textButton95->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1841,7 +1814,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton95->setBounds(705, -76, 25, 24);
 
-    textButton96.reset(new juce::TextButton("new button"));
+    textButton96 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton96.get());
     textButton96->setButtonText(TRANS("16"));
     textButton96->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -1849,7 +1822,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton96->setBounds(730, -76, 28, 24);
 
-    textButton97.reset(new juce::TextButton("new button"));
+    textButton97 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton97.get());
     textButton97->setButtonText(TRANS("1"));
     textButton97->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1857,7 +1830,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton97->setBounds(413, -59, 25, 24);
 
-    textButton98.reset(new juce::TextButton("new button"));
+    textButton98 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton98.get());
     textButton98->setButtonText(TRANS("2"));
     textButton98->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1866,7 +1839,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton98->setBounds(438, -59, 23, 24);
 
-    textButton99.reset(new juce::TextButton("new button"));
+    textButton99 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton99.get());
     textButton99->setButtonText(TRANS("3"));
     textButton99->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1874,7 +1847,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton99->setBounds(461, -59, 23, 24);
 
-    textButton100.reset(new juce::TextButton("new button"));
+    textButton100 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton100.get());
     textButton100->setButtonText(TRANS("4"));
     textButton100->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1882,7 +1855,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton100->setBounds(484, -59, 23, 24);
 
-    textButton101.reset(new juce::TextButton("new button"));
+    textButton101 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton101.get());
     textButton101->setButtonText(TRANS("5"));
     textButton101->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1890,7 +1863,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton101->setBounds(507, -59, 23, 24);
 
-    textButton102.reset(new juce::TextButton("new button"));
+    textButton102 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton102.get());
     textButton102->setButtonText(TRANS("6"));
     textButton102->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1898,7 +1871,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton102->setBounds(530, -59, 23, 24);
 
-    textButton103.reset(new juce::TextButton("new button"));
+    textButton103 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton103.get());
     textButton103->setButtonText(TRANS("7"));
     textButton103->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1906,7 +1879,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton103->setBounds(553, -59, 23, 24);
 
-    textButton104.reset(new juce::TextButton("new button"));
+    textButton104 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton104.get());
     textButton104->setButtonText(TRANS("8"));
     textButton104->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1914,7 +1887,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton104->setBounds(576, -59, 23, 24);
 
-    textButton105.reset(new juce::TextButton("new button"));
+    textButton105 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton105.get());
     textButton105->setButtonText(TRANS("9"));
     textButton105->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1922,7 +1895,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton105->setBounds(599, -59, 23, 24);
 
-    textButton106.reset(new juce::TextButton("new button"));
+    textButton106 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton106.get());
     textButton106->setButtonText(TRANS("10"));
     textButton106->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1930,7 +1903,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton106->setBounds(622, -59, 25, 24);
 
-    textButton107.reset(new juce::TextButton("new button"));
+    textButton107 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton107.get());
     textButton107->setButtonText(TRANS("11"));
     textButton107->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1938,7 +1911,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton107->setBounds(647, -59, 25, 24);
 
-    textButton108.reset(new juce::TextButton("new button"));
+    textButton108 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton108.get());
     textButton108->setButtonText(TRANS("12"));
     textButton108->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1946,7 +1919,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton108->setBounds(672, -59, 25, 24);
 
-    textButton109.reset(new juce::TextButton("new button"));
+    textButton109 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton109.get());
     textButton109->setButtonText(TRANS("13"));
     textButton109->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1954,7 +1927,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton109->setBounds(697, -59, 25, 24);
 
-    textButton110.reset(new juce::TextButton("new button"));
+    textButton110 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton110.get());
     textButton110->setButtonText(TRANS("14"));
     textButton110->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1962,7 +1935,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton110->setBounds(722, -59, 25, 24);
 
-    textButton111.reset(new juce::TextButton("new button"));
+    textButton111 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton111.get());
     textButton111->setButtonText(TRANS("15"));
     textButton111->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1970,7 +1943,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton111->setBounds(747, -59, 25, 24);
 
-    textButton112.reset(new juce::TextButton("new button"));
+    textButton112 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton112.get());
     textButton112->setButtonText(TRANS("16"));
     textButton112->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -1978,7 +1951,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton112->setBounds(772, -59, 28, 24);
 
-    textButton113.reset(new juce::TextButton("new button"));
+    textButton113 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton113.get());
     textButton113->setButtonText(TRANS("1"));
     textButton113->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1986,7 +1959,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton113->setBounds(408, -29, 25, 24);
 
-    textButton114.reset(new juce::TextButton("new button"));
+    textButton114 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton114.get());
     textButton114->setButtonText(TRANS("2"));
     textButton114->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -1995,7 +1968,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton114->setBounds(433, -29, 23, 24);
 
-    textButton115.reset(new juce::TextButton("new button"));
+    textButton115 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton115.get());
     textButton115->setButtonText(TRANS("3"));
     textButton115->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2003,7 +1976,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton115->setBounds(456, -29, 23, 24);
 
-    textButton116.reset(new juce::TextButton("new button"));
+    textButton116 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton116.get());
     textButton116->setButtonText(TRANS("4"));
     textButton116->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2011,7 +1984,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton116->setBounds(479, -29, 23, 24);
 
-    textButton117.reset(new juce::TextButton("new button"));
+    textButton117 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton117.get());
     textButton117->setButtonText(TRANS("5"));
     textButton117->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2019,7 +1992,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton117->setBounds(502, -29, 23, 24);
 
-    textButton118.reset(new juce::TextButton("new button"));
+    textButton118 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton118.get());
     textButton118->setButtonText(TRANS("6"));
     textButton118->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2027,7 +2000,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton118->setBounds(525, -29, 23, 24);
 
-    textButton119.reset(new juce::TextButton("new button"));
+    textButton119 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton119.get());
     textButton119->setButtonText(TRANS("7"));
     textButton119->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2035,7 +2008,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton119->setBounds(548, -29, 23, 24);
 
-    textButton120.reset(new juce::TextButton("new button"));
+    textButton120 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton120.get());
     textButton120->setButtonText(TRANS("8"));
     textButton120->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2043,7 +2016,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton120->setBounds(571, -29, 23, 24);
 
-    textButton121.reset(new juce::TextButton("new button"));
+    textButton121 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton121.get());
     textButton121->setButtonText(TRANS("9"));
     textButton121->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2051,7 +2024,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton121->setBounds(594, -29, 23, 24);
 
-    textButton122.reset(new juce::TextButton("new button"));
+    textButton122 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton122.get());
     textButton122->setButtonText(TRANS("10"));
     textButton122->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2059,7 +2032,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton122->setBounds(617, -29, 25, 24);
 
-    textButton123.reset(new juce::TextButton("new button"));
+    textButton123 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton123.get());
     textButton123->setButtonText(TRANS("11"));
     textButton123->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2067,7 +2040,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton123->setBounds(642, -29, 25, 24);
 
-    textButton124.reset(new juce::TextButton("new button"));
+    textButton124 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton124.get());
     textButton124->setButtonText(TRANS("12"));
     textButton124->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2075,7 +2048,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton124->setBounds(667, -29, 25, 24);
 
-    textButton125.reset(new juce::TextButton("new button"));
+    textButton125 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton125.get());
     textButton125->setButtonText(TRANS("13"));
     textButton125->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2083,7 +2056,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton125->setBounds(692, -29, 25, 24);
 
-    textButton126.reset(new juce::TextButton("new button"));
+    textButton126 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton126.get());
     textButton126->setButtonText(TRANS("14"));
     textButton126->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2091,7 +2064,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton126->setBounds(717, -29, 25, 24);
 
-    textButton127.reset(new juce::TextButton("new button"));
+    textButton127 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton127.get());
     textButton127->setButtonText(TRANS("15"));
     textButton127->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
@@ -2099,7 +2072,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton127->setBounds(742, -29, 25, 24);
 
-    textButton128.reset(new juce::TextButton("new button"));
+    textButton128 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton128.get());
     textButton128->setButtonText(TRANS("16"));
     textButton128->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
@@ -2107,7 +2080,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton128->setBounds(767, -29, 28, 24);
 
-    b_Transpose10.reset(new juce::TextButton("new button"));
+    b_Transpose10 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(b_Transpose10.get());
     b_Transpose10->setButtonText(TRANS("transpose channel 10"));
     b_Transpose10->addListener(this);
@@ -2115,7 +2088,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Transpose10->setBounds(306, 252, 72, 13);
 
-    b_KeepLength.reset(new juce::ToggleButton("OverdubMode"));
+    b_KeepLength = std::make_unique<juce::ToggleButton>("OverdubMode");
     addAndMakeVisible(b_KeepLength.get());
     b_KeepLength->setTooltip(TRANS("When checked, overdubbing will loop record into existing loop length"));
     b_KeepLength->setButtonText(TRANS("Keep Length"));
@@ -2124,7 +2097,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_KeepLength->setBounds(520, -2, 83, 16);
 
-    s_RecCC.reset(new VSTSlider("recCC"));
+    s_RecCC = std::make_unique<VSTSlider>("recCC");
     addAndMakeVisible(s_RecCC.get());
     s_RecCC->setTooltip(TRANS("CC Number to toggle recoring to active slot"));
     s_RecCC->setRange(-2, 127, 1);
@@ -2137,7 +2110,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_RecCC->setBounds(11, 149, 64, 20);
 
-    s_PlayCC.reset(new VSTSlider("playCC"));
+    s_PlayCC = std::make_unique<VSTSlider>("playCC");
     addAndMakeVisible(s_PlayCC.get());
     s_PlayCC->setTooltip(TRANS("CC Number to toggle play for active slot"));
     s_PlayCC->setRange(-2, 127, 1);
@@ -2150,7 +2123,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_PlayCC->setBounds(81, 149, 64, 20);
 
-    s_VelocitySens.reset(new VSTSlider("Velocity Sensitivity"));
+    s_VelocitySens = std::make_unique<VSTSlider>("Velocity Sensitivity");
     addAndMakeVisible(s_VelocitySens.get());
     s_VelocitySens->setTooltip(TRANS("Velocity Sensitivity (Input Velocity -> Output Velocity)"));
     s_VelocitySens->setRange(0, 200, 1);
@@ -2163,8 +2136,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_VelocitySens->setBounds(234, 440, 64, 20);
 
-    label24.reset(new juce::Label("new label",
-                                  TRANS("VeloSens")));
+    label24 = std::make_unique<juce::Label>("new label",
+                                  TRANS("VeloSens"));
     addAndMakeVisible(label24.get());
     label24->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label24->setJustificationType(juce::Justification::centred);
@@ -2175,7 +2148,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     label24->setBounds(225, 424, 80, 16);
 
-    b_Monitor.reset(new juce::TextButton("MIDI_Monitor"));
+    b_Monitor = std::make_unique<juce::TextButton>("MIDI_Monitor");
     addAndMakeVisible(b_Monitor.get());
     b_Monitor->setTooltip(TRANS("Monitor input MIDI through active slot\'s settings (Transpose, Scale, I/O Channel)"));
     b_Monitor->setButtonText(TRANS("Monitor"));
@@ -2184,7 +2157,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     b_Monitor->setBounds(678, 33, 55, 20);
 
-    s_TransposeChannel.reset(new VSTSlider("TransposeChannel"));
+    s_TransposeChannel = std::make_unique<VSTSlider>("TransposeChannel");
     addAndMakeVisible(s_TransposeChannel.get());
     s_TransposeChannel->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Transp Ch\" is enabled"));
     s_TransposeChannel->setRange(1, 16, 1);
@@ -2197,8 +2170,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_TransposeChannel->setBounds(76, 283, 60, 20);
 
-    label28.reset(new juce::Label("tr ch",
-                                  TRANS("Transpose Ch")));
+    label28 = std::make_unique<juce::Label>("tr ch",
+                                  TRANS("Transpose Ch"));
     addAndMakeVisible(label28.get());
     label28->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     label28->setJustificationType(juce::Justification::centred);
@@ -2211,8 +2184,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     cachedImage_piznew40_png_1 = juce::ImageCache::getFromMemory(piznew40_png, piznew40_pngSize);
 
-    //[UserPreSize]
-    DBG("PizLooperEditor()");
+
     aboutButton->setTooltip(L"Insert Piz Here-> midiLooper v" + juce::String(JucePlugin_VersionString) + " https://github.com/sleiner/pizmidi");
     viewport->setTimeline(timeline.get());
     viewport->setKeyboard(kbport.get());
@@ -2292,7 +2264,6 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_PlayCC->setMouseClickGrabsKeyboardFocus(false);
     s_VelocitySens->setMouseClickGrabsKeyboardFocus(false);
     b_Monitor->setMouseClickGrabsKeyboardFocus(false);
-    //b_Monitor->setVisible(false);
 
     s_Stretch->setOwner(getAudioProcessor(), kStretch);
     s_High->setOwner(getAudioProcessor(), kNHigh);
@@ -2409,30 +2380,18 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     ownerFilter->keySelectorState.addListener(this);
     startTimer(75);
 
-#if 0
-    //[/UserPreSize]
-
-    setSize (800, 487);
-
-
-    //[Constructor] You can add your own custom stuff here..
-#endif
     setSize(ownerFilter->lastUIWidth, ownerFilter->lastUIHeight);
     updateParametersFromFilter();
-    //[/Constructor]
 }
 
 PizLooperEditor::~PizLooperEditor()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    DBG("start ~PizLooperEditor()");
     stopTimer();
     getFilter()->dispatchPendingMessages();
     getFilter()->info->dispatchPendingMessages();
     getFilter()->removeChangeListener(this);
     getFilter()->info->removeChangeListener(this);
     getFilter()->keySelectorState.removeListener(this);
-    //[/Destructor_pre]
 
     label                = nullptr;
     timeline             = nullptr;
@@ -2661,25 +2620,17 @@ PizLooperEditor::~PizLooperEditor()
     b_Monitor            = nullptr;
     s_TransposeChannel   = nullptr;
     label28              = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    DBG("end ~PizLooperEditor()");
-    //[/Destructor]
 }
 
 //==============================================================================
 void PizLooperEditor::paint(juce::Graphics& g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
     g.fillAll(juce::Colour(0xff202029));
 
     {
         int x = 1, y = 393, width = 303, height = 78;
         juce::Colour fillColour1 = juce::Colours::black, fillColour2 = juce::Colour(0xff404049);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                176.0f - 1.0f + x,
                                                352.0f - 393.0f + y,
@@ -2693,8 +2644,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
     {
         int x = 305, y = 393, width = 81, height = 78;
         juce::Colour fillColour1 = juce::Colours::black, fillColour2 = juce::Colour(0xff162938);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                190.0f - 305.0f + x,
                                                369.0f - 393.0f + y,
@@ -2707,9 +2657,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         float x = 390.0f, y = 62.0f, width = static_cast<float>(getWidth() - 391), height = 40.0f;
-        juce::Colour fillColour = juce::Colour(0xffa0a0a0);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xffa0a0a0);
+
         g.setColour(fillColour);
         g.fillRoundedRectangle(x, y, width, height, 10.000f);
     }
@@ -2717,9 +2666,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
     {
         int x = 152, y = -1, width = getWidth() - 151, height = 56;
         juce::Colour fillColour1 = juce::Colours::black, fillColour2 = juce::Colour(0xff404049);
-        juce::Colour strokeColour = juce::Colour(0xff46495f);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto strokeColour = juce::Colour(0xff46495f);
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                160.0f - 152.0f + x,
                                                static_cast<float>(-30) - static_cast<float>(-1) + y,
@@ -2734,18 +2682,16 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 0, y = 0, width = 152, height = 55;
-        juce::Colour fillColour = juce::Colour(0xff202029);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xff202029);
+
         g.setColour(fillColour);
         g.fillRect(x, y, width, height);
     }
 
     {
         float x = 6.0f, y = 317.0f, width = 136.0f, height = 90.0f;
-        juce::Colour fillColour = juce::Colour(0xff404049);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xff404049);
+
         g.setColour(fillColour);
         g.fillRoundedRectangle(x, y, width, height, 14.500f);
     }
@@ -2753,8 +2699,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
     {
         int x = 1, y = 246, width = 385, height = 147;
         juce::Colour fillColour1 = juce::Colours::black, fillColour2 = juce::Colour(0xff404049);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                159.0f - 1.0f + x,
                                                215.0f - 246.0f + y,
@@ -2767,9 +2712,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         float x = 6.0f, y = 159.0f, width = 136.0f, height = 104.0f;
-        juce::Colour fillColour = juce::Colour(0xff404049);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xff404049);
+
         g.setColour(fillColour);
         g.fillRoundedRectangle(x, y, width, height, 14.500f);
     }
@@ -2777,8 +2721,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
     {
         int x = 1, y = 109, width = 385, height = 140;
         juce::Colour fillColour1 = juce::Colours::black, fillColour2 = juce::Colour(0xff404049);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                100.0f - 1.0f + x,
                                                89.0f - 109.0f + y,
@@ -2791,10 +2734,9 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         float x = 6.0f, y = static_cast<float>(-20), width = 139.0f, height = 67.0f;
-        juce::Colour fillColour1 = juce::Colour(0xff002700), fillColour2 = juce::Colour(0xba267387);
-        juce::Colour strokeColour = juce::Colour(0xffcbcbcb);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour1 = juce::Colour(0xff002700), fillColour2 = juce::Colour(0xba267387);
+        auto strokeColour = juce::Colour(0xffcbcbcb);
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                95.0f - 6.0f + x,
                                                static_cast<float>(-25) - static_cast<float>(-20) + y,
@@ -2809,8 +2751,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 12, y = 12, width = 41, height = 25;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setColour(juce::Colours::black);
         g.drawImage(cachedImage_piznew40_png_1,
                     x,
@@ -2826,9 +2767,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
     {
         int x = 44, y = 23, width = 108, height = 20;
         juce::String text(TRANS("midiLooper"));
-        juce::Colour fillColour = juce::Colour(0xffcbcbcb);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xffcbcbcb);
+
         g.setColour(fillColour);
         g.setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Bold"));
         g.drawText(text, x, y, width, height, juce::Justification::centred, true);
@@ -2837,9 +2777,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
     {
         int x = 46, y = 8, width = 108, height = 20;
         juce::String text(TRANS("Insert Piz Here->"));
-        juce::Colour fillColour = juce::Colour(0xffbfbfbf);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xffbfbfbf);
+
         g.setColour(fillColour);
         g.setFont(juce::Font(10.00f, juce::Font::plain).withTypefaceStyle("Bold"));
         g.drawText(text, x, y, width, height, juce::Justification::centred, true);
@@ -2847,10 +2786,9 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 9, y = 202, width = 369, height = 42;
-        juce::Colour fillColour1 = juce::Colour(0xff433b22), fillColour2 = juce::Colour(0xff8b7a47);
+        auto fillColour1 = juce::Colour(0xff433b22), fillColour2 = juce::Colour(0xff8b7a47);
         juce::Colour strokeColour = juce::Colours::black;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                100.0f - 9.0f + x,
                                                194.0f - 202.0f + y,
@@ -2865,9 +2803,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 1, y = 85, width = 385, height = 32;
-        juce::Colour fillColour1 = juce::Colour(0xff979797), fillColour2 = juce::Colour(0xff6f737a);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour1 = juce::Colour(0xff979797), fillColour2 = juce::Colour(0xff6f737a);
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                100.0f - 1.0f + x,
                                                85.0f - 85.0f + y,
@@ -2880,9 +2817,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 390, y = 85, width = getWidth() - 391, height = 20;
-        juce::Colour fillColour = juce::Colour(0xff8c8c8c);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xff8c8c8c);
+
         g.setColour(fillColour);
         g.fillRect(x, y, width, height);
     }
@@ -2891,8 +2827,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
         int x = 215, y = 177, width = 24, height = 15;
         juce::String text(TRANS("->"));
         juce::Colour fillColour = juce::Colours::white;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setColour(fillColour);
         g.setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
         g.drawText(text, x, y, width, height, juce::Justification::centred, true);
@@ -2902,8 +2837,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
         int x = 153, y = 162, width = 24, height = 15;
         juce::String text(TRANS("PLAY"));
         juce::Colour fillColour = juce::Colours::white;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setColour(fillColour);
         g.setFont(juce::Font(10.00f, juce::Font::plain).withTypefaceStyle("Regular"));
         g.drawText(text, x, y, width, height, juce::Justification::centred, true);
@@ -2913,8 +2847,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
         int x = 230, y = 162, width = 29, height = 15;
         juce::String text(TRANS("THEN"));
         juce::Colour fillColour = juce::Colours::white;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setColour(fillColour);
         g.setFont(juce::Font(10.00f, juce::Font::plain).withTypefaceStyle("Regular"));
         g.drawText(text, x, y, width, height, juce::Justification::centred, true);
@@ -2922,9 +2855,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         float x = 6.0f, y = 458.0f, width = 136.0f, height = 27.0f;
-        juce::Colour fillColour = juce::Colour(0xff404049);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0xff404049);
+
         g.setColour(fillColour);
         g.fillRoundedRectangle(x, y, width, height, 14.500f);
     }
@@ -2933,8 +2865,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
         int x = 574, y = 67, width = 20, height = 12;
         juce::String text(TRANS("/"));
         juce::Colour fillColour = juce::Colours::black;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setColour(fillColour);
         g.setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
         g.drawText(text, x, y, width, height, juce::Justification::centred, true);
@@ -2942,9 +2873,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         float x = 141.0f, y = 254.0f, width = 161.0f, height = 72.0f;
-        juce::Colour fillColour = juce::Colour(0x86404049);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto fillColour = juce::Colour(0x86404049);
+
         g.setColour(fillColour);
         g.fillRoundedRectangle(x, y, width, height, 10.000f);
     }
@@ -2952,9 +2882,8 @@ void PizLooperEditor::paint(juce::Graphics& g)
     {
         float x = 8.0f, y = 311.0f, width = 371.0f, height = 36.0f;
         juce::Colour fillColour1 = juce::Colours::black, fillColour2 = juce::Colour(0xff434450);
-        juce::Colour strokeColour = juce::Colour(0xff111111);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+        auto strokeColour = juce::Colour(0xff111111);
+
         g.setGradientFill(juce::ColourGradient(fillColour1,
                                                256.0f - 8.0f + x,
                                                265.0f - 311.0f + y,
@@ -2969,17 +2898,15 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 723, y = 64, width = 51, height = 18;
-        juce::Colour fillColour   = juce::Colour(0xffbababa);
+        auto fillColour   = juce::Colour(0xffbababa);
         juce::Colour strokeColour = juce::Colours::black;
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
+
         g.setColour(fillColour);
         g.fillRect(x, y, width, height);
         g.setColour(strokeColour);
         g.drawRect(x, y, width, height, 1);
     }
 
-    //[UserPaint] Add your own custom painting code here..
     if (getFilter()->getParameterForSlot(kUseTrChannel, getFilter()->getCurrentProgram()) >= 0.5f)
     {
         g.setColour(juce::Colour(0xff5b5b5b));
@@ -2990,19 +2917,15 @@ void PizLooperEditor::paint(juce::Graphics& g)
         g.setColour(juce::Colour(0xff5b5b5b));
         g.strokePath(internalPath2, juce::PathStrokeType(5.0000f));
     }
-    //[/UserPaint]
 }
 
 void PizLooperEditor::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-
     timeline->setBounds(415, 85, getWidth() - 430, 20);
     viewport->setBounds(415, 105, getWidth() - 415, getHeight() - 105);
     resizer->setBounds(getWidth() - 16, getHeight() - 16, 16, 16);
     kbport->setBounds(390, 105, 25, getHeight() - 121);
-    //[UserResized] Add your own custom resize handling here..
+
     internalPath1.clear();
     internalPath1.startNewSubPath(141.0f, 294.0f);
     internalPath1.lineTo(136.0f, 294.0f);
@@ -3013,7 +2936,6 @@ void PizLooperEditor::resized()
 
     pianoRoll->setVisible(getWidth() > 390);
     getFilter()->setSize(getWidth(), getHeight());
-    //[/UserResized]
 }
 
 void PizLooperEditor::buttonClicked(juce::Button* buttonThatWasClicked)
@@ -5625,971 +5547,8 @@ int PizLooperEditor::getButtonIndex(Component* button)
     return -1;
 }
 
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Projucer information section --
-
-    This is where the Projucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="PizLooperEditor" componentName=""
-                 parentClasses="public AudioProcessorEditor, public ChangeListener, public FileDragAndDropTarget, public ClickableLabelListener, public Timer, public MidiKeyboardStateListener"
-                 constructorParams="PizLooper* const ownerFilter" variableInitialisers="AudioProcessorEditor (ownerFilter)"
-                 snapPixels="8" snapActive="0" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="800" initialHeight="487">
-  <BACKGROUND backgroundColour="ff202029">
-    <RECT pos="1 393 303 78" fill="linear: 176 352, 176 443, 0=ff000000, 1=ff404049"
-          hasStroke="0"/>
-    <RECT pos="305 393 81 78" fill="linear: 190 369, 190 419, 0=ff000000, 1=ff162938"
-          hasStroke="0"/>
-    <ROUNDRECT pos="390 62 391M 40" cornerSize="10.0" fill="solid: ffa0a0a0"
-               hasStroke="0"/>
-    <RECT pos="152 -1 151M 56" fill="linear: 160 -30, 161 43, 0=ff000000, 1=ff404049"
-          hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff46495f"/>
-    <RECT pos="0 0 152 55" fill="solid: ff202029" hasStroke="0"/>
-    <ROUNDRECT pos="6 317 136 90" cornerSize="14.5" fill="solid: ff404049" hasStroke="0"/>
-    <RECT pos="1 246 385 147" fill="linear: 159 215, 159 307, 0=ff000000, 1=ff404049"
-          hasStroke="0"/>
-    <ROUNDRECT pos="6 159 136 104" cornerSize="14.5" fill="solid: ff404049"
-               hasStroke="0"/>
-    <RECT pos="1 109 385 140" fill="linear: 100 89, 100 165, 0=ff000000, 1=ff404049"
-          hasStroke="0"/>
-    <ROUNDRECT pos="6 -20 139 67" cornerSize="14.5" fill="linear: 95 -25, 95 107, 0=ff002700, 1=ba267387"
-               hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ffcbcbcb"/>
-    <IMAGE pos="12 12 41 25" resource="piznew40_png" opacity="1.0" mode="0"/>
-    <TEXT pos="44 23 108 20" fill="solid: ffcbcbcb" hasStroke="0" text="midiLooper"
-          fontname="Default font" fontsize="15.0" kerning="0.0" bold="1"
-          italic="0" justification="36" typefaceStyle="Bold"/>
-    <TEXT pos="46 8 108 20" fill="solid: ffbfbfbf" hasStroke="0" text="Insert Piz Here-&gt;"
-          fontname="Default font" fontsize="10.0" kerning="0.0" bold="1"
-          italic="0" justification="36" typefaceStyle="Bold"/>
-    <RECT pos="9 202 369 42" fill="linear: 100 194, 100 214, 0=ff433b22, 1=ff8b7a47"
-          hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff000000"/>
-    <RECT pos="1 85 385 32" fill="linear: 100 85, 100 98, 0=ff979797, 1=ff6f737a"
-          hasStroke="0"/>
-    <RECT pos="390 85 391M 20" fill="solid: ff8c8c8c" hasStroke="0"/>
-    <TEXT pos="215 177 24 15" fill="solid: ffffffff" hasStroke="0" text="-&gt;"
-          fontname="Default font" fontsize="12.0" kerning="0.0" bold="0"
-          italic="0" justification="36"/>
-    <TEXT pos="153 162 24 15" fill="solid: ffffffff" hasStroke="0" text="PLAY"
-          fontname="Default font" fontsize="10.0" kerning="0.0" bold="0"
-          italic="0" justification="36"/>
-    <TEXT pos="230 162 29 15" fill="solid: ffffffff" hasStroke="0" text="THEN"
-          fontname="Default font" fontsize="10.0" kerning="0.0" bold="0"
-          italic="0" justification="36"/>
-    <ROUNDRECT pos="6 458 136 27" cornerSize="14.5" fill="solid: ff404049" hasStroke="0"/>
-    <TEXT pos="574 67 20 12" fill="solid: ff000000" hasStroke="0" text="/"
-          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
-          italic="0" justification="36"/>
-    <PATH pos="0 0 100 100" fill="solid: 822aa5" hasStroke="1" stroke="5, mitered, butt"
-          strokeColour="solid: 5b5b5b" nonZeroWinding="1">s 139 294 l 139 310</PATH>
-    <PATH pos="0 0 100 100" fill="solid: 822aa5" hasStroke="1" stroke="5, mitered, butt"
-          strokeColour="solid: 5b5b5b" nonZeroWinding="1">s 141 294 l 136 294</PATH>
-    <ROUNDRECT pos="141 254 161 72" cornerSize="10.0" fill="solid: 86404049"
-               hasStroke="0"/>
-    <ROUNDRECT pos="8 311 371 36" cornerSize="10.0" fill="linear: 256 265, 256 355, 0=ff000000, 1=ff434450"
-               hasStroke="1" stroke="0.7, mitered, butt" strokeColour="solid: ff111111"/>
-    <PATH pos="0 0 100 100" fill="solid: 822aa5" hasStroke="1" stroke="5, mitered, butt"
-          strokeColour="solid: 5b5b5b" nonZeroWinding="1">s 29 310 l 29 301</PATH>
-    <RECT pos="723 64 51 18" fill="solid: ffbababa" hasStroke="1" stroke="1, mitered, butt"
-          strokeColour="solid: ff000000"/>
-  </BACKGROUND>
-  <LABEL name="new label" id="43a4ad473c82373c" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="613 64 46 18" edTextCol="ff000000"
-         edBkgCol="0" labelText="Zoom" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="33"/>
-  <GENERICCOMPONENT name="timeline" id="a7625d2eb81703f2" memberName="timeline" virtualName="Timeline"
-                    explicitFocusOrder="0" pos="415 85 430M 20" class="Component"
-                    params=""/>
-  <TEXTBUTTON name="new button" id="cc9f83dd3d0468de" memberName="textButton1"
-              virtualName="" explicitFocusOrder="0" pos="0 61 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="bbcf37dc6f0b1324" memberName="textButton2"
-              virtualName="" explicitFocusOrder="0" pos="25 61 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="90432b9c6e7e857a" memberName="textButton3"
-              virtualName="" explicitFocusOrder="0" pos="48 61 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="88345655396ef38e" memberName="textButton4"
-              virtualName="" explicitFocusOrder="0" pos="71 61 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3e29aef78f94dd2e" memberName="textButton5"
-              virtualName="" explicitFocusOrder="0" pos="94 61 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="4f173aa53ebf0c9d" memberName="textButton6"
-              virtualName="" explicitFocusOrder="0" pos="117 61 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="eaa3684bc44dddb" memberName="textButton7"
-              virtualName="" explicitFocusOrder="0" pos="140 61 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="804d8ad699bf3628" memberName="textButton8"
-              virtualName="" explicitFocusOrder="0" pos="163 61 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="9a99db46cfdaefcb" memberName="textButton9"
-              virtualName="" explicitFocusOrder="0" pos="186 61 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3245c8856dffbe0f" memberName="textButton10"
-              virtualName="" explicitFocusOrder="0" pos="209 61 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="cde037153fb2cd8e" memberName="textButton11"
-              virtualName="" explicitFocusOrder="0" pos="234 61 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="8de7af63894ca4b1" memberName="textButton12"
-              virtualName="" explicitFocusOrder="0" pos="259 61 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="126f2b1b010e0876" memberName="textButton13"
-              virtualName="" explicitFocusOrder="0" pos="284 61 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="39b1e3b78817e974" memberName="textButton14"
-              virtualName="" explicitFocusOrder="0" pos="309 61 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="eefcf6590c869d1c" memberName="textButton15"
-              virtualName="" explicitFocusOrder="0" pos="334 61 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="506ef0db1b30e740" memberName="textButton16"
-              virtualName="" explicitFocusOrder="0" pos="359 61 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="Play" id="40d6a4b1059081e9" memberName="b_Play" virtualName=""
-              explicitFocusOrder="0" pos="78 117 72 50" tooltip="Toggle playback of current slot"
-              bgColOff="d213540e" bgColOn="ff00c400" textCol="ff000000" textColOn="ffffffff"
-              buttonText="PLAY" connectedEdges="5" needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="Record" id="6c2bf14bf3928adc" memberName="b_Record" virtualName=""
-              explicitFocusOrder="0" pos="6 117 72 50" tooltip="Toggle recording to current slot"
-              bgColOff="d2a90000" bgColOn="ffff0000" textCol="ffffffff" textColOn="ffffffff"
-              buttonText="RECORD " connectedEdges="6" needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="Overdub" id="3cc1043be8aa3219" memberName="b_Overdub" virtualName=""
-              explicitFocusOrder="0" pos="523 12 80 20" tooltip="Toggle overdub recording"
-              bgColOff="ff999999" textCol="ff000000" textColOn="ff000000" buttonText="Overdub"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="MIDI Thru" id="a5cd82c0cb72daa9" memberName="b_Thru" virtualName=""
-              explicitFocusOrder="0" pos="634 33 40 20" tooltip="Toggle MIDI Thru (Notes selected for Note Triggering and Scale Channel are always blocked)"
-              bgColOff="ff999999" buttonText="Thru" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
-  <TEXTBUTTON name="Clear" id="cec5dda5d9d59001" memberName="b_Clear" virtualName=""
-              explicitFocusOrder="0" pos="264 90 39 22" tooltip="Erase MIDI data from the current slot"
-              bgColOff="ff000000" textCol="ffffffff" textColOn="fff0ffff" buttonText="Clear"
-              connectedEdges="2" needsCallback="1" radioGroupId="0"/>
-  <COMBOBOX name="Loop Step Size" id="654c333e00a3602f" memberName="stepsizeBox"
-            virtualName="" explicitFocusOrder="0" pos="264 15 77 16" tooltip="Recording length will be quantized to this step size."
-            editable="0" layout="33" items="1 Bar&#10;3 Beats&#10;2 Beats&#10;1 Beat&#10;16th Note&#10;1 Tick"
-            textWhenNonSelected="16th Note" textWhenNoItems="(no choices)"/>
-  <SLIDER name="Transpose" id="bebd4900b26b7ea8" memberName="s_Transpose"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="146 283 72 20"
-          tooltip="Transposition applied to the current slot" bkgcol="1e000000"
-          thumbcol="ff000000" textboxtext="ffffffff" min="-12.0" max="12.0"
-          int="1.0" style="LinearBar" textBoxPos="TextBoxLeft" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <SLIDER name="Octave Shift" id="d17041cc05fad561" memberName="s_Octave"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="226 283 72 20"
-          tooltip="Transposition by octave for the current slot" bkgcol="1e000000"
-          thumbcol="ff000000" textboxtext="ffffffff" min="-4.0" max="4.0"
-          int="1.0" style="LinearBar" textBoxPos="TextBoxLeft" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <SLIDER name="Velocity Offset" id="2c207442dda4efb5" memberName="s_Velocity"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="306 283 72 20"
-          tooltip="Velocity adjustment for the current slot" bkgcol="1e000000"
-          thumbcol="ff000000" textboxtext="ffffffff" min="0.0" max="200.0"
-          int="1.0" style="LinearBar" textBoxPos="TextBoxLeft" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <LABEL name="new label" id="46c2229e3e67f2f1" memberName="label3" virtualName=""
-         explicitFocusOrder="0" pos="146 267 72 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Semitones" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="6f6ca47640c250a9" memberName="label4" virtualName=""
-         explicitFocusOrder="0" pos="226 267 72 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Octave" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="93b1b361c9cc0086" memberName="label5" virtualName=""
-         explicitFocusOrder="0" pos="301 267 80 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Velocity" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Loop Start" id="f1ca2a13980568a8" memberName="s_Start"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="66 367 72 20"
-          tooltip="Offsets the loop start time by this number of beats"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-8.0" max="8.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="2c7022ccbc071339" memberName="label6" virtualName=""
-         explicitFocusOrder="0" pos="66 351 72 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Start Offset" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Loop End" id="dfaa63118a778aff" memberName="s_End" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="146 367 72 20" tooltip="Offsets the loop end time by this number of beats"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-8.0" max="8.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="5015260b61e3b2f3" memberName="label7" virtualName=""
-         explicitFocusOrder="0" pos="146 351 72 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="End Offset" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Loop Stretch" id="a9f425f1801b9523" memberName="s_Stretch"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="306 367 72 20"
-          tooltip="Playback speed, relative to host tempo" bkgcol="1e000000"
-          thumbcol="ff000000" textboxtext="ffffffff" min="-10.0" max="10.0"
-          int="1.0" style="LinearBar" textBoxPos="TextBoxLeft" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <LABEL name="new label" id="1b0b033f88b7706c" memberName="label8" virtualName=""
-         explicitFocusOrder="0" pos="306 351 72 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Speed" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <COMBOBOX name="Loop Mode" id="c2baafe98c323fba" memberName="loopmodeBox"
-            virtualName="" explicitFocusOrder="0" pos="175 144 110 16" tooltip="Playback Mode: &quot;Sync Loop&quot; follows the host timeline. &quot;Loop after rec&quot; is the same but also plays automatically as soon as recording ends. &quot;Unsync&quot; modes play the pattern from the beginning as soon as playback is started."
-            editable="0" layout="33" items="Loop after rec&#10;Sync loop&#10;Unsync 1-shot&#10;Unsync loop"
-            textWhenNonSelected="Unsync 1-shot" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="Note Trigger" id="3db6b8a47a703b85" memberName="notetriggerBox"
-            virtualName="" explicitFocusOrder="0" pos="146 402 106 16" tooltip="For &quot;Transpose&quot; modes, pattern will be transposed relative to &quot;Root Note&quot;"
-            editable="0" layout="33" items="Off&#10;Mono (Transpose)&#10;Poly (Transpose)&#10;Mono (Orig. Key)&#10;"
-            textWhenNonSelected="Mono (Transposed)" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="Sync" id="32c39e356a406b40" memberName="syncmodeBox" virtualName=""
-            explicitFocusOrder="0" pos="159 15 99 16" tooltip="&quot;PPQ&quot; modes always follow host timeline, which may not work in all hosts. &quot;Sample&quot; mode ignores the host's timeline, but the host's tempo is still followed."
-            editable="0" layout="33" items="PPQ (Host 0)&#10;PPQ (Recstart)&#10;Sample"
-            textWhenNonSelected="PPQ (Recstart)" textWhenNoItems="(no choices)"/>
-  <SLIDER name="Root Note" id="2c76ae48d2c4565c" memberName="s_Root" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="76 174 64 20" tooltip="Transposed note triggering and Scale Channel input will transpose the pattern relative to this note"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-1.0" max="127.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="98b122ff20c1e0ed" memberName="label9" virtualName=""
-         explicitFocusOrder="0" pos="15 176 64 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Root Note:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Low Note" id="9fc4ae89d34ed5e4" memberName="s_Low" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="18 440 64 20" tooltip="Lowest note to use for triggering"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-1.0" max="127.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="fe46ab559c888729" memberName="label10" virtualName=""
-         explicitFocusOrder="0" pos="18 424 64 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Low Note" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="High Note" id="7d4c7469f530caf5" memberName="s_High" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="90 440 64 20" tooltip="Highest note to use for triggering"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-1.0" max="127.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="a243134fcde26e0c" memberName="label11" virtualName=""
-         explicitFocusOrder="0" pos="90 424 64 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="High Note" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="TriggerChannel" id="dfa469788a1385f7" memberName="s_TrigChan"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="162 440 64 20"
-          tooltip="Channel to use for trigger notes" bkgcol="1e000000"
-          thumbcol="ff000000" textboxtext="ffffffff" min="1.0" max="16.0"
-          int="1.0" style="LinearBar" textBoxPos="TextBoxLeft" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <LABEL name="Trigger Channel" id="fbd851f9f6e023e1" memberName="label12"
-         virtualName="" explicitFocusOrder="0" pos="161 424 64 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Channel" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="Load" id="af7a2e7eac7e3bc3" memberName="b_Reload" virtualName=""
-              explicitFocusOrder="0" pos="344 90 39 22" tooltip="Load MIDI file (Ctrl-click: load MIDI file with the current pattern name from the &quot;midiloops&quot; folder)"
-              bgColOff="ff000000" textCol="ffffffff" textColOn="ffffffff" buttonText="Load"
-              connectedEdges="1" needsCallback="1" radioGroupId="0"/>
-  <COMBOBOX name="Input Quantize Step" id="3542a5d892a57b8" memberName="quantizeBox"
-            virtualName="" explicitFocusOrder="0" pos="439 15 77 16" tooltip="Recorded events will be quantized to this step size"
-            editable="0" layout="33" items="Off&#10;8th&#10;16th&#10;32nd&#10;64th"
-            textWhenNonSelected="32nd" textWhenNoItems="(no choices)"/>
-  <LABEL name="LoopStepSize" id="b46f312ba1698624" memberName="label21"
-         virtualName="" explicitFocusOrder="0" pos="261 0 84 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Loop Step Size"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12.0" kerning="0.0" bold="0"
-         italic="0" justification="36"/>
-  <SLIDER name="Shift" id="128b285d21c35465" memberName="s_Shift" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="226 367 72 20" tooltip="Shifts the pattern by this number of beats, with wraparound"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-8.0" max="8.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="Shift" id="493778df7df64035" memberName="label2" virtualName=""
-         explicitFocusOrder="0" pos="226 351 72 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Beat Shift" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="QuantizeLabel" id="9539aa66eb92d49f" memberName="label23"
-         virtualName="" explicitFocusOrder="0" pos="433 0 87 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Quantize Input"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12.0" kerning="0.0" bold="0"
-         italic="0" justification="36"/>
-  <LABEL name="Name" id="c61a01db7e29e02e" memberName="nameLabel" virtualName="ClickableLabel"
-         explicitFocusOrder="0" pos="4 87 256 27" tooltip="Current pattern name (double-click to edit)"
-         edTextCol="ff000000" edBkgCol="ffffffff" labelText="Bassline (4 bars)"
-         editableSingleClick="0" editableDoubleClick="1" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="26.3" kerning="0.0" bold="1"
-         italic="0" justification="33" typefaceStyle="Bold"/>
-  <TEXTBUTTON name="Save" id="2cda0dd565e6a8a4" memberName="b_Save" virtualName=""
-              explicitFocusOrder="0" pos="304 90 39 22" tooltip="Save a MIDI file of the current pattern (Ctrl-click: save to the &quot;midiloops&quot; folder with the current name)"
-              bgColOff="ff000000" textCol="ffffffff" textColOn="ffffffff" buttonText="Save"
-              connectedEdges="3" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="Sync" id="531c1b1950299dd1" memberName="label22" virtualName=""
-         explicitFocusOrder="0" pos="162 0 95 16" textCol="ffffffff" edTextCol="ff000000"
-         edBkgCol="0" labelText="Host Sync Mode" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="Sync:" id="8b2914befe90511" memberName="label18" virtualName=""
-         explicitFocusOrder="0" pos="12 469 125 16" textCol="ff9f9f9f"
-         edTextCol="ff000000" edBkgCol="0" labelText="Note Triggering"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12.0" kerning="0.0" bold="1"
-         italic="0" justification="36" typefaceStyle="Bold"/>
-  <LABEL name="Loop Info" id="9e460abf305befb3" memberName="loopinfoLabel"
-         virtualName="" explicitFocusOrder="0" pos="14 205 272 16" textCol="ff000000"
-         edTextCol="ff000000" edBkgCol="0" labelText="label text" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Loop Info 2" id="afa6b5a7c7af7805" memberName="loopinfoLabel2"
-         virtualName="" explicitFocusOrder="0" pos="14 225 272 16" edTextCol="ff000000"
-         edBkgCol="0" labelText="label text" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="Sync:" id="317b90b2dfd6f517" memberName="label17" virtualName=""
-         explicitFocusOrder="0" pos="14 391 125 16" textCol="ff9f9f9f"
-         edTextCol="ff000000" edBkgCol="0" labelText="Loop Manipulation"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12.0" kerning="0.0" bold="1"
-         italic="0" justification="36" typefaceStyle="Bold"/>
-  <SLIDER name="Channel" id="94315107a91d9b27" memberName="s_Channel" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="314 414 64 20" tooltip="Input and output channel for the current slot"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="0.0" max="16.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="I/O Channel" id="842d9c7cde349df9" memberName="label19"
-         virtualName="" explicitFocusOrder="0" pos="309 398 74 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="I/O Channel" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="RecordLengthLabel" id="63744c8a8acc6491" memberName="label20"
-         virtualName="" explicitFocusOrder="0" pos="347 0 83 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Record Length" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Recording Length" id="e936697207b7e6e8" memberName="s_FixedLength"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="347 15 86 16"
-          tooltip="If set to &quot;Manual&quot;, recording will go on as long as the record button is on. Otherwise, length will be limited to this number of steps (based on &quot;Loop Step Size&quot; setting)."
-          bkgcol="1e707070" thumbcol="ff000000" textboxtext="ffffffff"
-          min="0.0" max="32.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <TEXTBUTTON name="Transform/Filter" id="f37c696b28323e7f" memberName="b_Filt"
-              virtualName="" explicitFocusOrder="0" pos="314 440 64 20" tooltip="Transform: all events in the pattern are channelized to the sected channel; Filter: only events with the selected channel will be output"
-              bgColOff="ff999999" textCol="ff000000" buttonText="Transform"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <VIEWPORT name="Piano Roll View" id="5a31f2945a04ad37" memberName="viewport"
-            virtualName="PianoPort" explicitFocusOrder="0" pos="415 105 415M 105M"
-            vscroll="1" hscroll="1" scrollbarThickness="16" contentType="2"
-            jucerFile="" contentClass="PianoRoll" constructorParams="this-&gt;getFilter(), this, timeline.get()"/>
-  <GENERICCOMPONENT name="" id="12ca6202713b19aa" memberName="resizer" virtualName=""
-                    explicitFocusOrder="0" pos="16R 16R 16 16" class="ResizableCornerComponent"
-                    params="this, &amp;resizeLimits"/>
-  <TEXTBUTTON name="new button" id="d48ae418cc5b8c13" memberName="b_NoteToggle"
-              virtualName="" explicitFocusOrder="0" pos="257 402 40 16" tooltip="When enabled, Note On events will toggle playback, ignoring Note Off events; otherwise Note Off will stop playback"
-              bgColOff="ff999999" buttonText="Toggle" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
-  <SLIDER name="TriggerChannel" id="19f62893eab0e18d" memberName="s_PlayGroup"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="312 136 64 20"
-          tooltip="Slots with the same Play Group number will all start/stop at the same time"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="0.0" max="16.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="Trigger Channel" id="57f66cb40cfc50a9" memberName="label13"
-         virtualName="" explicitFocusOrder="0" pos="313 119 64 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Play Group" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="TriggerChannel" id="9796e75abea5bd57" memberName="s_MuteGroup"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="312 174 64 20"
-          tooltip="Only one slot with the same Mute Group number can be played at the same time"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="0.0" max="16.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="Trigger Channel" id="9a98f4a58163bef3" memberName="label14"
-         virtualName="" explicitFocusOrder="0" pos="307 157 74 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Mute Group" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <TOGGLEBUTTON name="new toggle button" id="561e4cda4f522f3c" memberName="b_Snap"
-                virtualName="" explicitFocusOrder="0" pos="392 61 59 24" tooltip="Toggle Snap to Grid"
-                buttonText="Snap" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <COMBOBOX name="PR Quantize Step" id="85626cd2316c90f7" memberName="quantizeBox2"
-            virtualName="" explicitFocusOrder="0" pos="453 64 50 18" tooltip="Grid Size"
-            editable="0" layout="33" items="4th&#10;8th&#10;16th&#10;32nd&#10;64th"
-            textWhenNonSelected="32nd" textWhenNoItems="(no choices)"/>
-  <TOGGLEBUTTON name="new toggle button" id="621ee9f53408a8a" memberName="b_ForceToKey"
-                virtualName="" explicitFocusOrder="0" pos="11 312 99 17" tooltip="When checked, played notes will be fitted to the defined scale"
-                txtcol="ffffffff" buttonText="Force to Scale" connectedEdges="0"
-                needsCallback="1" radioGroupId="0" state="0"/>
-  <GENERICCOMPONENT name="new component" id="3112d9375a206148" memberName="keySelector"
-                    virtualName="KeySelector" explicitFocusOrder="0" pos="199 315 154 28"
-                    class="MidiKeyboardComponent" params="ownerFilter-&gt;keySelectorState"/>
-  <TEXTBUTTON name="new button" id="995ef86d3cb49c2f" memberName="b_ShiftUp"
-              virtualName="" explicitFocusOrder="0" pos="353 314 21 30" tooltip="Shift selected notes one semitone up"
-              bgColOff="ff999999" buttonText="&gt;" connectedEdges="1" needsCallback="1"
-              radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="11c526a253e1d0a2" memberName="b_ShiftDown"
-              virtualName="" explicitFocusOrder="0" pos="178 314 21 30" tooltip="Shift selected notes one semitone down"
-              bgColOff="ff999999" buttonText="&lt;" connectedEdges="2" needsCallback="1"
-              radioGroupId="0"/>
-  <TOGGLEBUTTON name="Single Loop" id="4a29216d10fb9de8" memberName="b_SingleLoop"
-                virtualName="" explicitFocusOrder="0" pos="155 36 122 16" tooltip="When checked, switching from a playing slot to another slot will automatically play the new slot and stop the previous one"
-                txtcol="ffffffff" buttonText="Play active slot only" connectedEdges="0"
-                needsCallback="1" radioGroupId="0" state="0"/>
-  <SLIDER name="VMasterVelocity" id="9d52f6a9f07e4534" memberName="s_MasterVelocity"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="371 36 72 16"
-          tooltip="Global velocity adjustment applied to all played notes"
-          bkgcol="1e707070" thumbcol="ff000000" textboxtext="ffffffff"
-          min="0.0" max="200.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="2a2210fac0e009dd" memberName="label15" virtualName=""
-         explicitFocusOrder="0" pos="283 36 88 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Master Velocity:"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12.0" kerning="0.0" bold="0"
-         italic="0" justification="34"/>
-  <IMAGEBUTTON name="new button" id="5007a7df8a92f35d" memberName="aboutButton"
-               virtualName="" explicitFocusOrder="0" pos="9 1 136 47" tooltip="Insert Piz Here-&gt; midiLooper v1.3  https://github.com/sleiner/pizmidi"
-               buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-               keepProportions="1" resourceNormal="" opacityNormal="1.0" colourNormal="0"
-               resourceOver="" opacityOver="1.0" colourOver="0" resourceDown=""
-               opacityDown="1.0" colourDown="0"/>
-  <TEXTBUTTON name="Triplet" id="7c0cd0b629c71353" memberName="b_Triplet" virtualName=""
-              explicitFocusOrder="0" pos="506 64 18 18" tooltip="Toggle Triplet Note Grid"
-              bgColOff="ff8d8d8d" buttonText="3" connectedEdges="3" needsCallback="1"
-              radioGroupId="2"/>
-  <TEXTBUTTON name="Dotted" id="d877509ff32890af" memberName="b_Dotted" virtualName=""
-              explicitFocusOrder="0" pos="528 64 18 18" tooltip="Toggle Dotted Note Grid"
-              bgColOff="ff8d8d8d" buttonText="." connectedEdges="3" needsCallback="1"
-              radioGroupId="2"/>
-  <TEXTBUTTON name="ZoomOut" id="a5a56a67b71805c8" memberName="b_ZoomOut" virtualName=""
-              explicitFocusOrder="0" pos="656 64 18 18" tooltip="Zoom Out (Ctrl-click for vertical)"
-              bgColOff="ffbbbbff" buttonText="-" connectedEdges="2" needsCallback="1"
-              radioGroupId="0"/>
-  <TEXTBUTTON name="ZoomIn" id="457e768c161c96fb" memberName="b_ZoomIn" virtualName=""
-              explicitFocusOrder="0" pos="674 64 18 18" tooltip="Zoom In (Ctrl-click for vertical)"
-              bgColOff="ffbbbbff" buttonText="+" connectedEdges="1" needsCallback="1"
-              radioGroupId="2"/>
-  <LABEL name="new label" id="6d9c9863d2d35748" memberName="numerator"
-         virtualName="" explicitFocusOrder="0" pos="555 64 27 18" tooltip="Time Sig Numerator"
-         edTextCol="ff000000" edBkgCol="0" labelText="4" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="34"/>
-  <LABEL name="new label" id="57902df5cc918e78" memberName="denominator"
-         virtualName="" explicitFocusOrder="0" pos="584 64 29 18" tooltip="Time Sig Denominator"
-         edTextCol="ff000000" edBkgCol="0" labelText="4" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="new toggle button" id="5543bd5e8c49a007" memberName="b_UseScaleChannel"
-                virtualName="" explicitFocusOrder="0" pos="11 329 129 17" tooltip="When checked, input notes on &quot;Scale Ch&quot; will be used to define the scale"
-                txtcol="ffffffff" buttonText="Use Scale Channel" connectedEdges="0"
-                needsCallback="1" radioGroupId="0" state="0"/>
-  <SLIDER name="ScaleChannel" id="ea379f0c4e3dd4ec" memberName="s_ScaleChannel"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="10 283 60 20"
-          tooltip="Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where &quot;Use Scale Ch&quot; is enabled"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="1.0" max="16.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="scale ch" id="93cfb6ed66e0a17c" memberName="label25" virtualName=""
-         explicitFocusOrder="0" pos="13 267 54 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Scale Ch" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <SLIDER name="MasterTranspose" id="d57f221f805d0cab" memberName="s_MasterTranspose"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="554 36 72 16"
-          tooltip="Global transposition applied to all played notes (after Force to Scale)"
-          bkgcol="1e707070" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-12.0" max="12.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="d40dfc76a0032690" memberName="label26" virtualName=""
-         explicitFocusOrder="0" pos="452 36 102 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Master Transpose:"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12.0" kerning="0.0" bold="0"
-         italic="0" justification="34"/>
-  <TOGGLEBUTTON name="WaitForBar" id="9ab8ef37e97d43e0" memberName="b_WaitForBar"
-                virtualName="" explicitFocusOrder="0" pos="175 123 107 16" tooltip="When checked, play/stop of this slot will happen at the start of the bar after"
-                txtcol="ffffffff" buttonText="Wait for Next Bar" connectedEdges="0"
-                needsCallback="1" radioGroupId="0" state="0"/>
-  <COMBOBOX name="midiOutDevice" id="6ab1b2012b5d6135" memberName="midiOutDeviceBox"
-            virtualName="" explicitFocusOrder="0" pos="633 15 158 16" tooltip="Send ouput to selected MIDI port in addition to VST host output"
-            editable="0" layout="33" items="" textWhenNonSelected="--" textWhenNoItems="(no choices)"/>
-  <LABEL name="QuantizeLabel" id="3339c761cb236777" memberName="label27"
-         virtualName="" explicitFocusOrder="0" pos="627 0 117 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="MIDI Output Device"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12.0" kerning="0.0" bold="0"
-         italic="0" justification="36"/>
-  <TOGGLEBUTTON name="new toggle button" id="4860c217b9607fce" memberName="b_UseTrChannel"
-                virtualName="" explicitFocusOrder="0" pos="148 252 130 17" tooltip="When checked, notes on selected &quot;Transpose Ch&quot; will apply to &quot;Semitones&quot; and &quot;Octave&quot; settings, relative to &quot;Root Note&quot;"
-                txtcol="ffffffff" buttonText="Use Transp Ch" connectedEdges="0"
-                needsCallback="1" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="new toggle button" id="85d95ffb3ae3028a" memberName="b_ImmediateTranspose"
-                virtualName="" explicitFocusOrder="0" pos="247 252 48 17" tooltip="When checked, playing notes will be split and transposed immediately on changes to Semitones / Octave / Force to Scale / Master Transpose settings"
-                txtcol="ffffffff" buttonText="Split" connectedEdges="0" needsCallback="1"
-                radioGroupId="0" state="0"/>
-  <SLIDER name="NumLoops" id="6ce62dba23a224a8" memberName="s_NumLoops"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="155 174 64 20"
-          tooltip="Number of times to loop playback" bkgcol="1e000000"
-          thumbcol="ff000000" textboxtext="ffffffff" min="0.0" max="64.0"
-          int="1.0" style="LinearBar" textBoxPos="TextBoxLeft" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <SLIDER name="NextSlot" id="89b8c16e6410c4dc" memberName="s_NextSlot"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="234 174 64 20"
-          tooltip="What to do after the selected number of loops have played"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="0.0" max="16.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="Sync:" id="3505240ec530568f" memberName="label16" virtualName=""
-         explicitFocusOrder="0" pos="12 247 125 16" textCol="ff9f9f9f"
-         edTextCol="ff000000" edBkgCol="0" labelText="Loop Settings" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="1" italic="0" justification="36"
-         typefaceStyle="Bold"/>
-  <COMBOBOX name="Force To Scale Mode" id="43ff2ca0052c54b0" memberName="forceModeBox"
-            virtualName="" explicitFocusOrder="0" pos="110 313 61 16" editable="0"
-            layout="33" items="Nearest&#10;Up&#10;Down&#10;Block" textWhenNonSelected="Nearest"
-            textWhenNoItems="(no choices)"/>
-  <VIEWPORT name="Keyboard View" id="cd5cf3f9d86959b2" memberName="kbport"
-            virtualName="" explicitFocusOrder="0" pos="390 105 25 121M" vscroll="0"
-            hscroll="0" scrollbarThickness="16" contentType="2" jucerFile=""
-            contentClass="MidiKeyboardComponent" constructorParams="ownerFilter-&gt;kbstate,MidiKeyboardComponent::verticalKeyboardFacingRight"/>
-  <TEXTBUTTON name="RemoveBar" id="d6d493284d7125c9" memberName="b_RemoveBar"
-              virtualName="" explicitFocusOrder="0" pos="706 64 18 18" tooltip="Remove bar"
-              bgColOff="ffbbbbff" buttonText="-" connectedEdges="2" needsCallback="1"
-              radioGroupId="0"/>
-  <TEXTBUTTON name="AddBar" id="d6e74e96a2942be5" memberName="b_AddBar" virtualName=""
-              explicitFocusOrder="0" pos="773 64 18 18" tooltip="Add bar" bgColOff="ffbbbbff"
-              buttonText="+" connectedEdges="1" needsCallback="1" radioGroupId="2"/>
-  <LABEL name="Length" id="1b0d10758ceeb2c6" memberName="LengthLabel"
-         virtualName="" explicitFocusOrder="0" pos="724 65 49 16" tooltip="Pattern length in bars"
-         edTextCol="ff000000" edBkgCol="0" labelText="4" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="new button" id="f82b62c14f5e0654" memberName="textButton17"
-              virtualName="" explicitFocusOrder="0" pos="4 -97 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="f3d9e6aa2250a016" memberName="textButton18"
-              virtualName="" explicitFocusOrder="0" pos="29 -97 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="fd1b907d561151ac" memberName="textButton19"
-              virtualName="" explicitFocusOrder="0" pos="52 -97 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="bebf9067f8e7ead5" memberName="textButton20"
-              virtualName="" explicitFocusOrder="0" pos="75 -97 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="2e9b4196bc044ad4" memberName="textButton21"
-              virtualName="" explicitFocusOrder="0" pos="98 -97 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="143b513b7883582f" memberName="textButton22"
-              virtualName="" explicitFocusOrder="0" pos="121 -97 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="26aea4d0d192007d" memberName="textButton23"
-              virtualName="" explicitFocusOrder="0" pos="144 -97 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="34b98f50c0125adb" memberName="textButton24"
-              virtualName="" explicitFocusOrder="0" pos="167 -97 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="b346d14758db1eb8" memberName="textButton25"
-              virtualName="" explicitFocusOrder="0" pos="190 -97 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="4a7d45e14d6faa20" memberName="textButton26"
-              virtualName="" explicitFocusOrder="0" pos="213 -97 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="d7828f6b0aa51da9" memberName="textButton27"
-              virtualName="" explicitFocusOrder="0" pos="238 -97 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="a68c9fd9483e71ab" memberName="textButton28"
-              virtualName="" explicitFocusOrder="0" pos="263 -97 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="54442e4cee712779" memberName="textButton29"
-              virtualName="" explicitFocusOrder="0" pos="288 -97 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="69fa18b953ca2aa3" memberName="textButton30"
-              virtualName="" explicitFocusOrder="0" pos="313 -97 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="97f8e917a546e991" memberName="textButton31"
-              virtualName="" explicitFocusOrder="0" pos="338 -97 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="8a2447be2be271fa" memberName="textButton32"
-              virtualName="" explicitFocusOrder="0" pos="363 -97 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="6b84b942866d7006" memberName="textButton33"
-              virtualName="" explicitFocusOrder="0" pos="1 -73 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="9a7ceea1009a124c" memberName="textButton34"
-              virtualName="" explicitFocusOrder="0" pos="26 -73 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="c5487a62fc00a54f" memberName="textButton35"
-              virtualName="" explicitFocusOrder="0" pos="49 -73 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="70e2d1815eef6c38" memberName="textButton36"
-              virtualName="" explicitFocusOrder="0" pos="72 -73 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="96733ae0ee7930aa" memberName="textButton37"
-              virtualName="" explicitFocusOrder="0" pos="95 -73 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="2a2a7d5a20dc3625" memberName="textButton38"
-              virtualName="" explicitFocusOrder="0" pos="118 -73 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="45f8294bb289e286" memberName="textButton39"
-              virtualName="" explicitFocusOrder="0" pos="141 -73 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="b2210d75a50bd16b" memberName="textButton40"
-              virtualName="" explicitFocusOrder="0" pos="164 -73 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="9041ed5d69c6b185" memberName="textButton41"
-              virtualName="" explicitFocusOrder="0" pos="187 -73 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="a3a81f971178361a" memberName="textButton42"
-              virtualName="" explicitFocusOrder="0" pos="210 -73 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="485564a3931a644e" memberName="textButton43"
-              virtualName="" explicitFocusOrder="0" pos="235 -73 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="e8d39b40ebcee2e6" memberName="textButton44"
-              virtualName="" explicitFocusOrder="0" pos="260 -73 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="b7510563090c84a1" memberName="textButton45"
-              virtualName="" explicitFocusOrder="0" pos="285 -73 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="458629325720585f" memberName="textButton46"
-              virtualName="" explicitFocusOrder="0" pos="310 -73 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="34c50bb9ed0aefab" memberName="textButton47"
-              virtualName="" explicitFocusOrder="0" pos="335 -73 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="82df1f30a42f9364" memberName="textButton48"
-              virtualName="" explicitFocusOrder="0" pos="360 -73 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="bdb4e4075d1a3ad9" memberName="textButton49"
-              virtualName="" explicitFocusOrder="0" pos="-2 -40 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="f3240d7ed7104a74" memberName="textButton50"
-              virtualName="" explicitFocusOrder="0" pos="23 -40 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="14830fd1fb697497" memberName="textButton51"
-              virtualName="" explicitFocusOrder="0" pos="46 -40 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3da094304d5f9224" memberName="textButton52"
-              virtualName="" explicitFocusOrder="0" pos="69 -40 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="b9e3cc78442695a4" memberName="textButton53"
-              virtualName="" explicitFocusOrder="0" pos="92 -40 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="8a34390909e301d6" memberName="textButton54"
-              virtualName="" explicitFocusOrder="0" pos="115 -40 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="2c203a79878e21a3" memberName="textButton55"
-              virtualName="" explicitFocusOrder="0" pos="138 -40 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="9d1bb945d1cc8484" memberName="textButton56"
-              virtualName="" explicitFocusOrder="0" pos="161 -40 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="e8dbddea1caecd8e" memberName="textButton57"
-              virtualName="" explicitFocusOrder="0" pos="184 -40 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="e4a29e1374a980cf" memberName="textButton58"
-              virtualName="" explicitFocusOrder="0" pos="207 -40 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="919b57bdbbe979a1" memberName="textButton59"
-              virtualName="" explicitFocusOrder="0" pos="232 -40 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="121e17b3623e612" memberName="textButton60"
-              virtualName="" explicitFocusOrder="0" pos="257 -40 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="cb26ef4661225699" memberName="textButton61"
-              virtualName="" explicitFocusOrder="0" pos="282 -40 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="9f497d7c031e76b4" memberName="textButton62"
-              virtualName="" explicitFocusOrder="0" pos="307 -40 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="a2cdaffa1ec2aa1e" memberName="textButton63"
-              virtualName="" explicitFocusOrder="0" pos="332 -40 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="995149744a9ae3bd" memberName="textButton64"
-              virtualName="" explicitFocusOrder="0" pos="357 -40 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="d68fc9c452ad8dab" memberName="textButton65"
-              virtualName="" explicitFocusOrder="0" pos="383 -93 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="7ab5cfcd21440999" memberName="textButton66"
-              virtualName="" explicitFocusOrder="0" pos="408 -93 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="7bbd5b301abfe86" memberName="textButton67"
-              virtualName="" explicitFocusOrder="0" pos="431 -93 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="887951f325b67723" memberName="textButton68"
-              virtualName="" explicitFocusOrder="0" pos="454 -93 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3083792c1007132" memberName="textButton69"
-              virtualName="" explicitFocusOrder="0" pos="477 -93 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="d55a4c9b0993c208" memberName="textButton70"
-              virtualName="" explicitFocusOrder="0" pos="500 -93 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="6496ab215addfa03" memberName="textButton71"
-              virtualName="" explicitFocusOrder="0" pos="523 -93 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3699bb2c06c2192b" memberName="textButton72"
-              virtualName="" explicitFocusOrder="0" pos="546 -93 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="17b1de3153b62496" memberName="textButton73"
-              virtualName="" explicitFocusOrder="0" pos="569 -93 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="2e90990a96674b54" memberName="textButton74"
-              virtualName="" explicitFocusOrder="0" pos="592 -93 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="5214578a2d0a1ade" memberName="textButton75"
-              virtualName="" explicitFocusOrder="0" pos="617 -93 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="a7497d1bbbb89667" memberName="textButton76"
-              virtualName="" explicitFocusOrder="0" pos="642 -93 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3e7c680e763ea97d" memberName="textButton77"
-              virtualName="" explicitFocusOrder="0" pos="667 -93 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="6e19e986e29bb5d8" memberName="textButton78"
-              virtualName="" explicitFocusOrder="0" pos="692 -93 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="652b8a1e62bbb554" memberName="textButton79"
-              virtualName="" explicitFocusOrder="0" pos="717 -93 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="1f1a53bdd4a5e45e" memberName="textButton80"
-              virtualName="" explicitFocusOrder="0" pos="742 -93 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="8fc828bd969cc4e6" memberName="textButton81"
-              virtualName="" explicitFocusOrder="0" pos="371 -76 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3e4c5bf034830bb7" memberName="textButton82"
-              virtualName="" explicitFocusOrder="0" pos="396 -76 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="5b0d51946a6866ca" memberName="textButton83"
-              virtualName="" explicitFocusOrder="0" pos="419 -76 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="ed27c1f0c2d13d02" memberName="textButton84"
-              virtualName="" explicitFocusOrder="0" pos="442 -76 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="1a9cfc23a4a4d942" memberName="textButton85"
-              virtualName="" explicitFocusOrder="0" pos="465 -76 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="4b46287ace557cec" memberName="textButton86"
-              virtualName="" explicitFocusOrder="0" pos="488 -76 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="424dac2524f5021a" memberName="textButton87"
-              virtualName="" explicitFocusOrder="0" pos="511 -76 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="ed5a5b0454cd810c" memberName="textButton88"
-              virtualName="" explicitFocusOrder="0" pos="534 -76 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="e614d86fa41faba5" memberName="textButton89"
-              virtualName="" explicitFocusOrder="0" pos="557 -76 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="51dff617965502ee" memberName="textButton90"
-              virtualName="" explicitFocusOrder="0" pos="580 -76 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="e2c898797e1afdf1" memberName="textButton91"
-              virtualName="" explicitFocusOrder="0" pos="605 -76 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="ad2ba786a567e6e" memberName="textButton92"
-              virtualName="" explicitFocusOrder="0" pos="630 -76 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="a110261c5fb9d73b" memberName="textButton93"
-              virtualName="" explicitFocusOrder="0" pos="655 -76 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="90e56e88fc990149" memberName="textButton94"
-              virtualName="" explicitFocusOrder="0" pos="680 -76 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="b134379d42f1b7a5" memberName="textButton95"
-              virtualName="" explicitFocusOrder="0" pos="705 -76 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="e0faf1edf4a2dff0" memberName="textButton96"
-              virtualName="" explicitFocusOrder="0" pos="730 -76 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="7baa677054d263a0" memberName="textButton97"
-              virtualName="" explicitFocusOrder="0" pos="413 -59 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="c5579322b15a24c0" memberName="textButton98"
-              virtualName="" explicitFocusOrder="0" pos="438 -59 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="97c19928ab0ac5ae" memberName="textButton99"
-              virtualName="" explicitFocusOrder="0" pos="461 -59 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="4c9fc55a92ea01f8" memberName="textButton100"
-              virtualName="" explicitFocusOrder="0" pos="484 -59 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="d246fad8bbe50c27" memberName="textButton101"
-              virtualName="" explicitFocusOrder="0" pos="507 -59 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="53a5a99d123e2583" memberName="textButton102"
-              virtualName="" explicitFocusOrder="0" pos="530 -59 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="82aeee95b8399b98" memberName="textButton103"
-              virtualName="" explicitFocusOrder="0" pos="553 -59 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="c467d3344ea4e23d" memberName="textButton104"
-              virtualName="" explicitFocusOrder="0" pos="576 -59 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="1f0e2fac74d09229" memberName="textButton105"
-              virtualName="" explicitFocusOrder="0" pos="599 -59 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="f57d8b285c77a75e" memberName="textButton106"
-              virtualName="" explicitFocusOrder="0" pos="622 -59 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="f44d87c182543ff0" memberName="textButton107"
-              virtualName="" explicitFocusOrder="0" pos="647 -59 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="79df8405bfc1a2ef" memberName="textButton108"
-              virtualName="" explicitFocusOrder="0" pos="672 -59 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="7001323b79825083" memberName="textButton109"
-              virtualName="" explicitFocusOrder="0" pos="697 -59 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="69a185df3f899779" memberName="textButton110"
-              virtualName="" explicitFocusOrder="0" pos="722 -59 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="86c891df3a4d79cf" memberName="textButton111"
-              virtualName="" explicitFocusOrder="0" pos="747 -59 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="89cc5699baf6d900" memberName="textButton112"
-              virtualName="" explicitFocusOrder="0" pos="772 -59 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="56b76264f094a52f" memberName="textButton113"
-              virtualName="" explicitFocusOrder="0" pos="408 -29 25 24" buttonText="1"
-              connectedEdges="10" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="94e1a2446be2bf9f" memberName="textButton114"
-              virtualName="" explicitFocusOrder="0" pos="433 -29 23 24" bgColOff="ffbbbbff"
-              buttonText="2" connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="4c35e8860c764ad4" memberName="textButton115"
-              virtualName="" explicitFocusOrder="0" pos="456 -29 23 24" buttonText="3"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="2bc14fc280f03a9b" memberName="textButton116"
-              virtualName="" explicitFocusOrder="0" pos="479 -29 23 24" buttonText="4"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="41e3b05c3731d48d" memberName="textButton117"
-              virtualName="" explicitFocusOrder="0" pos="502 -29 23 24" buttonText="5"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="20a016ecbcfb4da2" memberName="textButton118"
-              virtualName="" explicitFocusOrder="0" pos="525 -29 23 24" buttonText="6"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="fc198aa11cce2ac3" memberName="textButton119"
-              virtualName="" explicitFocusOrder="0" pos="548 -29 23 24" buttonText="7"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="31bc5acefe18d077" memberName="textButton120"
-              virtualName="" explicitFocusOrder="0" pos="571 -29 23 24" buttonText="8"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="5bd222f0831ce0d8" memberName="textButton121"
-              virtualName="" explicitFocusOrder="0" pos="594 -29 23 24" buttonText="9"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="ef5c06f268638c6a" memberName="textButton122"
-              virtualName="" explicitFocusOrder="0" pos="617 -29 25 24" buttonText="10"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="d54be58709c7219c" memberName="textButton123"
-              virtualName="" explicitFocusOrder="0" pos="642 -29 25 24" buttonText="11"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="b0ad74bfe805bfeb" memberName="textButton124"
-              virtualName="" explicitFocusOrder="0" pos="667 -29 25 24" buttonText="12"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="febcfd4d46d86f04" memberName="textButton125"
-              virtualName="" explicitFocusOrder="0" pos="692 -29 25 24" buttonText="13"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="3506c31bc51ec75f" memberName="textButton126"
-              virtualName="" explicitFocusOrder="0" pos="717 -29 25 24" buttonText="14"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="5a3aae16c809291d" memberName="textButton127"
-              virtualName="" explicitFocusOrder="0" pos="742 -29 25 24" buttonText="15"
-              connectedEdges="11" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="26d084584019ff36" memberName="textButton128"
-              virtualName="" explicitFocusOrder="0" pos="767 -29 28 24" buttonText="16"
-              connectedEdges="9" needsCallback="0" radioGroupId="1"/>
-  <TEXTBUTTON name="new button" id="882925b8a07e236f" memberName="b_Transpose10"
-              virtualName="" explicitFocusOrder="0" pos="306 252 72 13" bgColOff="ff999999"
-              buttonText="transpose channel 10" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
-  <TOGGLEBUTTON name="OverdubMode" id="deb54e2d772c8ee4" memberName="b_KeepLength"
-                virtualName="" explicitFocusOrder="0" pos="520 -2 83 16" tooltip="When checked, overdubbing will loop record into existing loop length"
-                txtcol="ffffffff" buttonText="Keep Length" connectedEdges="0"
-                needsCallback="1" radioGroupId="0" state="0"/>
-  <SLIDER name="recCC" id="a135262705472738" memberName="s_RecCC" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="11 149 64 20" tooltip="CC Number to toggle recoring to active slot"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-2.0" max="127.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <SLIDER name="playCC" id="742efa24bd3cf708" memberName="s_PlayCC" virtualName="VSTSlider"
-          explicitFocusOrder="0" pos="81 149 64 20" tooltip="CC Number to toggle play for active slot"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="-2.0" max="127.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <SLIDER name="Velocity Sensitivity" id="56077b1f3eddabf4" memberName="s_VelocitySens"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="234 440 64 20"
-          tooltip="Velocity Sensitivity (Input Velocity -&gt; Output Velocity)"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="0.0" max="200.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="new label" id="56dd185855bc67b0" memberName="label24" virtualName=""
-         explicitFocusOrder="0" pos="225 424 80 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="VeloSens" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="MIDI_Monitor" id="9b82f84d650b5d48" memberName="b_Monitor"
-              virtualName="" explicitFocusOrder="0" pos="678 33 55 20" tooltip="Monitor input MIDI through active slot's settings (Transpose, Scale, I/O Channel)"
-              bgColOff="ff999999" buttonText="Monitor" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
-  <SLIDER name="TransposeChannel" id="b0b2857ba8bcb082" memberName="s_TransposeChannel"
-          virtualName="VSTSlider" explicitFocusOrder="0" pos="76 283 60 20"
-          tooltip="Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where &quot;Use Transp Ch&quot; is enabled"
-          bkgcol="1e000000" thumbcol="ff000000" textboxtext="ffffffff"
-          min="1.0" max="16.0" int="1.0" style="LinearBar" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
-  <LABEL name="tr ch" id="63fe8f3eb653b053" memberName="label28" virtualName=""
-         explicitFocusOrder="0" pos="66 267 80 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Transpose Ch" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
-
-//==============================================================================
-// Binary resources - be careful not to edit any of these sections!
-
 // JUCER_RESOURCE: piznew40_png, 1803, "../../../My Pictures/piznew40.png"
 static const unsigned char resource_PizLooperEditor_piznew40_png[] = { 137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 40, 0, 0, 0, 24, 8, 6, 0, 0, 1, 255, 131, 143, 86, 0, 0, 0, 9, 112, 72, 89, 115, 0, 0, 46, 35, 0, 0, 46, 35, 1, 120, 165, 63, 118, 0, 0, 0, 13, 116, 69, 88, 116, 67, 111, 109, 109, 101, 110, 116, 0, 104, 195, 123, 3, 0, 168, 254, 86, 169, 0, 0, 6, 164, 73, 68, 65, 84, 120, 156, 181, 87, 9, 84, 205, 105, 20, 255, 215, 123, 175, 69, 74, 90, 212, 107, 85, 74, 76, 26, 137, 142, 112, 44, 169, 168, 145, 37, 154, 49, 24, 145, 61, 164, 178, 150, 38, 106, 210, 12, 141, 148, 16, 102, 70, 165, 33, 45, 104, 179, 205, 88, 143, 194, 88, 178, 85, 42, 107, 171, 147, 97, 178, 68, 141, 234, 185, 115, 239, 247, 122, 233, 165, 158, 154, 49, 223, 57, 247, 252, 255, 255, 239, 187, 223, 125, 247, 254, 238, 250, 56, 78, 198, 50, 46, 187, 186, 7, 158, 220, 78, 0, 124, 183, 102, 59, 187, 54, 121, 137, 254, 126, 116, 16, 158, 23, 38, 130, 185, 137, 94, 14, 103, 209, 75, 63, 181, 229, 21, 171, 62, 198, 39, 217, 203, 153, 212, 13, 34, 226, 34, 110, 201, 161, 160, 232, 124, 12, 187, 138, 239, 158, 146, 205, 37, 65, 190, 83, 33, 35, 46, 144, 54, 5, 180, 145, 182, 39, 128, 49, 109, 94, 231, 9, 163, 135, 89, 85, 69, 133, 204, 107, 150, 192, 225, 71, 253, 211, 252, 95, 25, 131, 132, 94, 223, 75, 126, 207, 32, 39, 39, 183, 6, 42, 51, 222, 111, 112, 156, 214, 189, 11, 187, 0, 247, 67, 154, 190, 93, 107, 31, 164, 178, 115, 99, 89, 198, 211, 10, 243, 159, 41, 226, 174, 30, 143, 0, 168, 202, 2, 117, 53, 149, 159, 36, 7, 175, 239, 167, 52, 91, 38, 42, 79, 135, 105, 147, 134, 23, 52, 223, 10, 240, 118, 175, 190, 122, 44, 2, 136, 233, 69, 209, 1, 98, 130, 33, 3, 45, 178, 62, 16, 255, 234, 110, 146, 148, 33, 77, 208, 104, 75, 49, 233, 233, 104, 164, 244, 54, 213, 99, 82, 36, 248, 229, 159, 221, 14, 229, 185, 177, 239, 141, 12, 93, 61, 163, 14, 31, 250, 45, 238, 221, 122, 116, 249, 231, 102, 134, 132, 173, 190, 240, 174, 9, 21, 7, 130, 163, 246, 33, 131, 96, 169, 12, 227, 205, 23, 205, 116, 174, 28, 239, 100, 91, 136, 239, 30, 173, 206, 150, 92, 202, 10, 151, 168, 43, 181, 44, 209, 208, 27, 215, 127, 139, 132, 210, 43, 191, 208, 161, 29, 109, 234, 106, 171, 103, 19, 90, 254, 75, 167, 64, 13, 58, 139, 16, 173, 198, 203, 10, 10, 252, 92, 248, 243, 40, 12, 232, 103, 122, 183, 93, 53, 188, 60, 92, 158, 183, 6, 169, 37, 85, 223, 73, 132, 191, 10, 246, 193, 171, 226, 36, 48, 212, 211, 138, 147, 97, 81, 243, 154, 129, 102, 193, 53, 212, 34, 255, 204, 54, 120, 89, 252, 161, 23, 200, 109, 67, 7, 245, 41, 105, 243, 182, 130, 128, 159, 17, 187, 101, 25, 16, 142, 244, 171, 104, 86, 157, 128, 207, 91, 142, 71, 93, 145, 158, 52, 101, 12, 212, 61, 20, 39, 202, 219, 146, 67, 244, 61, 75, 173, 171, 114, 88, 90, 236, 90, 104, 40, 75, 131, 83, 201, 223, 209, 158, 191, 102, 119, 213, 13, 205, 130, 117, 180, 213, 55, 119, 68, 253, 118, 150, 254, 245, 223, 35, 49, 206, 185, 0, 177, 48, 45, 117, 194, 98, 194, 127, 16, 200, 21, 98, 188, 225, 99, 0, 103, 109, 105, 114, 167, 14, 61, 136, 33, 81, 131, 27, 42, 237, 93, 208, 237, 209, 61, 115, 205, 146, 201, 85, 6, 122, 90, 137, 156, 116, 36, 11, 28, 134, 247, 175, 120, 131, 41, 177, 59, 124, 49, 112, 211, 221, 70, 214, 44, 242, 112, 110, 164, 48, 161, 144, 112, 119, 29, 86, 133, 76, 163, 90, 10, 227, 201, 203, 7, 195, 227, 76, 134, 33, 57, 137, 242, 73, 32, 224, 71, 224, 209, 196, 188, 211, 209, 12, 223, 207, 63, 235, 121, 19, 195, 231, 15, 41, 45, 208, 25, 235, 191, 15, 152, 217, 72, 133, 97, 222, 116, 39, 73, 144, 26, 220, 60, 25, 5, 83, 198, 13, 5, 178, 228, 64, 204, 74, 76, 163, 109, 144, 135, 17, 16, 23, 185, 172, 254, 100, 18, 115, 200, 152, 118, 177, 192, 60, 204, 74, 217, 189, 186, 225, 98, 102, 248, 187, 188, 51, 209, 172, 234, 72, 66, 133, 200, 115, 170, 3, 172, 243, 155, 202, 52, 69, 246, 209, 31, 195, 86, 183, 17, 195, 64, 86, 96, 83, 117, 200, 78, 251, 1, 42, 175, 199, 125, 144, 102, 109, 173, 190, 245, 165, 135, 160, 224, 220, 118, 153, 66, 95, 20, 37, 130, 211, 8, 235, 199, 29, 17, 200, 161, 57, 111, 57, 10, 100, 196, 235, 214, 233, 173, 237, 10, 229, 196, 129, 47, 115, 77, 152, 49, 121, 100, 101, 66, 180, 95, 131, 190, 174, 38, 236, 141, 242, 5, 143, 47, 237, 153, 137, 207, 48, 119, 155, 43, 57, 122, 24, 147, 32, 43, 33, 218, 23, 126, 12, 242, 36, 193, 46, 82, 82, 130, 87, 76, 3, 239, 57, 227, 68, 84, 225, 207, 29, 12, 131, 254, 150, 38, 23, 56, 113, 156, 133, 142, 115, 28, 68, 149, 132, 121, 86, 226, 24, 140, 69, 134, 29, 254, 216, 83, 74, 203, 134, 178, 195, 48, 106, 168, 85, 137, 178, 146, 194, 106, 220, 118, 224, 236, 108, 44, 242, 41, 6, 23, 124, 51, 246, 73, 59, 154, 47, 38, 33, 164, 169, 247, 28, 215, 70, 252, 150, 107, 113, 198, 51, 51, 17, 94, 162, 51, 10, 236, 240, 111, 103, 139, 216, 174, 188, 188, 220, 2, 124, 76, 234, 16, 200, 109, 172, 73, 206, 118, 207, 176, 245, 212, 183, 220, 179, 178, 177, 234, 245, 32, 247, 196, 22, 102, 26, 150, 166, 130, 246, 46, 119, 98, 169, 35, 105, 34, 41, 118, 226, 142, 145, 155, 139, 221, 67, 106, 135, 199, 247, 175, 7, 52, 116, 19, 165, 233, 33, 250, 32, 159, 212, 62, 72, 97, 209, 66, 216, 199, 71, 249, 128, 173, 181, 121, 30, 94, 242, 70, 18, 118, 84, 41, 115, 19, 225, 237, 91, 167, 182, 50, 95, 81, 233, 164, 110, 93, 118, 109, 15, 96, 242, 81, 232, 150, 33, 143, 15, 146, 124, 139, 59, 125, 133, 61, 186, 159, 194, 217, 132, 185, 169, 161, 244, 48, 208, 136, 208, 88, 158, 198, 178, 91, 194, 52, 140, 207, 147, 95, 136, 207, 193, 72, 99, 12, 132, 154, 153, 62, 243, 198, 215, 230, 100, 108, 100, 141, 156, 234, 76, 113, 206, 78, 140, 186, 217, 48, 120, 64, 239, 92, 129, 128, 183, 12, 249, 186, 180, 82, 206, 108, 226, 216, 193, 213, 245, 248, 3, 235, 151, 127, 13, 145, 193, 115, 225, 13, 26, 76, 30, 161, 39, 213, 49, 138, 96, 250, 97, 191, 249, 19, 26, 144, 127, 149, 135, 187, 125, 45, 117, 39, 81, 69, 58, 60, 190, 17, 15, 115, 167, 57, 82, 74, 81, 137, 86, 224, 196, 3, 143, 60, 215, 129, 69, 76, 212, 75, 147, 76, 141, 117, 43, 13, 132, 90, 21, 170, 42, 202, 231, 21, 21, 248, 43, 187, 170, 40, 173, 212, 23, 106, 198, 186, 58, 218, 86, 230, 164, 111, 100, 104, 137, 219, 226, 126, 70, 146, 6, 132, 19, 2, 24, 234, 107, 1, 14, 108, 80, 148, 29, 3, 47, 209, 67, 230, 166, 122, 231, 93, 157, 108, 171, 16, 136, 58, 37, 69, 193, 14, 148, 175, 211, 65, 47, 73, 43, 71, 57, 75, 19, 15, 89, 94, 135, 147, 5, 101, 3, 33, 65, 53, 146, 80, 105, 171, 197, 74, 136, 13, 4, 120, 215, 197, 222, 6, 209, 113, 130, 17, 131, 45, 161, 6, 221, 72, 149, 202, 198, 202, 52, 253, 223, 40, 212, 122, 245, 221, 17, 182, 240, 173, 100, 110, 173, 185, 155, 204, 132, 203, 42, 147, 237, 149, 78, 138, 235, 215, 247, 147, 89, 235, 161, 57, 21, 99, 127, 241, 167, 80, 176, 219, 200, 33, 253, 74, 73, 65, 106, 67, 136, 38, 67, 132, 144, 33, 101, 137, 58, 163, 40, 41, 151, 25, 31, 8, 60, 158, 124, 208, 167, 80, 142, 150, 6, 146, 13, 210, 81, 36, 140, 35, 109, 246, 183, 160, 252, 90, 44, 24, 225, 251, 228, 47, 134, 48, 183, 139, 209, 77, 146, 137, 46, 197, 98, 116, 232, 124, 202, 74, 63, 45, 13, 181, 221, 152, 185, 123, 241, 221, 25, 137, 255, 49, 37, 148, 56, 113, 131, 118, 66, 178, 55, 49, 210, 201, 142, 12, 153, 11, 37, 88, 189, 223, 97, 118, 81, 77, 34, 4, 119, 110, 244, 162, 41, 225, 44, 206, 130, 151, 41, 216, 73, 225, 64, 159, 175, 240, 252, 8, 36, 198, 172, 0, 109, 77, 53, 56, 157, 18, 202, 98, 180, 165, 98, 47, 139, 15, 48, 194, 56, 172, 198, 59, 102, 38, 134, 58, 169, 148, 64, 20, 211, 84, 138, 42, 112, 222, 94, 229, 229, 38, 82, 82, 84, 216, 197, 181, 85, 206, 122, 26, 244, 0, 26, 152, 224, 233, 81, 160, 18, 65, 136, 156, 197, 30, 101, 55, 208, 162, 16, 93, 225, 143, 44, 150, 156, 116, 251, 144, 44, 67, 164, 16, 179, 158, 194, 18, 62, 143, 199, 20, 62, 145, 24, 204, 100, 16, 146, 228, 126, 66, 109, 83, 224, 44, 250, 23, 179, 161, 213, 93, 154, 249, 23, 244, 179, 48, 186, 72, 231, 84, 39, 169, 14, 147, 65, 71, 18, 130, 224, 202, 177, 205, 12, 32, 231, 81, 54, 229, 146, 11, 202, 72, 110, 254, 75, 221, 177, 72, 238, 3, 103, 123, 155, 251, 29, 129, 190, 213, 34, 25, 174, 26, 234, 170, 59, 177, 192, 103, 161, 11, 227, 241, 219, 177, 131, 119, 201, 139, 17, 164, 28, 33, 75, 255, 67, 176, 247, 190, 194, 57, 120, 71, 39, 117, 248, 223, 215, 218, 110, 170, 93, 104, 176, 220, 194, 53, 53, 130, 127, 0, 217, 46, 21, 116, 181, 241, 235, 130, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130, 0, 0 };
 
 const char* PizLooperEditor::piznew40_png   = (const char*) resource_PizLooperEditor_piznew40_png;
 const int PizLooperEditor::piznew40_pngSize = 1803;
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
