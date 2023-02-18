@@ -20,124 +20,48 @@ public:
 
     void setSequence(Loop* sequence_);
 
-    Loop* getSequence()
-    {
-        return sequence;
-    }
-
     void sequenceChanged();
-    int getTimeInPixels();
     double pixelsToPpq(float pixels, bool snap, bool round = false);
     float ppqToPixels(double ppq);
     int ppqToPixelsWithOffset(double ppq);
     double snapPpqToGrid(double ppq, bool round = false);
     void setNoteLength(float beatDiv);
     double blankLength;
-    float pixelsPerPpq;
-    float getNoteHeight();
 
-    void setDisplayLength(double ppq)
-    {
-        blankLength = ppq;
-        sequenceChanged();
-    }
+    void setDisplayLength(double ppq);
+    void setDisplayLength(int bars);
 
-    void setDisplayLength(int bars)
-    {
-        int pixelBarLength = (int) ppqToPixels(getPpqPerBar());
-        blankLength        = getPpqPerBar() * bars;
-        sequenceChanged();
-        setSize((int) ppqToPixels(juce::jmax(blankLength, seqLengthInPpq)), getHeight());
-    }
+    void addBar();
+    void removeBar();
 
-    void addBar()
-    {
-        int pixelBarLength = (int) ppqToPixels(getPpqPerBar());
-        setDisplayLength(seqLengthInPpq + getPpqPerBar());
-        setSize(getWidth() + pixelBarLength, getHeight());
-    }
-
-    void removeBar()
-    {
-        int pixelBarLength = (int) ppqToPixels(getPpqPerBar());
-        setDisplayLength(juce::jmax(getPpqPerBar(), seqLengthInPpq - getPpqPerBar()));
-        setSize(juce::jmax(pixelBarLength, getWidth() - pixelBarLength), getHeight());
-    }
-
-    int getDisplayLength()
-    {
-        return (int) (juce::jmax(blankLength, seqLengthInPpq) / getPpqPerBar());
-    }
+    int getDisplayLength();
 
     void mouseDown(const juce::MouseEvent& e) override;
     void mouseDrag(const juce::MouseEvent& e) override;
     void mouseUp(const juce::MouseEvent& e) override;
-    //void mouseMove (const MouseEvent& e);
+
     void mouseDoubleClick(const juce::MouseEvent& e) override;
 
     void paintOverChildren(juce::Graphics& g) override;
     void resized() override;
 
-    bool getSnap()
-    {
-        return snapToGrid;
-    }
+    bool getSnap() const;
+    void setSnap(bool snap);
 
-    float getBeatDiv()
-    {
-        return 1.f / noteLength;
-    }
-
-    void setSnap(bool snap)
-    {
-        snapToGrid = snap;
-    }
-
-    void setPlayTime(double timeInPpq)
-    {
-        const int lastpixels = ppqToPixelsWithOffset(playTime);
-        const int pixels     = ppqToPixelsWithOffset(timeInPpq);
-        if (pixels != lastpixels)
-        {
-            playTime = timeInPpq;
-            playline->repaint(lastpixels, 0, 1, getHeight());
-            playline->repaint(pixels, 0, 1, getHeight());
-        }
-    }
+    void setPlayTime(double timeInPpq);
 
     void setTimeSig(int n, int d);
 
-    void setPlaying(bool isPlaying)
-    {
-        playing = isPlaying;
-        playline->repaint();
-    }
+    double getPpqPerBar() const;
 
-    void setRecording(bool isRecording)
-    {
-        recording = isRecording;
-        playline->repaint();
-    }
-
-    double getPpqPerBar()
-    {
-        return timebase * quarterNotesPerBar;
-    }
-
-    Component* getPlayline()
-    {
-        return (Component*) playline;
-    }
+    Component* getPlayline();
 
     int defaultChannel;
     int timeSigN, timeSigD;
     bool playing;
     bool recording;
 
-    void repaintBG()
-    {
-        bg->repaint();
-    }
+    void repaintBG();
 
     double seqLengthInPpq;
     double playTime;
@@ -147,8 +71,7 @@ public:
     float barSize;  //number of pixels per measure
 
     Loop* sequence;
-
-    float xinc;
+    
     float yinc;
 
     int draggingNoteTransposition;
@@ -160,24 +83,8 @@ private:
     juce::Rectangle<int> lasso;
     juce::Array<PizNote> selectedNoteLengths;
 
-    void addToSelection(PizMidiMessageSequence::mehPtr note)
-    {
-        if (note->message.isNoteOn())
-        {
-            if (note->noteOffObject == nullptr)
-            {
-                sequence->updateMatchedPairs();
-            }
-            selectedNotes.addIfNotAlreadyThere(note);
-            selectedNoteLengths.add(PizNote(note));
-        }
-    }
-
-    void clearSelection()
-    {
-        selectedNotes.clear();
-        selectedNoteLengths.clear();
-    }
+    void addToSelection(PizMidiMessageSequence::mehPtr note);
+    void clearSelection();
 
     Timeline* timeline;
     Playbar* playline;
@@ -192,7 +99,6 @@ private:
 
     float seqLength;
 
-    int numEvents;
     double lastDragTime;
     juce::uint8 draggingNoteChannel;
     int draggingNoteNumber;

@@ -8,7 +8,7 @@ class PianoRoll;
 class Playbar : public juce::Component
 {
 public:
-    Playbar(PianoRoll* pianoroll);
+    explicit Playbar(PianoRoll* pianoroll);
 
     ~Playbar() override;
 

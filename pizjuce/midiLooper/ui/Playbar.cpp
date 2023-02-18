@@ -3,13 +3,11 @@
 #include "PianoRoll.h"
 
 Playbar::Playbar(PianoRoll* pianoroll)
-    : Component(), roll(pianoroll)
+    : roll(pianoroll)
 {
 }
 
-Playbar::~Playbar()
-{
-}
+Playbar::~Playbar() = default;
 
 void Playbar::paint(juce::Graphics& g)
 {

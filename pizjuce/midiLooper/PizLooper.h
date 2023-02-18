@@ -201,7 +201,7 @@ public:
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
 
-    bool hasEditor(void) const override
+    bool hasEditor() const override
     {
         return true;
     }

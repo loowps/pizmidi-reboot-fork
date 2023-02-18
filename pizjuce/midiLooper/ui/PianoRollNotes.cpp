@@ -3,6 +3,8 @@
 
 #include "PianoRoll.h"
 
+using juce::jmax;
+
 PianoRollNotes::PianoRollNotes()
 {
     setBufferedToImage(true);
@@ -21,7 +23,7 @@ void PianoRollNotes::paint(juce::Graphics& g)
             {
                 if (roll->sequence->getEventPointer(i)->message.isNoteOn() /* && (i-9999!=hoveringNote)*/)
                 {
-                    auto noteLength = (float) (juce::jmax(1.0, (roll->sequence->getEventTime(roll->sequence->getIndexOfMatchingKeyUp(i)) - roll->sequence->getEventTime(i))) * (double) getWidth() / roll->seqLengthInPpq);
+                    auto noteLength = (float) (jmax(1.0, (roll->sequence->getEventTime(roll->sequence->getIndexOfMatchingKeyUp(i)) - roll->sequence->getEventTime(i))) * (double) getWidth() / roll->seqLengthInPpq);
                     //if (i==sequence->indexOfLastNoteOn
                     //	|| abs(sequence->getEventTime(i)-sequence->getEventTime(sequence->indexOfLastNoteOn))<sequence->chordTolerance)
                     //	g.setColour(Colours::blue);

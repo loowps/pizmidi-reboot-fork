@@ -7,9 +7,7 @@ KeySelector::KeySelector(juce::MidiKeyboardState& state)
     this->setColour(MidiKeyboardComponent::textLabelColourId, juce::Colours::transparentBlack);
 }
 
-KeySelector::~KeySelector()
-{
-}
+KeySelector::~KeySelector() = default;
 
 bool KeySelector::mouseDownOnKey(int midiNoteNumber, const juce::MouseEvent& e)
 {

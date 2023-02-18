@@ -7,15 +7,13 @@ PianoRollBackground::PianoRollBackground()
     setBufferedToImage(true);
 }
 
-PianoRollBackground::~PianoRollBackground()
-{
-}
+PianoRollBackground::~PianoRollBackground() = default;
 
 void PianoRollBackground::paint(juce::Graphics& g)
 {
     const PianoRoll* roll = (PianoRoll*) getParentComponent();
     int n                 = 0;
-    float y               = (float) getHeight();
+    auto y                = (float) getHeight();
     float yinc            = (float) getHeight() / 128.f;
 
     while (y > 0)
@@ -55,7 +53,7 @@ void PianoRollBackground::paint(juce::Graphics& g)
     while (x < getWidth())
     {
         //draw grid
-        if (! (fmod(x, roll->barSize) < 0.0001) && ! (fmod(x, roll->beatSize) < 0.0001))
+        if (fmod(x, roll->barSize) >= 0.0001 && fmod(x, roll->beatSize) >= 0.0001)
         {
             g.setColour(juce::Colours::lightgrey);
             g.drawLine(x, 0.f, x, (float) getHeight());
@@ -67,7 +65,7 @@ void PianoRollBackground::paint(juce::Graphics& g)
     while (x < getWidth())
     {
         //draw beats
-        if (! (fmod(x, roll->barSize) < 0.0001))
+        if (fmod(x, roll->barSize) >= 0.0001)
         {
             g.setColour(juce::Colours::grey);
             g.drawLine(x, 0.f, x, (float) getHeight());

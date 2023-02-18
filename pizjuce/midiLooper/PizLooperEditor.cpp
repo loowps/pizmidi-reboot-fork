@@ -2099,7 +2099,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     s_RecCC = std::make_unique<VSTSlider>("recCC");
     addAndMakeVisible(s_RecCC.get());
-    s_RecCC->setTooltip(TRANS("CC Number to toggle recoring to active slot"));
+    s_RecCC->setTooltip(TRANS("CC Number to toggle recording to active slot"));
     s_RecCC->setRange(-2, 127, 1);
     s_RecCC->setSliderStyle(juce::Slider::LinearBar);
     s_RecCC->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -3705,7 +3705,7 @@ void PizLooperEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
 void PizLooperEditor::sliderValueChanged(juce::Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
-    VSTSlider* slider = (VSTSlider*) sliderThatWasMoved;
+    auto* slider = (VSTSlider*) sliderThatWasMoved;
     //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == s_Transpose.get())
@@ -4631,7 +4631,7 @@ void PizLooperEditor::updateParametersFromFilter()
 
     filter->getCallbackLock().exit();
 
-    // ..and after releasing the lock, we're free to do the time-consuming UI stuff..
+    // and after releasing the lock, we're free to do the time-consuming UI stuff
     {
         b_Snap->setToggleState(filter->getPRSetting("snap"), juce::dontSendNotification);
         pianoRoll->setSnap(b_Snap->getToggleState());
@@ -5025,7 +5025,7 @@ juce::TextButton* PizLooperEditor::getButtonForSlot(int slot)
         case 127:
             return textButton128.get();
         default:
-            return 0;
+            return nullptr;
     }
 }
 
@@ -5551,3 +5551,15 @@ static const unsigned char resource_PizLooperEditor_piznew40_png[] = { 137, 80, 
 
 const char* PizLooperEditor::piznew40_png   = (const char*) resource_PizLooperEditor_piznew40_png;
 const int PizLooperEditor::piznew40_pngSize = 1803;
+
+void PizLooperEditor::clickableLabelMouseDown(ClickableLabel* label, const juce::MouseEvent& e)
+{
+}
+
+void PizLooperEditor::clickableLabelMouseDoubleClick(ClickableLabel* label, const juce::MouseEvent& e)
+{
+    if (label == nameLabel.get())
+    {
+        label->edit();
+    }
+}

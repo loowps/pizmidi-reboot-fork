@@ -36,17 +36,8 @@ public:
     void mouseDown(const juce::MouseEvent& e) override;
     void mouseUp(const juce::MouseEvent& e) override;
 
-    void clickableLabelMouseDown(ClickableLabel* label, const juce::MouseEvent& e) override
-    {
-    }
-
-    void clickableLabelMouseDoubleClick(ClickableLabel* label, const juce::MouseEvent& e) override
-    {
-        if (label == nameLabel.get())
-        {
-            label->edit();
-        }
-    }
+    void clickableLabelMouseDown(ClickableLabel* label, const juce::MouseEvent& e) override;
+    void clickableLabelMouseDoubleClick(ClickableLabel* label, const juce::MouseEvent& e) override;
 
     void handleNoteOn(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff(juce::MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;

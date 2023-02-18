@@ -9,11 +9,10 @@ using juce::jmin;
 using juce::roundToInt;
 
 PianoRoll::PianoRoll(juce::AudioProcessor* _plugin, juce::AudioProcessorEditor* _owner, Timeline* _timeline)
-    : sequence(0),
+    : sequence(nullptr),
       hoveringNoteIndex(-1),
       hoveringNote(nullptr),
       timebase(960.0),
-      numEvents(0),
       snapToGrid(true),
       defaultChannel(0),
       playTime(0.0),
@@ -27,11 +26,11 @@ PianoRoll::PianoRoll(juce::AudioProcessor* _plugin, juce::AudioProcessorEditor* 
       draggingNoteTimeDelta(0)
 
 {
-    plugin       = _plugin;
-    owner        = _owner;
-    timeline     = _timeline;
-    blankLength  = timebase * 16.0;
-    pixelsPerPpq = (float) (800.0 / blankLength);
+    plugin      = _plugin;
+    owner       = _owner;
+    timeline    = _timeline;
+    blankLength = timebase * 16.0;
+
     setNoteLength(4.f);
     setTimeSig(4, 4);
     addAndMakeVisible(bg = new PianoRollBackground());
@@ -55,14 +54,9 @@ PianoRoll::~PianoRoll()
 
 void PianoRoll::setSequence(Loop* sequence_)
 {
-    sequence  = sequence_;
-    numEvents = sequence->getNumEvents();
+    sequence = sequence_;
+    sequence->getNumEvents();
     sequenceChanged();
-}
-
-int PianoRoll::getTimeInPixels()
-{
-    return roundToInt(sequence->getCurrentTime() * (double) noteLayer->getWidth() / seqLengthInPpq);
 }
 
 void PianoRoll::mouseDown(const juce::MouseEvent& e)
@@ -290,11 +284,6 @@ void PianoRoll::mouseUp(const juce::MouseEvent& e)
     }
 }
 
-//void PianoRoll::mouseMove (const MouseEvent& e)
-//{
-//
-//}
-
 void PianoRoll::mouseDoubleClick(const juce::MouseEvent& e)
 {
     if (e.mods.isLeftButtonDown())
@@ -347,8 +336,7 @@ void PianoRoll::resized()
     gridSize = (float) noteLayer->getWidth() / seqLength;
     beatSize = ppqToPixels(timebase * 4.0 / (double) timeSigD);
     barSize  = ppqToPixels(timebase * quarterNotesPerBar);
-    xinc     = (float) noteLayer->getWidth() / (seqLength - 1);
-    yinc     = (float) getHeight() / 128.f;
+    yinc = (float) getHeight() / 128.f;
 }
 
 void PianoRoll::sequenceChanged()
@@ -361,8 +349,7 @@ void PianoRoll::sequenceChanged()
     beatSize           = ppqToPixels(timebase * 4.0 / (double) timeSigD);
     quarterNotesPerBar = (double) (timeSigN * 4) / (double) timeSigD;
     barSize            = ppqToPixels(timebase * quarterNotesPerBar);
-    xinc               = (float) noteLayer->getWidth() / (seqLength - 1);
-    numEvents          = sequence->getNumEvents();
+
     bg->repaint();
     noteLayer->repaint();
     timeline->repaint();
@@ -385,7 +372,6 @@ void PianoRoll::setNoteLength(float newBeatDiv)
         stepLengthInPpq = timebase * noteLength;
         seqLength       = (float) (seqLengthInPpq / stepLengthInPpq);
         gridSize        = (float) getWidth() / seqLength;
-        xinc            = (float) getWidth() / (seqLength - 1);
     }
 }
 
@@ -422,7 +408,91 @@ double PianoRoll::snapPpqToGrid(double ppq, bool round)
     return stepLengthInPpq * floor(ppq / stepLengthInPpq);
 }
 
-float PianoRoll::getNoteHeight()
+void PianoRoll::setDisplayLength(double ppq)
 {
-    return (float) getHeight() / 128.f;
+    blankLength = ppq;
+    sequenceChanged();
+}
+
+void PianoRoll::setDisplayLength(int bars)
+{
+    int pixelBarLength = (int) ppqToPixels(getPpqPerBar());
+    blankLength        = getPpqPerBar() * bars;
+    sequenceChanged();
+    setSize((int) ppqToPixels(juce::jmax(blankLength, seqLengthInPpq)), getHeight());
+}
+
+void PianoRoll::addBar()
+{
+    int pixelBarLength = (int) ppqToPixels(getPpqPerBar());
+    setDisplayLength(seqLengthInPpq + getPpqPerBar());
+    setSize(getWidth() + pixelBarLength, getHeight());
+}
+
+void PianoRoll::removeBar()
+{
+    int pixelBarLength = (int) ppqToPixels(getPpqPerBar());
+    setDisplayLength(juce::jmax(getPpqPerBar(), seqLengthInPpq - getPpqPerBar()));
+    setSize(juce::jmax(pixelBarLength, getWidth() - pixelBarLength), getHeight());
+}
+
+int PianoRoll::getDisplayLength()
+{
+    return (int) (juce::jmax(blankLength, seqLengthInPpq) / getPpqPerBar());
+}
+
+bool PianoRoll::getSnap() const
+{
+    return snapToGrid;
+}
+
+void PianoRoll::setSnap(bool snap)
+{
+    snapToGrid = snap;
+}
+
+void PianoRoll::setPlayTime(double timeInPpq)
+{
+    const int lastpixels = ppqToPixelsWithOffset(playTime);
+    const int pixels     = ppqToPixelsWithOffset(timeInPpq);
+    if (pixels != lastpixels)
+    {
+        playTime = timeInPpq;
+        playline->repaint(lastpixels, 0, 1, getHeight());
+        playline->repaint(pixels, 0, 1, getHeight());
+    }
+}
+
+double PianoRoll::getPpqPerBar() const
+{
+    return timebase * quarterNotesPerBar;
+}
+
+juce::Component* PianoRoll::getPlayline()
+{
+    return (Component*) playline;
+}
+
+void PianoRoll::repaintBG()
+{
+    bg->repaint();
+}
+
+void PianoRoll::addToSelection(PizMidiMessageSequence::mehPtr note)
+{
+    if (note->message.isNoteOn())
+    {
+        if (note->noteOffObject == nullptr)
+        {
+            sequence->updateMatchedPairs();
+        }
+        selectedNotes.addIfNotAlreadyThere(note);
+        selectedNoteLengths.add(PizNote(note));
+    }
+}
+
+void PianoRoll::clearSelection()
+{
+    selectedNotes.clear();
+    selectedNoteLengths.clear();
 }
