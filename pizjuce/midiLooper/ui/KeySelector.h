@@ -11,7 +11,7 @@ public:
 
 private:
     bool mouseDownOnKey(int midiNoteNumber, const juce::MouseEvent& e) override;
-    juce::MidiKeyboardState* s;
+    juce::MidiKeyboardState* keyboardState;
 };
 
 #endif //PIZMIDI_KEYSELECTOR_H
