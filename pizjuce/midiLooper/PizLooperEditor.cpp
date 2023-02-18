@@ -6,7 +6,6 @@ using juce::jmax;
 using juce::jmin;
 using juce::roundToInt;
 
-//==============================================================================
 PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     : AudioProcessorEditor(ownerFilter)
 {
@@ -180,32 +179,38 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_Overdub = std::make_unique<juce::TextButton>("Overdub");
     addAndMakeVisible(b_Overdub.get());
     b_Overdub->setTooltip(TRANS("Toggle overdub recording"));
-    b_Overdub->addListener(this);
     b_Overdub->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     b_Overdub->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
     b_Overdub->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
-
     b_Overdub->setBounds(523, 12, 80, 20);
+    b_Overdub->onClick = [this]
+    {
+        handleOverdubButtonClick();
+    };
 
     b_Thru = std::make_unique<juce::TextButton>("MIDI Thru");
     addAndMakeVisible(b_Thru.get());
     b_Thru->setTooltip(TRANS("Toggle MIDI Thru (Notes selected for Note Triggering and Scale Channel are always blocked)"));
     b_Thru->setButtonText(TRANS("Thru"));
-    b_Thru->addListener(this);
     b_Thru->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-
     b_Thru->setBounds(634, 33, 40, 20);
+    b_Thru->onClick = [this]
+    {
+        handleThruButtonClick();
+    };
 
     b_Clear = std::make_unique<juce::TextButton>("Clear");
     addAndMakeVisible(b_Clear.get());
     b_Clear->setTooltip(TRANS("Erase MIDI data from the current slot"));
     b_Clear->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_Clear->addListener(this);
     b_Clear->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
     b_Clear->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
     b_Clear->setColour(juce::TextButton::textColourOnId, juce::Colours::azure);
-
     b_Clear->setBounds(264, 90, 39, 22);
+    b_Clear->onClick = [this]
+    {
+        handleClearButtonClick();
+    };
 
     stepsizeBox = std::make_unique<juce::ComboBox>("Loop Step Size");
     addAndMakeVisible(stepsizeBox.get());
@@ -220,9 +225,10 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     stepsizeBox->addItem(TRANS("1 Beat"), 4);
     stepsizeBox->addItem(TRANS("16th Note"), 5);
     stepsizeBox->addItem(TRANS("1 Tick"), 6);
-    stepsizeBox->addListener(this);
-
     stepsizeBox->setBounds(264, 15, 77, 16);
+    stepsizeBox->onChange = [this] {
+        handleStepsizeComboBoxChange();
+    };
 
     s_Transpose = std::make_unique<VSTSlider>("Transpose");
     addAndMakeVisible(s_Transpose.get());
@@ -233,7 +239,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Transpose->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Transpose->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Transpose->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Transpose->addListener(this);
+    s_Transpose->onValueChange = [this] {
+        handleTransposeSliderChange();
+    };
 
     s_Transpose->setBounds(146, 283, 72, 20);
 
@@ -246,7 +254,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Octave->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Octave->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Octave->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Octave->addListener(this);
+    s_Octave->onValueChange = [this] {
+      handleOctaveSliderChange();
+    };
 
     s_Octave->setBounds(226, 283, 72, 20);
 
@@ -259,7 +269,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Velocity->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Velocity->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Velocity->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Velocity->addListener(this);
+    s_Velocity->onValueChange = [this] {
+        handleVelocitySliderChange();
+    };
 
     s_Velocity->setBounds(306, 283, 72, 20);
 
@@ -308,7 +320,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Start->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Start->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Start->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Start->addListener(this);
+    s_Start->onValueChange = [this] {
+        handleStartSliderChange();
+    };
 
     s_Start->setBounds(66, 367, 72, 20);
 
@@ -333,7 +347,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_End->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_End->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_End->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_End->addListener(this);
+    s_End->onValueChange = [this] {
+        handleEndSliderChange();
+    };
 
     s_End->setBounds(146, 367, 72, 20);
 
@@ -358,7 +374,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Stretch->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Stretch->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Stretch->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Stretch->addListener(this);
+    s_Stretch->onValueChange = [this] {
+        handleStretchSliderChange();
+    };
 
     s_Stretch->setBounds(306, 367, 72, 20);
 
@@ -385,7 +403,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     loopmodeBox->addItem(TRANS("Sync loop"), 2);
     loopmodeBox->addItem(TRANS("Unsync 1-shot"), 3);
     loopmodeBox->addItem(TRANS("Unsync loop"), 4);
-    loopmodeBox->addListener(this);
+    loopmodeBox->onChange = [this] {
+        handleLoopModeComboBoxChange();
+    };
 
     loopmodeBox->setBounds(175, 144, 110, 16);
 
@@ -401,7 +421,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     notetriggerBox->addItem(TRANS("Poly (Transpose)"), 3);
     notetriggerBox->addItem(TRANS("Mono (Orig. Key)"), 4);
     notetriggerBox->addSeparator();
-    notetriggerBox->addListener(this);
+    notetriggerBox->onChange = [this] {
+        handleNoteTriggerComboBoxChange();
+    };
 
     notetriggerBox->setBounds(146, 402, 106, 16);
 
@@ -415,7 +437,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     syncmodeBox->addItem(TRANS("PPQ (Host 0)"), 1);
     syncmodeBox->addItem(TRANS("PPQ (Recstart)"), 2);
     syncmodeBox->addItem(TRANS("Sample"), 3);
-    syncmodeBox->addListener(this);
+    syncmodeBox->onChange = [this] {
+        handleSyncModeComboBoxChange();
+    };
 
     syncmodeBox->setBounds(159, 15, 99, 16);
 
@@ -428,7 +452,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Root->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Root->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Root->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Root->addListener(this);
+    s_Root->onValueChange = [this] {
+        handleRootSliderChange();
+    };
 
     s_Root->setBounds(76, 174, 64, 20);
 
@@ -453,7 +479,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Low->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Low->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Low->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Low->addListener(this);
+    s_Low->onValueChange = [this] {
+        handleLowSliderChange();
+    };
 
     s_Low->setBounds(18, 440, 64, 20);
 
@@ -478,7 +506,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_High->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_High->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_High->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_High->addListener(this);
+    s_High->onValueChange = [this] {
+        handleHighSliderChange();
+    };
 
     s_High->setBounds(90, 440, 64, 20);
 
@@ -503,7 +533,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_TrigChan->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_TrigChan->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_TrigChan->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_TrigChan->addListener(this);
+    s_TrigChan->onValueChange = [this] {
+        handleTrigChanSliderChange();
+    };
 
     s_TrigChan->setBounds(162, 440, 64, 20);
 
@@ -523,7 +555,10 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_Reload.get());
     b_Reload->setTooltip(TRANS("Load MIDI file (Ctrl-click: load MIDI file with the current pattern name from the \"midiloops\" folder)"));
     b_Reload->setConnectedEdges(juce::Button::ConnectedOnLeft);
-    b_Reload->addListener(this);
+    b_Reload->onClick = [this]
+    {
+        handleReloadButtonClick();
+    };
     b_Reload->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
     b_Reload->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
     b_Reload->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
@@ -542,7 +577,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     quantizeBox->addItem(TRANS("16th"), 3);
     quantizeBox->addItem(TRANS("32nd"), 4);
     quantizeBox->addItem(TRANS("64th"), 5);
-    quantizeBox->addListener(this);
+    quantizeBox->onChange = [this] {
+        handleQuantizeComboBoxChange();
+    };
 
     quantizeBox->setBounds(439, 15, 77, 16);
 
@@ -567,7 +604,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Shift->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Shift->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Shift->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Shift->addListener(this);
+    s_Shift->onValueChange = [this] {
+        handleShiftSliderChange();
+    };
 
     s_Shift->setBounds(226, 367, 72, 20);
 
@@ -604,15 +643,19 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     nameLabel->setEditable(false, true, false);
     nameLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     nameLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::white);
-    nameLabel->addListener(this);
-
+    nameLabel->onTextChange = [this] {
+        handleNameLabelTextChange();
+    };
     nameLabel->setBounds(4, 87, 256, 27);
 
     b_Save = std::make_unique<juce::TextButton>("Save");
     addAndMakeVisible(b_Save.get());
     b_Save->setTooltip(TRANS("Save a MIDI file of the current pattern (Ctrl-click: save to the \"midiloops\" folder with the current name)"));
     b_Save->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
-    b_Save->addListener(this);
+    b_Save->onClick = [this]
+    {
+        handleSaveButtonClick();
+    };
     b_Save->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
     b_Save->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
     b_Save->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
@@ -687,7 +730,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_Channel->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_Channel->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_Channel->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_Channel->addListener(this);
+    s_Channel->onValueChange = [this] {
+        handleChannelSliderChange();
+    };
 
     s_Channel->setBounds(314, 414, 64, 20);
 
@@ -724,7 +769,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_FixedLength->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
     s_FixedLength->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_FixedLength->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_FixedLength->addListener(this);
+    s_FixedLength->onValueChange = [this] {
+        handleFixedLengthSliderChange();
+    };
 
     s_FixedLength->setBounds(347, 15, 86, 16);
 
@@ -732,7 +779,10 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_Filt.get());
     b_Filt->setTooltip(TRANS("Transform: all events in the pattern are channelized to the sected channel; Filter: only events with the selected channel will be output"));
     b_Filt->setButtonText(TRANS("Transform"));
-    b_Filt->addListener(this);
+    b_Filt->onClick = [this]
+    {
+        handleFiltButtonClick();
+    };
     b_Filt->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     b_Filt->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
@@ -750,10 +800,12 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_NoteToggle.get());
     b_NoteToggle->setTooltip(TRANS("When enabled, Note On events will toggle playback, ignoring Note Off events; otherwise Note Off will stop playback"));
     b_NoteToggle->setButtonText(TRANS("Toggle"));
-    b_NoteToggle->addListener(this);
     b_NoteToggle->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-
     b_NoteToggle->setBounds(257, 402, 40, 16);
+    b_NoteToggle->onClick = [this]
+    {
+        handleNoteToggleButtonClick();
+    };
 
     s_PlayGroup = std::make_unique<VSTSlider>("TriggerChannel");
     addAndMakeVisible(s_PlayGroup.get());
@@ -764,7 +816,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_PlayGroup->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_PlayGroup->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_PlayGroup->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_PlayGroup->addListener(this);
+    s_PlayGroup->onValueChange = [this] {
+        handlePlayGroupSliderChange();
+    };
 
     s_PlayGroup->setBounds(312, 136, 64, 20);
 
@@ -789,7 +843,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_MuteGroup->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_MuteGroup->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_MuteGroup->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_MuteGroup->addListener(this);
+    s_MuteGroup->onValueChange = [this] {
+        handleMuteGroupSliderChange();
+    };
 
     s_MuteGroup->setBounds(312, 174, 64, 20);
 
@@ -809,9 +865,11 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_Snap.get());
     b_Snap->setTooltip(TRANS("Toggle Snap to Grid"));
     b_Snap->setButtonText(TRANS("Snap"));
-    b_Snap->addListener(this);
-
     b_Snap->setBounds(392, 61, 59, 24);
+    b_Snap->onClick = [this]
+    {
+        handleSnapButtonClick();
+    };
 
     quantizeBox2 = std::make_unique<juce::ComboBox>("PR Quantize Step");
     addAndMakeVisible(quantizeBox2.get());
@@ -825,7 +883,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     quantizeBox2->addItem(TRANS("16th"), 3);
     quantizeBox2->addItem(TRANS("32nd"), 4);
     quantizeBox2->addItem(TRANS("64th"), 5);
-    quantizeBox2->addListener(this);
+    quantizeBox2->onChange = [this] {
+        handleQuantize2ComboBoxChange();
+    };
 
     quantizeBox2->setBounds(453, 64, 50, 18);
 
@@ -833,10 +893,12 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_ForceToKey.get());
     b_ForceToKey->setTooltip(TRANS("When checked, played notes will be fitted to the defined scale"));
     b_ForceToKey->setButtonText(TRANS("Force to Scale"));
-    b_ForceToKey->addListener(this);
     b_ForceToKey->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-
     b_ForceToKey->setBounds(11, 312, 99, 17);
+    b_ForceToKey->onClick = [this]
+    {
+        handleForceToKeyButtonClick();
+    };
 
     keySelector = std::make_unique<KeySelector>(ownerFilter->keySelectorState);
     addAndMakeVisible(keySelector.get());
@@ -849,29 +911,35 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_ShiftUp->setTooltip(TRANS("Shift selected notes one semitone up"));
     b_ShiftUp->setButtonText(TRANS(">"));
     b_ShiftUp->setConnectedEdges(juce::Button::ConnectedOnLeft);
-    b_ShiftUp->addListener(this);
     b_ShiftUp->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-
     b_ShiftUp->setBounds(353, 314, 21, 30);
+    b_ShiftUp->onClick = [this]
+    {
+        handleShiftUpButtonClick();
+    };
 
     b_ShiftDown = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(b_ShiftDown.get());
     b_ShiftDown->setTooltip(TRANS("Shift selected notes one semitone down"));
     b_ShiftDown->setButtonText(TRANS("<"));
     b_ShiftDown->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_ShiftDown->addListener(this);
     b_ShiftDown->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-
     b_ShiftDown->setBounds(178, 314, 21, 30);
+    b_ShiftDown->onClick = [this]
+    {
+        handleShiftDownButtonClick();
+    };
 
     b_SingleLoop = std::make_unique<juce::ToggleButton>("Single Loop");
     addAndMakeVisible(b_SingleLoop.get());
     b_SingleLoop->setTooltip(TRANS("When checked, switching from a playing slot to another slot will automatically play the new slot and stop the previous one"));
     b_SingleLoop->setButtonText(TRANS("Play active slot only"));
-    b_SingleLoop->addListener(this);
     b_SingleLoop->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-
     b_SingleLoop->setBounds(155, 36, 122, 16);
+    b_SingleLoop->onClick = [this]
+    {
+        handleSingleLoopButtonClick();
+    };
 
     s_MasterVelocity = std::make_unique<VSTSlider>("VMasterVelocity");
     addAndMakeVisible(s_MasterVelocity.get());
@@ -882,7 +950,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_MasterVelocity->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
     s_MasterVelocity->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_MasterVelocity->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_MasterVelocity->addListener(this);
+    s_MasterVelocity->onValueChange = [this] {
+        handleMasterVelocitySliderChange();
+    };
 
     s_MasterVelocity->setBounds(371, 36, 72, 16);
 
@@ -902,10 +972,12 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(aboutButton.get());
     aboutButton->setTooltip(TRANS("Insert Piz Here-> midiLooper v1.3  https://github.com/sleiner/pizmidi"));
     aboutButton->setButtonText(juce::String());
-    aboutButton->addListener(this);
-
     aboutButton->setImages(false, true, true, juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000));
     aboutButton->setBounds(9, 1, 136, 47);
+    aboutButton->onClick = []
+    {
+        handleAboutButtonClick();
+    };
 
     b_Triplet = std::make_unique<juce::TextButton>("Triplet");
     addAndMakeVisible(b_Triplet.get());
@@ -913,10 +985,12 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_Triplet->setButtonText(TRANS("3"));
     b_Triplet->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
     b_Triplet->setRadioGroupId(2);
-    b_Triplet->addListener(this);
     b_Triplet->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
-
     b_Triplet->setBounds(506, 64, 18, 18);
+    b_Triplet->onClick = [this]
+    {
+        handleTripletButtonClick();
+    };
 
     b_Dotted = std::make_unique<juce::TextButton>("Dotted");
     addAndMakeVisible(b_Dotted.get());
@@ -924,20 +998,24 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_Dotted->setButtonText(TRANS("."));
     b_Dotted->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
     b_Dotted->setRadioGroupId(2);
-    b_Dotted->addListener(this);
     b_Dotted->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
-
     b_Dotted->setBounds(528, 64, 18, 18);
+    b_Dotted->onClick = [this]
+    {
+        handleDottedButtonClick();
+    };
 
     b_ZoomOut = std::make_unique<juce::TextButton>("ZoomOut");
     addAndMakeVisible(b_ZoomOut.get());
     b_ZoomOut->setTooltip(TRANS("Zoom Out (Ctrl-click for vertical)"));
     b_ZoomOut->setButtonText(TRANS("-"));
     b_ZoomOut->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_ZoomOut->addListener(this);
     b_ZoomOut->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-
     b_ZoomOut->setBounds(656, 64, 18, 18);
+    b_ZoomOut->onClick = [this]
+    {
+        handleZoomOutButtonClick();
+    };
 
     b_ZoomIn = std::make_unique<juce::TextButton>("ZoomIn");
     addAndMakeVisible(b_ZoomIn.get());
@@ -945,44 +1023,51 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_ZoomIn->setButtonText(TRANS("+"));
     b_ZoomIn->setConnectedEdges(juce::Button::ConnectedOnLeft);
     b_ZoomIn->setRadioGroupId(2);
-    b_ZoomIn->addListener(this);
     b_ZoomIn->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-
     b_ZoomIn->setBounds(674, 64, 18, 18);
+    b_ZoomIn->onClick = [this]
+    {
+        handleZoomInButtonClick();
+    };
 
-    numerator = std::make_unique<juce::Label>("new label",
+    numeratorLabel = std::make_unique<juce::Label>("new label",
                                               TRANS("4"));
-    addAndMakeVisible(numerator.get());
-    numerator->setTooltip(TRANS("Time Sig Numerator"));
-    numerator->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    numerator->setJustificationType(juce::Justification::centredRight);
-    numerator->setEditable(true, true, false);
-    numerator->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    numerator->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-    numerator->addListener(this);
+    addAndMakeVisible(numeratorLabel.get());
+    numeratorLabel->setTooltip(TRANS("Time Sig Numerator"));
+    numeratorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    numeratorLabel->setJustificationType(juce::Justification::centredRight);
+    numeratorLabel->setEditable(true, true, false);
+    numeratorLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    numeratorLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    numeratorLabel->onTextChange = [this] {
+        handleNumeratorLabelTextChange();
+    };
+    numeratorLabel->setBounds(555, 64, 27, 18);
 
-    numerator->setBounds(555, 64, 27, 18);
-
-    denominator = std::make_unique<juce::Label>("new label",
+    denominatorLabel = std::make_unique<juce::Label>("new label",
                                                 TRANS("4"));
-    addAndMakeVisible(denominator.get());
-    denominator->setTooltip(TRANS("Time Sig Denominator"));
-    denominator->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
-    denominator->setJustificationType(juce::Justification::centredLeft);
-    denominator->setEditable(true, true, false);
-    denominator->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    denominator->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-    denominator->addListener(this);
+    addAndMakeVisible(denominatorLabel.get());
+    denominatorLabel->setTooltip(TRANS("Time Sig Denominator"));
+    denominatorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
+    denominatorLabel->setJustificationType(juce::Justification::centredLeft);
+    denominatorLabel->setEditable(true, true, false);
+    denominatorLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    denominatorLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
+    denominatorLabel->onTextChange = [this] {
+        handleDenominatorLabelChange();
+    };
 
-    denominator->setBounds(584, 64, 29, 18);
+    denominatorLabel->setBounds(584, 64, 29, 18);
 
     b_UseScaleChannel = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(b_UseScaleChannel.get());
     b_UseScaleChannel->setTooltip(TRANS("When checked, input notes on \"Scale Ch\" will be used to define the scale"));
     b_UseScaleChannel->setButtonText(TRANS("Use Scale Channel"));
-    b_UseScaleChannel->addListener(this);
+    b_UseScaleChannel->onClick = [this]
+    {
+        handleUseScaleChannelButtonClick();
+    };
     b_UseScaleChannel->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-
     b_UseScaleChannel->setBounds(11, 329, 129, 17);
 
     s_ScaleChannel = std::make_unique<VSTSlider>("ScaleChannel");
@@ -994,7 +1079,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_ScaleChannel->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_ScaleChannel->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_ScaleChannel->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_ScaleChannel->addListener(this);
+    s_ScaleChannel->onValueChange = [this] {
+        handleScaleChannelSliderChange();
+    };
 
     s_ScaleChannel->setBounds(10, 283, 60, 20);
 
@@ -1019,7 +1106,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_MasterTranspose->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e707070));
     s_MasterTranspose->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_MasterTranspose->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_MasterTranspose->addListener(this);
+    s_MasterTranspose->onValueChange = [this] {
+        handleMasterTransposeSliderChange();
+    };
 
     s_MasterTranspose->setBounds(554, 36, 72, 16);
 
@@ -1039,19 +1128,23 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_WaitForBar.get());
     b_WaitForBar->setTooltip(TRANS("When checked, play/stop of this slot will happen at the start of the bar after"));
     b_WaitForBar->setButtonText(TRANS("Wait for Next Bar"));
-    b_WaitForBar->addListener(this);
+    b_WaitForBar->onClick = [this]
+    {
+        handleWaitForBarButtonClick();
+    };
     b_WaitForBar->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-
     b_WaitForBar->setBounds(175, 123, 107, 16);
 
     midiOutDeviceBox = std::make_unique<juce::ComboBox>("midiOutDevice");
     addAndMakeVisible(midiOutDeviceBox.get());
-    midiOutDeviceBox->setTooltip(TRANS("Send ouput to selected MIDI port in addition to VST host output"));
+    midiOutDeviceBox->setTooltip(TRANS("Send output to selected MIDI port in addition to VST host output"));
     midiOutDeviceBox->setEditableText(false);
     midiOutDeviceBox->setJustificationType(juce::Justification::centredLeft);
     midiOutDeviceBox->setTextWhenNothingSelected(TRANS("--"));
     midiOutDeviceBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    midiOutDeviceBox->addListener(this);
+    midiOutDeviceBox->onChange = [this] {
+        handleMidiOutDeviceComboBoxChange();
+    };
 
     midiOutDeviceBox->setBounds(633, 15, 158, 16);
 
@@ -1071,19 +1164,23 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_UseTrChannel.get());
     b_UseTrChannel->setTooltip(TRANS("When checked, notes on selected \"Transpose Ch\" will apply to \"Semitones\" and \"Octave\" settings, relative to \"Root Note\""));
     b_UseTrChannel->setButtonText(TRANS("Use Transp Ch"));
-    b_UseTrChannel->addListener(this);
     b_UseTrChannel->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-
     b_UseTrChannel->setBounds(148, 252, 130, 17);
+    b_UseTrChannel->onClick = [this]
+    {
+        handleUseTrChannelButtonClick();
+    };
 
     b_ImmediateTranspose = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(b_ImmediateTranspose.get());
     b_ImmediateTranspose->setTooltip(TRANS("When checked, playing notes will be split and transposed immediately on changes to Semitones / Octave / Force to Scale / Master Transpose settings"));
     b_ImmediateTranspose->setButtonText(TRANS("Split"));
-    b_ImmediateTranspose->addListener(this);
     b_ImmediateTranspose->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-
     b_ImmediateTranspose->setBounds(247, 252, 48, 17);
+    b_ImmediateTranspose->onClick = [this]
+    {
+        handleImmediateTransposeButtonClick();
+    };
 
     s_NumLoops = std::make_unique<VSTSlider>("NumLoops");
     addAndMakeVisible(s_NumLoops.get());
@@ -1094,7 +1191,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_NumLoops->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_NumLoops->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_NumLoops->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_NumLoops->addListener(this);
+    s_NumLoops->onValueChange = [this] {
+        handleNumLoopsSliderChange();
+    };
 
     s_NumLoops->setBounds(155, 174, 64, 20);
 
@@ -1107,7 +1206,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_NextSlot->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_NextSlot->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_NextSlot->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_NextSlot->addListener(this);
+    s_NextSlot->onValueChange = [this] {
+        handleNextSlotSliderChange();
+    };
 
     s_NextSlot->setBounds(234, 174, 64, 20);
 
@@ -1133,7 +1234,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     forceModeBox->addItem(TRANS("Up"), 2);
     forceModeBox->addItem(TRANS("Down"), 3);
     forceModeBox->addItem(TRANS("Block"), 4);
-    forceModeBox->addListener(this);
+    forceModeBox->onChange = [this] {
+        handleForceModeComboBoxChange();
+    };
 
     forceModeBox->setBounds(110, 313, 61, 16);
 
@@ -1148,10 +1251,12 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_RemoveBar->setTooltip(TRANS("Remove bar"));
     b_RemoveBar->setButtonText(TRANS("-"));
     b_RemoveBar->setConnectedEdges(juce::Button::ConnectedOnRight);
-    b_RemoveBar->addListener(this);
     b_RemoveBar->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-
     b_RemoveBar->setBounds(706, 64, 18, 18);
+    b_RemoveBar->onClick = [this]
+    {
+        handleRemoveBarButtonClick();
+    };
 
     b_AddBar = std::make_unique<juce::TextButton>("AddBar");
     addAndMakeVisible(b_AddBar.get());
@@ -1159,10 +1264,12 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_AddBar->setButtonText(TRANS("+"));
     b_AddBar->setConnectedEdges(juce::Button::ConnectedOnLeft);
     b_AddBar->setRadioGroupId(2);
-    b_AddBar->addListener(this);
     b_AddBar->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
-
     b_AddBar->setBounds(773, 64, 18, 18);
+    b_AddBar->onClick = [this]
+    {
+        handleAddBarButtonClick();
+    };
 
     LengthLabel = std::make_unique<juce::Label>("Length",
                                                 TRANS("4"));
@@ -1173,7 +1280,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     LengthLabel->setEditable(true, true, false);
     LengthLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     LengthLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
-    LengthLabel->addListener(this);
+    LengthLabel->onTextChange = [this] {
+        handleLengthLabelChange();
+    };
 
     LengthLabel->setBounds(724, 65, 49, 16);
 
@@ -2083,19 +2192,23 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     b_Transpose10 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(b_Transpose10.get());
     b_Transpose10->setButtonText(TRANS("transpose channel 10"));
-    b_Transpose10->addListener(this);
     b_Transpose10->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
-
     b_Transpose10->setBounds(306, 252, 72, 13);
+    b_Transpose10->onClick = [this]
+    {
+        handleTranspose10ButtonClick();
+    };
 
     b_KeepLength = std::make_unique<juce::ToggleButton>("OverdubMode");
     addAndMakeVisible(b_KeepLength.get());
     b_KeepLength->setTooltip(TRANS("When checked, overdubbing will loop record into existing loop length"));
     b_KeepLength->setButtonText(TRANS("Keep Length"));
-    b_KeepLength->addListener(this);
     b_KeepLength->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
-
     b_KeepLength->setBounds(520, -2, 83, 16);
+    b_KeepLength->onClick = [this]
+    {
+        handleKeepLengthButtonClick();
+    };
 
     s_RecCC = std::make_unique<VSTSlider>("recCC");
     addAndMakeVisible(s_RecCC.get());
@@ -2106,7 +2219,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_RecCC->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_RecCC->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_RecCC->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_RecCC->addListener(this);
+    s_RecCC->onValueChange = [this] {
+        handleRecCCSliderChange();
+    };
 
     s_RecCC->setBounds(11, 149, 64, 20);
 
@@ -2119,7 +2234,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_PlayCC->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_PlayCC->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_PlayCC->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_PlayCC->addListener(this);
+    s_PlayCC->onValueChange = [this] {
+        handlePlayCCSliderChange();
+    };
 
     s_PlayCC->setBounds(81, 149, 64, 20);
 
@@ -2132,7 +2249,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_VelocitySens->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_VelocitySens->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_VelocitySens->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_VelocitySens->addListener(this);
+    s_VelocitySens->onValueChange = [this] {
+      handleVelocitySensSliderChange();
+    };
 
     s_VelocitySens->setBounds(234, 440, 64, 20);
 
@@ -2152,7 +2271,10 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(b_Monitor.get());
     b_Monitor->setTooltip(TRANS("Monitor input MIDI through active slot\'s settings (Transpose, Scale, I/O Channel)"));
     b_Monitor->setButtonText(TRANS("Monitor"));
-    b_Monitor->addListener(this);
+    b_Monitor->onClick = [this]
+    {
+        handleMonitorButtonClick();
+    };
     b_Monitor->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
 
     b_Monitor->setBounds(678, 33, 55, 20);
@@ -2166,7 +2288,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     s_TransposeChannel->setColour(juce::Slider::backgroundColourId, juce::Colour(0x1e000000));
     s_TransposeChannel->setColour(juce::Slider::thumbColourId, juce::Colours::black);
     s_TransposeChannel->setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
-    s_TransposeChannel->addListener(this);
+    s_TransposeChannel->onValueChange = [this] {
+        handleTransposeChannelSliderChange();
+    };
 
     s_TransposeChannel->setBounds(76, 283, 60, 20);
 
@@ -2478,8 +2602,8 @@ PizLooperEditor::~PizLooperEditor()
     b_Dotted             = nullptr;
     b_ZoomOut            = nullptr;
     b_ZoomIn             = nullptr;
-    numerator            = nullptr;
-    denominator          = nullptr;
+    numeratorLabel       = nullptr;
+    denominatorLabel     = nullptr;
     b_UseScaleChannel    = nullptr;
     s_ScaleChannel       = nullptr;
     label25              = nullptr;
@@ -2939,7 +3063,6 @@ void PizLooperEditor::resized()
 
 void PizLooperEditor::buttonClicked(juce::Button* buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
     int index = getButtonIndex(buttonThatWasClicked);
     if (index > -1)
     {
@@ -2953,1206 +3076,8 @@ void PizLooperEditor::buttonClicked(juce::Button* buttonThatWasClicked)
             buttonThatWasClicked->setToggleState(true, juce::dontSendNotification);
         }
     }
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == b_Overdub.get())
-    {
-        //[UserButtonCode_b_Overdub] -- add your button handler code here..
-        if (getFilter()->getParamForActiveSlot(kRecMode) >= 0.5f)
-        {
-            getFilter()->setParameter(kRecMode, 0.0f);
-        }
-        else
-        {
-            if (juce::ModifierKeys::getCurrentModifiers().isAltDown())
-            {
-                getFilter()->setParameter(kRecMode, 1.0f);
-            }
-            else
-            {
-                getFilter()->setParameter(kRecMode, 0.7f);
-            }
-        }
-        //[/UserButtonCode_b_Overdub]
-    }
-    else if (buttonThatWasClicked == b_Thru.get())
-    {
-        //[UserButtonCode_b_Thru] -- add your button handler code here..
-        if (getFilter()->getParamForActiveSlot(kThru) >= 0.5f)
-        {
-            getFilter()->setParameter(kThru, 0.0f);
-        }
-        else
-        {
-            getFilter()->setParameter(kThru, 1.0f);
-        }
-        //[/UserButtonCode_b_Thru]
-    }
-    else if (buttonThatWasClicked == b_Clear.get())
-    {
-        //[UserButtonCode_b_Clear] -- add your button handler code here..
-        getFilter()->setParameter(kFile, 0.0f);
-        //[/UserButtonCode_b_Clear]
-    }
-    else if (buttonThatWasClicked == b_Reload.get())
-    {
-        //[UserButtonCode_b_Reload] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            getFilter()->setParameter(kFile, 1.0f);
-        }
-
-        else
-        {
-            juce::FileChooser myChooser("Load MIDI File...",
-                                        juce::File(getFilter()->loopDir),
-                                        "*.mid");
-
-            if (myChooser.browseForFileToOpen())
-            {
-                juce::File midiFile(myChooser.getResult());
-                getFilter()->loadMidiFile(midiFile);
-            }
-        }
-        //[/UserButtonCode_b_Reload]
-    }
-    else if (buttonThatWasClicked == b_Save.get())
-    {
-        //[UserButtonCode_b_Save] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-        {
-            //save with filename incremented
-            getFilter()->setParameter(kSave, 1.0f);
-        }
-        else if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            getFilter()->setParameter(kSave, 0.9f);
-        }
-        else
-        {
-            juce::FileChooser myChooser("Save MIDI File...",
-                                        juce::File(getFilter()->loopDir + juce::File::getSeparatorString() + nameLabel->getText()),
-                                        "*.mid");
-
-            if (myChooser.browseForFileToSave(true))
-            {
-                juce::File midiFile(myChooser.getResult());
-                if (! midiFile.hasFileExtension("mid"))
-                {
-                    midiFile = midiFile.withFileExtension("mid");
-                }
-
-                getFilter()->writeMidiFile(lastActiveLoop, midiFile);
-            }
-        }
-        //[/UserButtonCode_b_Save]
-    }
-    else if (buttonThatWasClicked == b_Filt.get())
-    {
-        //[UserButtonCode_b_Filt] -- add your button handler code here..
-        if (getFilter()->getParamForActiveSlot(kFiltChan) >= 0.5f)
-        {
-            getFilter()->notifyHostForActiveSlot(kFiltChan, 0.0f);
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kFiltChan, 1.0f);
-        }
-        //[/UserButtonCode_b_Filt]
-    }
-    else if (buttonThatWasClicked == b_NoteToggle.get())
-    {
-        //[UserButtonCode_b_NoteToggle] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kNoteToggle, i, b_NoteToggle->getToggleState() ? 0.f : 1.f);
-            }
-        }
-        else
-        {
-            if (getFilter()->getParamForActiveSlot(kNoteToggle) >= 0.5f)
-            {
-                getFilter()->notifyHostForActiveSlot(kNoteToggle, 0.0f);
-            }
-            else
-            {
-                getFilter()->notifyHostForActiveSlot(kNoteToggle, 1.0f);
-            }
-        }
-        //[/UserButtonCode_b_NoteToggle]
-    }
-    else if (buttonThatWasClicked == b_Snap.get())
-    {
-        //[UserButtonCode_b_Snap] -- add your button handler code here..
-        b_Snap->setToggleState(! getFilter()->getPRSetting("snap"), juce::dontSendNotification);
-        getFilter()->setPRSetting("snap", b_Snap->getToggleState());
-        pianoRoll->repaintBG();
-        //[/UserButtonCode_b_Snap]
-    }
-    else if (buttonThatWasClicked == b_ForceToKey.get())
-    {
-        //[UserButtonCode_b_ForceToKey] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kForceToKey, i, buttonThatWasClicked->getToggleState() ? 1.f : 0.f);
-            }
-        }
-        else
-        {
-            if (getFilter()->getParamForActiveSlot(kForceToKey) >= 0.5f)
-            {
-                getFilter()->notifyHostForActiveSlot(kForceToKey, 0.0f);
-            }
-            else
-            {
-                getFilter()->notifyHostForActiveSlot(kForceToKey, 1.0f);
-            }
-        }
-        //[/UserButtonCode_b_ForceToKey]
-    }
-    else if (buttonThatWasClicked == b_ShiftUp.get())
-    {
-        //[UserButtonCode_b_ShiftUp] -- add your button handler code here..
-        bool lastNotes[12];
-        for (int i = 0; i < 12; i++)
-        {
-            lastNotes[i] = getFilter()->keySelectorState.isNoteOn(1, i);
-        }
-        getFilter()->keySelectorState.reset();
-        if (lastNotes[11])
-        {
-            getFilter()->keySelectorState.noteOn(1, 0, 1.f);
-        }
-        for (int n = 0; n < 11; n++)
-        {
-            if (lastNotes[n])
-            {
-                getFilter()->keySelectorState.noteOn(1, n + 1, 1.f);
-            }
-        }
-        //if (ModifierKeys::getCurrentModifiers().isCommandDown())
-        //{
-        //	for (int i=0;i<numSlots;i++) {
-        //		getFilter()->notifyHost(kNote0,i,lastNotes[11] ? 1.f : 0.f);
-        //		for (int n=0;n<11;n++) {
-        //			getFilter()->notifyHost(kNote0+n+1,i,lastNotes[i]?1.f:0.f);
-        //		}
-        //	}
-        //}
-        //else {
-        getFilter()->notifyHostForActiveSlot(kNote0, lastNotes[11] ? 1.f : 0.f);
-        for (int n = 0; n < 11; n++)
-        {
-            getFilter()->notifyHostForActiveSlot(kNote0 + n + 1, lastNotes[n] ? 1.f : 0.f);
-        }
-        //}
-        //[/UserButtonCode_b_ShiftUp]
-    }
-    else if (buttonThatWasClicked == b_ShiftDown.get())
-    {
-        //[UserButtonCode_b_ShiftDown] -- add your button handler code here..
-        bool lastNotes[12];
-        for (int i = 0; i < 12; i++)
-        {
-            lastNotes[i] = getFilter()->keySelectorState.isNoteOn(1, i);
-        }
-        getFilter()->keySelectorState.reset();
-        if (lastNotes[0])
-        {
-            getFilter()->keySelectorState.noteOn(1, 11, 1.f);
-        }
-        for (int n = 1; n < 12; n++)
-        {
-            if (lastNotes[n])
-            {
-                getFilter()->keySelectorState.noteOn(1, n - 1, 1.f);
-            }
-        }
-        //if (ModifierKeys::getCurrentModifiers().isCommandDown())
-        //{
-        //	for (int i=0;i<numSlots;i++) {
-        //		getFilter()->notifyHost(kNote11,i,lastNotes[0]?1.f:0.f);
-        //		for (int n=0;n<11;n++)
-        //			getFilter()->notifyHost(kNote0+n-1,i,lastNotes[n]?1.f:0.f);
-        //	}
-        //}
-        //else {
-        getFilter()->notifyHostForActiveSlot(kNote11, lastNotes[0] ? 1.f : 0.f);
-        for (int n = 0; n < 11; n++)
-        {
-            getFilter()->notifyHostForActiveSlot(kNote0 + n - 1, lastNotes[n] ? 1.f : 0.f);
-        }
-        //}
-        //[/UserButtonCode_b_ShiftDown]
-    }
-    else if (buttonThatWasClicked == b_SingleLoop.get())
-    {
-        //[UserButtonCode_b_SingleLoop] -- add your button handler code here..
-        if (getFilter()->getParamForActiveSlot(kSingleLoop) >= 0.5f)
-        {
-            getFilter()->notifyHostForActiveSlot(kSingleLoop, 0.0f);
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kSingleLoop, 1.0f);
-        }
-        //[/UserButtonCode_b_SingleLoop]
-    }
-    else if (buttonThatWasClicked == aboutButton.get())
-    {
-        //[UserButtonCode_aboutButton] -- add your button handler code here..
-        juce::URL("https://github.com/sleiner/pizmidi").launchInDefaultBrowser();
-        //[/UserButtonCode_aboutButton]
-    }
-    else if (buttonThatWasClicked == b_Triplet.get())
-    {
-        //[UserButtonCode_b_Triplet] -- add your button handler code here..
-        buttonThatWasClicked->setToggleState(! getFilter()->getPRSetting("triplet"), juce::dontSendNotification);
-        getFilter()->setPRSetting("triplet", buttonThatWasClicked->getToggleState());
-        pianoRoll->repaintBG();
-        //[/UserButtonCode_b_Triplet]
-    }
-    else if (buttonThatWasClicked == b_Dotted.get())
-    {
-        //[UserButtonCode_b_Dotted] -- add your button handler code here..
-        buttonThatWasClicked->setToggleState(! getFilter()->getPRSetting("dotted"), juce::dontSendNotification);
-        getFilter()->setPRSetting("dotted", buttonThatWasClicked->getToggleState());
-        pianoRoll->repaintBG();
-        //[/UserButtonCode_b_Dotted]
-    }
-    else if (buttonThatWasClicked == b_ZoomOut.get())
-    {
-        //[UserButtonCode_b_ZoomOut] -- add your button handler code here..
-        double y = (double) viewport->getViewPositionY() / ((double) pianoRoll->getHeight() - viewport->getHeight());
-        double x = (double) viewport->getViewPositionX() / ((double) pianoRoll->getWidth() - viewport->getWidth());
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            pianoRoll->setSize(pianoRoll->getWidth(), jmax(366, (int) (pianoRoll->getHeight() * 0.75)));
-            keyboard->setSize(25, pianoRoll->getHeight());
-            keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
-            viewport->setViewPositionProportionately(x, y);
-            getFilter()->setPRSetting("height", pianoRoll->getHeight(), false);
-            getFilter()->setPRSetting("y", viewport->getViewPositionY(), false);
-        }
-        else
-        {
-            pianoRoll->setSize(jmax(100, (int) (pianoRoll->getWidth() * 0.75)), pianoRoll->getHeight());
-            viewport->setViewPositionProportionately(x, y);
-            getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
-            getFilter()->setPRSetting("x", viewport->getViewPositionX(), false);
-        }
-        //[/UserButtonCode_b_ZoomOut]
-    }
-    else if (buttonThatWasClicked == b_ZoomIn.get())
-    {
-        //[UserButtonCode_b_ZoomIn] -- add your button handler code here..
-        double y = (double) viewport->getViewPositionY() / ((double) pianoRoll->getHeight() - viewport->getHeight());
-        double x = (double) viewport->getViewPositionX() / ((double) pianoRoll->getWidth() - viewport->getWidth());
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            pianoRoll->setSize(pianoRoll->getWidth(), jmin(25600, (int) (pianoRoll->getHeight() * 1.33333333333)));
-            keyboard->setSize(25, pianoRoll->getHeight());
-            keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
-            viewport->setViewPositionProportionately(x, y);
-            getFilter()->setPRSetting("height", pianoRoll->getHeight(), false);
-            getFilter()->setPRSetting("y", viewport->getViewPositionY(), false);
-        }
-        else
-        {
-            pianoRoll->setSize((int) (pianoRoll->getWidth() * 1.33333333333), pianoRoll->getHeight());
-            viewport->setViewPositionProportionately(x, y);
-            getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
-            getFilter()->setPRSetting("x", viewport->getViewPositionX(), false);
-        }
-        //[/UserButtonCode_b_ZoomIn]
-    }
-    else if (buttonThatWasClicked == b_UseScaleChannel.get())
-    {
-        //[UserButtonCode_b_UseScaleChannel] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kUseScaleChannel, i, buttonThatWasClicked->getToggleState() ? 1.f : 0.f);
-            }
-        }
-        else
-        {
-            if (getFilter()->getParamForActiveSlot(kUseScaleChannel) >= 0.5f)
-            {
-                getFilter()->notifyHostForActiveSlot(kUseScaleChannel, 0.0f);
-            }
-            else
-            {
-                getFilter()->notifyHostForActiveSlot(kUseScaleChannel, 1.0f);
-            }
-        }
-        repaint(24, 290, 22, 23);
-        //[/UserButtonCode_b_UseScaleChannel]
-    }
-    else if (buttonThatWasClicked == b_WaitForBar.get())
-    {
-        //[UserButtonCode_b_WaitForBar] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kWaitForBar, i, buttonThatWasClicked->getToggleState() ? 1.f : 0.f);
-            }
-        }
-        else
-        {
-            if (getFilter()->getParamForActiveSlot(kWaitForBar) >= 0.5f)
-            {
-                getFilter()->notifyHostForActiveSlot(kWaitForBar, 0.0f);
-            }
-            else
-            {
-                getFilter()->notifyHostForActiveSlot(kWaitForBar, 1.0f);
-            }
-        }
-        //[/UserButtonCode_b_WaitForBar]
-    }
-    else if (buttonThatWasClicked == b_UseTrChannel.get())
-    {
-        //[UserButtonCode_b_UseTrChannel] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kUseTrChannel, i, buttonThatWasClicked->getToggleState() ? 1.f : 0.f);
-            }
-        }
-        else
-        {
-            if (getFilter()->getParamForActiveSlot(kUseTrChannel) >= 0.5f)
-            {
-                getFilter()->notifyHostForActiveSlot(kUseTrChannel, 0.0f);
-            }
-            else
-            {
-                getFilter()->notifyHostForActiveSlot(kUseTrChannel, 1.0f);
-            }
-        }
-        repaint(112, 284, 34, 20);
-        //[/UserButtonCode_b_UseTrChannel]
-    }
-    else if (buttonThatWasClicked == b_ImmediateTranspose.get())
-    {
-        //[UserButtonCode_b_ImmediateTranspose] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kImmediateTranspose, i, buttonThatWasClicked->getToggleState() ? 1.f : 0.f);
-            }
-        }
-        else
-        {
-            if (getFilter()->getParamForActiveSlot(kImmediateTranspose) >= 0.5f)
-            {
-                getFilter()->notifyHostForActiveSlot(kImmediateTranspose, 0.0f);
-            }
-            else
-            {
-                getFilter()->notifyHostForActiveSlot(kImmediateTranspose, 1.0f);
-            }
-        }
-        //[/UserButtonCode_b_ImmediateTranspose]
-    }
-    else if (buttonThatWasClicked == b_RemoveBar.get())
-    {
-        //[UserButtonCode_b_RemoveBar] -- add your button handler code here..
-        pianoRoll->removeBar();
-        LengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
-        getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
-        getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
-        //[/UserButtonCode_b_RemoveBar]
-    }
-    else if (buttonThatWasClicked == b_AddBar.get())
-    {
-        //[UserButtonCode_b_AddBar] -- add your button handler code here..
-        pianoRoll->addBar();
-        LengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
-        getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
-        getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
-        //[/UserButtonCode_b_AddBar]
-    }
-    else if (buttonThatWasClicked == b_Transpose10.get())
-    {
-        //[UserButtonCode_b_Transpose10] -- add your button handler code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kTranspose10, i, b_Transpose10->getToggleState() ? 0.f : 1.f);
-            }
-        }
-        else
-        {
-            if (getFilter()->getParamForActiveSlot(kTranspose10) >= 0.5f)
-            {
-                getFilter()->notifyHostForActiveSlot(kTranspose10, 0.0f);
-            }
-            else
-            {
-                getFilter()->notifyHostForActiveSlot(kTranspose10, 1.0f);
-            }
-        }
-        //[/UserButtonCode_b_Transpose10]
-    }
-    else if (buttonThatWasClicked == b_KeepLength.get())
-    {
-        //[UserButtonCode_b_KeepLength] -- add your button handler code here..
-        if (getFilter()->getParamForActiveSlot(kRecMode) >= 0.8f)
-        {
-            getFilter()->notifyHostForActiveSlot(kRecMode, 0.7f);
-        }
-        else if (getFilter()->getParamForActiveSlot(kRecMode) >= 0.5f)
-        {
-            getFilter()->notifyHostForActiveSlot(kRecMode, 1.0f);
-        }
-        //[/UserButtonCode_b_KeepLength]
-    }
-    else if (buttonThatWasClicked == b_Monitor.get())
-    {
-        //[UserButtonCode_b_Monitor] -- add your button handler code here..
-        if (getFilter()->getParamForActiveSlot(kMonitor) >= 0.5f)
-        {
-            getFilter()->setParameter(kMonitor, 0.0f);
-        }
-        else
-        {
-            getFilter()->setParameter(kMonitor, 1.0f);
-        }
-        //[/UserButtonCode_b_Monitor]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
-void PizLooperEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
-{
-    //[UsercomboBoxChanged_Pre]
-    const juce::String selection = comboBoxThatHasChanged->getText();
-    //[/UsercomboBoxChanged_Pre]
-
-    if (comboBoxThatHasChanged == stepsizeBox.get())
-    {
-        //[UserComboBoxCode_stepsizeBox] -- add your combo box handling code here..
-        if (selection == "1 Bar")
-        {
-            getFilter()->notifyHostForActiveSlot(kRecStep, 0.f);
-        }
-        else if (selection == "3 Beats")
-        {
-            getFilter()->notifyHostForActiveSlot(kRecStep, 0.15f);
-        }
-        else if (selection == "2 Beats")
-        {
-            getFilter()->notifyHostForActiveSlot(kRecStep, 0.25f);
-        }
-        else if (selection == "1 Beat")
-        {
-            getFilter()->notifyHostForActiveSlot(kRecStep, 0.35f);
-        }
-        else if (selection == "8th Note")
-        {
-            getFilter()->notifyHostForActiveSlot(kRecStep, 0.45f);
-        }
-        else if (selection == "16th Note")
-        {
-            getFilter()->notifyHostForActiveSlot(kRecStep, 0.55f);
-        }
-        else if (selection == "1 Tick")
-        {
-            getFilter()->notifyHostForActiveSlot(kRecStep, 1.0f);
-        }
-        //[/UserComboBoxCode_stepsizeBox]
-    }
-    else if (comboBoxThatHasChanged == loopmodeBox.get())
-    {
-        //[UserComboBoxCode_loopmodeBox] -- add your combo box handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                if (selection == "Loop after rec")
-                {
-                    getFilter()->notifyHost(kTrigger, i, 0.f);
-                }
-                else if (selection == "Sync loop")
-                {
-                    getFilter()->notifyHost(kTrigger, i, 0.05f);
-                }
-                else if (selection == "Unsync 1-shot")
-                {
-                    getFilter()->notifyHost(kTrigger, i, 0.15f);
-                }
-                else if (selection == "Unsync loop")
-                {
-                    getFilter()->notifyHost(kTrigger, i, 0.25f);
-                }
-            }
-        }
-        else
-        {
-            if (selection == "Loop after rec")
-            {
-                getFilter()->notifyHostForActiveSlot(kTrigger, 0.f);
-            }
-            else if (selection == "Sync loop")
-            {
-                getFilter()->notifyHostForActiveSlot(kTrigger, 0.05f);
-            }
-            else if (selection == "Unsync 1-shot")
-            {
-                getFilter()->notifyHostForActiveSlot(kTrigger, 0.15f);
-            }
-            else if (selection == "Unsync loop")
-            {
-                getFilter()->notifyHostForActiveSlot(kTrigger, 0.25f);
-            }
-        }
-        //[/UserComboBoxCode_loopmodeBox]
-    }
-    else if (comboBoxThatHasChanged == notetriggerBox.get())
-    {
-        //[UserComboBoxCode_notetriggerBox] -- add your combo box handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                if (selection == "Off")
-                {
-                    getFilter()->notifyHost(kNoteTrig, i, 0.f);
-                }
-                else if (selection == "Mono (Transpose)")
-                {
-                    getFilter()->notifyHost(kNoteTrig, i, 0.05f);
-                }
-                else if (selection == "Poly (Transpose)")
-                {
-                    getFilter()->notifyHost(kNoteTrig, i, 0.15f);
-                }
-                else if (selection == "Mono (Orig. Key)")
-                {
-                    getFilter()->notifyHost(kNoteTrig, i, 0.25f);
-                }
-            }
-        }
-        else
-        {
-            if (selection == "Off")
-            {
-                getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.f);
-            }
-            else if (selection == "Mono (Transpose)")
-            {
-                getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.05f);
-            }
-            else if (selection == "Poly (Transpose)")
-            {
-                getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.15f);
-            }
-            else if (selection == "Mono (Orig. Key)")
-            {
-                getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.25f);
-            }
-        }
-        //[/UserComboBoxCode_notetriggerBox]
-    }
-    else if (comboBoxThatHasChanged == syncmodeBox.get())
-    {
-        //[UserComboBoxCode_syncmodeBox] -- add your combo box handling code here..
-        if (selection == "PPQ (Host 0)")
-        {
-            getFilter()->notifyHostForActiveSlot(kSync, 0.f);
-        }
-        else if (selection == "PPQ (Recstart)")
-        {
-            getFilter()->notifyHostForActiveSlot(kSync, 0.25f);
-        }
-        else if (selection == "Sample")
-        {
-            getFilter()->notifyHostForActiveSlot(kSync, 1.f);
-        }
-        //[/UserComboBoxCode_syncmodeBox]
-    }
-    else if (comboBoxThatHasChanged == quantizeBox.get())
-    {
-        //[UserComboBoxCode_quantizeBox] -- add your combo box handling code here..
-        if (selection == "Off")
-        {
-            getFilter()->notifyHostForActiveSlot(kQuantize, 0.f);
-        }
-        else if (selection == "8th")
-        {
-            getFilter()->notifyHostForActiveSlot(kQuantize, 0.25f);
-        }
-        else if (selection == "16th")
-        {
-            getFilter()->notifyHostForActiveSlot(kQuantize, 0.55f);
-        }
-        else if (selection == "32nd")
-        {
-            getFilter()->notifyHostForActiveSlot(kQuantize, 0.75f);
-        }
-        else if (selection == "64th")
-        {
-            getFilter()->notifyHostForActiveSlot(kQuantize, 1.f);
-        }
-        //[/UserComboBoxCode_quantizeBox]
-    }
-    else if (comboBoxThatHasChanged == quantizeBox2.get())
-    {
-        //[UserComboBoxCode_quantizeBox2] -- add your combo box handling code here..
-        if (selection == "4th")
-        {
-            getFilter()->setPRSetting("stepsize", 0.f);
-        }
-        else if (selection == "8th")
-        {
-            getFilter()->setPRSetting("stepsize", 0.25f);
-        }
-        else if (selection == "16th")
-        {
-            getFilter()->setPRSetting("stepsize", 0.55f);
-        }
-        else if (selection == "32nd")
-        {
-            getFilter()->setPRSetting("stepsize", 0.75f);
-        }
-        else if (selection == "64th")
-        {
-            getFilter()->setPRSetting("stepsize", 1.f);
-        }
-        pianoRoll->repaintBG();
-        //[/UserComboBoxCode_quantizeBox2]
-    }
-    else if (comboBoxThatHasChanged == midiOutDeviceBox.get())
-    {
-        //[UserComboBoxCode_midiOutDeviceBox] -- add your combo box handling code here..
-        if (midiOutDeviceBox->getSelectedItemIndex() == 0)
-        {
-            getFilter()->setParameter(kMidiOutDevice, 0.0f);
-            getFilter()->setActiveDevice(midiOutDeviceBox->getText());
-        }
-        else
-        {
-            getFilter()->setActiveDevice(midiOutDeviceBox->getText());
-            getFilter()->setParameter(kMidiOutDevice, 1.0f);
-            //getFilter()->setParameter(0,float(comboBox->getSelectedItemIndex()-1)/float(getFilter()->devices.size()-1)+0.00001f);
-        }
-        //[/UserComboBoxCode_midiOutDeviceBox]
-    }
-    else if (comboBoxThatHasChanged == forceModeBox.get())
-    {
-        //[UserComboBoxCode_forceModeBox] -- add your combo box handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                if (selection == "Nearest")
-                {
-                    getFilter()->notifyHost(kForceToScaleMode, i, 0.f);
-                }
-                else if (selection == "Up")
-                {
-                    getFilter()->notifyHost(kForceToScaleMode, i, 0.33f);
-                }
-                else if (selection == "Down")
-                {
-                    getFilter()->notifyHost(kForceToScaleMode, i, 0.67f);
-                }
-                else if (selection == "Block")
-                {
-                    getFilter()->notifyHost(kForceToScaleMode, i, 1.f);
-                }
-            }
-        }
-        else
-        {
-            if (selection == "Nearest")
-            {
-                getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 0.f);
-            }
-            else if (selection == "Up")
-            {
-                getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 0.33f);
-            }
-            else if (selection == "Down")
-            {
-                getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 0.67f);
-            }
-            else if (selection == "Block")
-            {
-                getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 1.f);
-            }
-        }
-        //[/UserComboBoxCode_forceModeBox]
-    }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
-}
-
-void PizLooperEditor::sliderValueChanged(juce::Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
-    auto* slider = (VSTSlider*) sliderThatWasMoved;
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == s_Transpose.get())
-    {
-        //[UserSliderCode_s_Transpose] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kTranspose, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kTranspose, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Transpose]
-    }
-    else if (sliderThatWasMoved == s_Octave.get())
-    {
-        //[UserSliderCode_s_Octave] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kOctave, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kOctave, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Octave]
-    }
-    else if (sliderThatWasMoved == s_Velocity.get())
-    {
-        //[UserSliderCode_s_Velocity] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kVelocity, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kVelocity, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Velocity]
-    }
-    else if (sliderThatWasMoved == s_Start.get())
-    {
-        //[UserSliderCode_s_Start] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kLoopStart, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kLoopStart, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Start]
-    }
-    else if (sliderThatWasMoved == s_End.get())
-    {
-        //[UserSliderCode_s_End] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kLoopEnd, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kLoopEnd, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_End]
-    }
-    else if (sliderThatWasMoved == s_Stretch.get())
-    {
-        //[UserSliderCode_s_Stretch] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kStretch, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kStretch, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Stretch]
-    }
-    else if (sliderThatWasMoved == s_Root.get())
-    {
-        //[UserSliderCode_s_Root] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kRoot, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kRoot, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Root]
-    }
-    else if (sliderThatWasMoved == s_Low.get())
-    {
-        //[UserSliderCode_s_Low] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kNLow, i, slider->mapToVSTRange());
-                if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-                {
-                    getFilter()->notifyHost(kNHigh, i, slider->mapToVSTRange());
-                }
-            }
-        }
-        else if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-        {
-            getFilter()->notifyHostForActiveSlot(kNLow, slider->mapToVSTRange());
-            getFilter()->notifyHostForActiveSlot(kNHigh, slider->mapToVSTRange());
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kNLow, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Low]
-    }
-    else if (sliderThatWasMoved == s_High.get())
-    {
-        //[UserSliderCode_s_High] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kNHigh, i, slider->mapToVSTRange());
-                if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-                {
-                    getFilter()->notifyHost(kNLow, i, slider->mapToVSTRange());
-                }
-            }
-        }
-        else if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-        {
-            getFilter()->notifyHostForActiveSlot(kNHigh, slider->mapToVSTRange());
-            getFilter()->notifyHostForActiveSlot(kNLow, slider->mapToVSTRange());
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kNHigh, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_High]
-    }
-    else if (sliderThatWasMoved == s_TrigChan.get())
-    {
-        //[UserSliderCode_s_TrigChan] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kTrigChan, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kTrigChan, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_TrigChan]
-    }
-    else if (sliderThatWasMoved == s_Shift.get())
-    {
-        //[UserSliderCode_s_Shift] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kShift, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kShift, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Shift]
-    }
-    else if (sliderThatWasMoved == s_Channel.get())
-    {
-        //[UserSliderCode_s_Channel] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kChannel, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kChannel, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_Channel]
-    }
-    else if (sliderThatWasMoved == s_FixedLength.get())
-    {
-        //[UserSliderCode_s_FixedLength] -- add your slider handling code here..
-        getFilter()->notifyHostForActiveSlot(kFixedLength, slider->mapToVSTRange());
-        //[/UserSliderCode_s_FixedLength]
-    }
-    else if (sliderThatWasMoved == s_PlayGroup.get())
-    {
-        //[UserSliderCode_s_PlayGroup] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kPlayGroup, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kPlayGroup, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_PlayGroup]
-    }
-    else if (sliderThatWasMoved == s_MuteGroup.get())
-    {
-        //[UserSliderCode_s_MuteGroup] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kMuteGroup, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kMuteGroup, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_MuteGroup]
-    }
-    else if (sliderThatWasMoved == s_MasterVelocity.get())
-    {
-        //[UserSliderCode_s_MasterVelocity] -- add your slider handling code here..
-        getFilter()->setParameterNotifyingHost(kMasterVelocity, slider->mapToVSTRange());
-        //[/UserSliderCode_s_MasterVelocity]
-    }
-    else if (sliderThatWasMoved == s_ScaleChannel.get())
-    {
-        //[UserSliderCode_s_ScaleChannel] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-            {
-                for (int i = 0; i < numSlots; i++)
-                {
-                    getFilter()->notifyHost(kScaleChannel, i, slider->mapToVSTRange());
-                    getFilter()->notifyHost(kTransposeChannel, i, slider->mapToVSTRange());
-                }
-            }
-            else
-            {
-                for (int i = 0; i < numSlots; i++)
-                {
-                    getFilter()->notifyHost(kScaleChannel, i, slider->mapToVSTRange());
-                }
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kScaleChannel, slider->mapToVSTRange());
-            if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-            {
-                getFilter()->notifyHostForActiveSlot(kTransposeChannel, slider->mapToVSTRange());
-            }
-        }
-        //[/UserSliderCode_s_ScaleChannel]
-    }
-    else if (sliderThatWasMoved == s_MasterTranspose.get())
-    {
-        //[UserSliderCode_s_MasterTranspose] -- add your slider handling code here..
-        getFilter()->setParameterNotifyingHost(kMasterTranspose, slider->mapToVSTRange());
-        //[/UserSliderCode_s_MasterTranspose]
-    }
-    else if (sliderThatWasMoved == s_NumLoops.get())
-    {
-        //[UserSliderCode_s_NumLoops] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kNumLoops, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kNumLoops, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_NumLoops]
-    }
-    else if (sliderThatWasMoved == s_NextSlot.get())
-    {
-        //[UserSliderCode_s_NextSlot] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kNextSlot, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kNextSlot, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_NextSlot]
-    }
-    else if (sliderThatWasMoved == s_RecCC.get())
-    {
-        //[UserSliderCode_s_RecCC] -- add your slider handling code here..
-        getFilter()->notifyHostForActiveSlot(kRecCC, slider->mapToVSTRange());
-        //[/UserSliderCode_s_RecCC]
-    }
-    else if (sliderThatWasMoved == s_PlayCC.get())
-    {
-        //[UserSliderCode_s_PlayCC] -- add your slider handling code here..
-        getFilter()->notifyHostForActiveSlot(kPlayCC, slider->mapToVSTRange());
-        //[/UserSliderCode_s_PlayCC]
-    }
-    else if (sliderThatWasMoved == s_VelocitySens.get())
-    {
-        //[UserSliderCode_s_VelocitySens] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            for (int i = 0; i < numSlots; i++)
-            {
-                getFilter()->notifyHost(kVeloSens, i, slider->mapToVSTRange());
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kVeloSens, slider->mapToVSTRange());
-        }
-        //[/UserSliderCode_s_VelocitySens]
-    }
-    else if (sliderThatWasMoved == s_TransposeChannel.get())
-    {
-        //[UserSliderCode_s_TransposeChannel] -- add your slider handling code here..
-        if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-        {
-            if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-            {
-                for (int i = 0; i < numSlots; i++)
-                {
-                    getFilter()->notifyHost(kTransposeChannel, i, slider->mapToVSTRange());
-                    getFilter()->notifyHost(kScaleChannel, i, slider->mapToVSTRange());
-                }
-            }
-            else
-            {
-                for (int i = 0; i < numSlots; i++)
-                {
-                    getFilter()->notifyHost(kTransposeChannel, i, slider->mapToVSTRange());
-                }
-            }
-        }
-        else
-        {
-            getFilter()->notifyHostForActiveSlot(kTransposeChannel, slider->mapToVSTRange());
-            if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
-            {
-                getFilter()->notifyHostForActiveSlot(kScaleChannel, slider->mapToVSTRange());
-            }
-        }
-        //[/UserSliderCode_s_TransposeChannel]
-    }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
-}
-
-void PizLooperEditor::labelTextChanged(juce::Label* labelThatHasChanged)
-{
-    //[UserlabelTextChanged_Pre]
-    //[/UserlabelTextChanged_Pre]
-
-    if (labelThatHasChanged == nameLabel.get())
-    {
-        //[UserLabelCode_nameLabel] -- add your label text handling code here..
-        getFilter()->changeProgramName(getFilter()->getCurrentProgram(), nameLabel->getText());
-        //[/UserLabelCode_nameLabel]
-    }
-    else if (labelThatHasChanged == numerator.get())
-    {
-        //[UserLabelCode_numerator] -- add your label text handling code here..
-        int x = numerator->getText().getIntValue();
-        if (x > 0)
-        {
-            pianoRoll->setTimeSig(x, pianoRoll->timeSigD);
-            getFilter()->setTimeSig(lastActiveLoop, x, pianoRoll->timeSigD);
-            pianoRoll->repaintBG();
-        }
-        else
-        {
-            numerator->setText(juce::String(getFilter()->getNumerator(lastActiveLoop)), juce::dontSendNotification);
-        }
-        //[/UserLabelCode_numerator]
-    }
-    else if (labelThatHasChanged == denominator.get())
-    {
-        //[UserLabelCode_denominator] -- add your label text handling code here..
-        int x = denominator->getText().getIntValue();
-        if (x > 0 && (x & (x - 1)) == 0)
-        {
-            pianoRoll->setTimeSig(pianoRoll->timeSigN, x);
-            getFilter()->setTimeSig(lastActiveLoop, pianoRoll->timeSigN, x);
-            pianoRoll->repaintBG();
-        }
-        else
-        {
-            denominator->setText(juce::String(getFilter()->getDenominator(lastActiveLoop)), juce::dontSendNotification);
-        }
-        //[/UserLabelCode_denominator]
-    }
-    else if (labelThatHasChanged == LengthLabel.get())
-    {
-        //[UserLabelCode_LengthLabel] -- add your label text handling code here..
-        pianoRoll->setDisplayLength(LengthLabel->getText().getIntValue());
-        getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
-        getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
-        //[/UserLabelCode_LengthLabel]
-    }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
-}
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//==============================================================================
 void PizLooperEditor::buttonStateChanged(juce::Button* button)
 {
 }
@@ -4691,8 +3616,8 @@ void PizLooperEditor::updateParametersFromFilter()
                                   filter->getPRSetting("y"));
     }
     pianoRoll->setTimeSig(n, d);
-    numerator->setText(juce::String(n), juce::dontSendNotification);
-    denominator->setText(juce::String(d), juce::dontSendNotification);
+    numeratorLabel->setText(juce::String(n), juce::dontSendNotification);
+    denominatorLabel->setText(juce::String(d), juce::dontSendNotification);
 
     midiOutDeviceBox->setSelectedItemIndex(newDevice + 1, juce::dontSendNotification);
 
@@ -5561,5 +4486,1139 @@ void PizLooperEditor::clickableLabelMouseDoubleClick(ClickableLabel* label, cons
     if (label == nameLabel.get())
     {
         label->edit();
+    }
+}
+
+void PizLooperEditor::handleMonitorButtonClick() const
+{
+    if (getFilter()->getParamForActiveSlot(kMonitor) >= 0.5f)
+    {
+        getFilter()->setParameter(kMonitor, 0.0f);
+    }
+    else
+    {
+        getFilter()->setParameter(kMonitor, 1.0f);
+    }
+}
+
+void PizLooperEditor::handleKeepLengthButtonClick() const
+{
+    if (getFilter()->getParamForActiveSlot(kRecMode) >= 0.8f)
+    {
+        getFilter()->notifyHostForActiveSlot(kRecMode, 0.7f);
+    }
+    else if (getFilter()->getParamForActiveSlot(kRecMode) >= 0.5f)
+    {
+        getFilter()->notifyHostForActiveSlot(kRecMode, 1.0f);
+    }
+}
+
+void PizLooperEditor::handleTranspose10ButtonClick() const
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kTranspose10, i, b_Transpose10->getToggleState() ? 0.f : 1.f);
+        }
+    }
+    else
+    {
+        if (getFilter()->getParamForActiveSlot(kTranspose10) >= 0.5f)
+        {
+            getFilter()->notifyHostForActiveSlot(kTranspose10, 0.0f);
+        }
+        else
+        {
+            getFilter()->notifyHostForActiveSlot(kTranspose10, 1.0f);
+        }
+    }
+}
+
+void PizLooperEditor::handleAddBarButtonClick()
+{
+    pianoRoll->addBar();
+    LengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
+    getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
+    getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
+}
+
+void PizLooperEditor::handleRemoveBarButtonClick()
+{
+    pianoRoll->removeBar();
+    LengthLabel->setText(juce::String(pianoRoll->getDisplayLength()), juce::dontSendNotification);
+    getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
+    getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
+}
+
+void PizLooperEditor::handleImmediateTransposeButtonClick() const
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kImmediateTranspose, i, b_ImmediateTranspose->getToggleState() ? 1.f : 0.f);
+        }
+    }
+    else
+    {
+        if (getFilter()->getParamForActiveSlot(kImmediateTranspose) >= 0.5f)
+        {
+            getFilter()->notifyHostForActiveSlot(kImmediateTranspose, 0.0f);
+        }
+        else
+        {
+            getFilter()->notifyHostForActiveSlot(kImmediateTranspose, 1.0f);
+        }
+    }
+}
+
+void PizLooperEditor::handleUseTrChannelButtonClick()
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kUseTrChannel, i, b_UseTrChannel->getToggleState() ? 1.f : 0.f);
+        }
+    }
+    else
+    {
+        if (getFilter()->getParamForActiveSlot(kUseTrChannel) >= 0.5f)
+        {
+            getFilter()->notifyHostForActiveSlot(kUseTrChannel, 0.0f);
+        }
+        else
+        {
+            getFilter()->notifyHostForActiveSlot(kUseTrChannel, 1.0f);
+        }
+    }
+    repaint(112, 284, 34, 20);
+}
+
+void PizLooperEditor::handleWaitForBarButtonClick() const
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kWaitForBar, i, b_WaitForBar->getToggleState() ? 1.f : 0.f);
+        }
+    }
+    else
+    {
+        if (getFilter()->getParamForActiveSlot(kWaitForBar) >= 0.5f)
+        {
+            getFilter()->notifyHostForActiveSlot(kWaitForBar, 0.0f);
+        }
+        else
+        {
+            getFilter()->notifyHostForActiveSlot(kWaitForBar, 1.0f);
+        }
+    }
+}
+
+void PizLooperEditor::handleUseScaleChannelButtonClick()
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kUseScaleChannel, i, b_UseScaleChannel->getToggleState() ? 1.f : 0.f);
+        }
+    }
+    else
+    {
+        if (getFilter()->getParamForActiveSlot(kUseScaleChannel) >= 0.5f)
+        {
+            getFilter()->notifyHostForActiveSlot(kUseScaleChannel, 0.0f);
+        }
+        else
+        {
+            getFilter()->notifyHostForActiveSlot(kUseScaleChannel, 1.0f);
+        }
+    }
+    repaint(24, 290, 22, 23);
+}
+
+void PizLooperEditor::handleZoomInButtonClick()
+{
+    double y = (double) viewport->getViewPositionY() / ((double) pianoRoll->getHeight() - viewport->getHeight());
+    double x = (double) viewport->getViewPositionX() / ((double) pianoRoll->getWidth() - viewport->getWidth());
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        pianoRoll->setSize(pianoRoll->getWidth(), jmin(25600, (int) (pianoRoll->getHeight() * 1.33333333333)));
+        keyboard->setSize(25, pianoRoll->getHeight());
+        keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
+        viewport->setViewPositionProportionately(x, y);
+        getFilter()->setPRSetting("height", pianoRoll->getHeight(), false);
+        getFilter()->setPRSetting("y", viewport->getViewPositionY(), false);
+    }
+    else
+    {
+        pianoRoll->setSize((int) (pianoRoll->getWidth() * 1.33333333333), pianoRoll->getHeight());
+        viewport->setViewPositionProportionately(x, y);
+        getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
+        getFilter()->setPRSetting("x", viewport->getViewPositionX(), false);
+    }
+}
+
+void PizLooperEditor::handleZoomOutButtonClick()
+{
+    double y = (double) viewport->getViewPositionY() / ((double) pianoRoll->getHeight() - viewport->getHeight());
+    double x = (double) viewport->getViewPositionX() / ((double) pianoRoll->getWidth() - viewport->getWidth());
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        pianoRoll->setSize(pianoRoll->getWidth(), jmax(366, (int) (pianoRoll->getHeight() * 0.75)));
+        keyboard->setSize(25, pianoRoll->getHeight());
+        keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
+        viewport->setViewPositionProportionately(x, y);
+        getFilter()->setPRSetting("height", pianoRoll->getHeight(), false);
+        getFilter()->setPRSetting("y", viewport->getViewPositionY(), false);
+    }
+    else
+    {
+        pianoRoll->setSize(jmax(100, (int) (pianoRoll->getWidth() * 0.75)), pianoRoll->getHeight());
+        viewport->setViewPositionProportionately(x, y);
+        getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
+        getFilter()->setPRSetting("x", viewport->getViewPositionX(), false);
+    }
+}
+
+void PizLooperEditor::handleDottedButtonClick()
+{
+    b_Dotted->setToggleState(! getFilter()->getPRSetting("dotted"), juce::dontSendNotification);
+    getFilter()->setPRSetting("dotted", b_Dotted->getToggleState());
+    pianoRoll->repaintBG();
+}
+
+void PizLooperEditor::handleTripletButtonClick()
+{
+    b_Triplet->setToggleState(! getFilter()->getPRSetting("triplet"), juce::dontSendNotification);
+    getFilter()->setPRSetting("triplet", b_Triplet->getToggleState());
+    pianoRoll->repaintBG();
+}
+
+void PizLooperEditor::handleAboutButtonClick()
+{
+    juce::URL("https://github.com/sleiner/pizmidi").launchInDefaultBrowser();
+}
+
+void PizLooperEditor::handleSingleLoopButtonClick() const
+{
+    if (getFilter()->getParamForActiveSlot(kSingleLoop) >= 0.5f)
+    {
+        getFilter()->notifyHostForActiveSlot(kSingleLoop, 0.0f);
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kSingleLoop, 1.0f);
+    }
+}
+
+void PizLooperEditor::handleShiftDownButtonClick() const
+{
+    bool lastNotes[12];
+    for (int i = 0; i < 12; i++)
+    {
+        lastNotes[i] = getFilter()->keySelectorState.isNoteOn(1, i);
+    }
+    getFilter()->keySelectorState.reset();
+    if (lastNotes[0])
+    {
+        getFilter()->keySelectorState.noteOn(1, 11, 1.f);
+    }
+    for (int n = 1; n < 12; n++)
+    {
+        if (lastNotes[n])
+        {
+            getFilter()->keySelectorState.noteOn(1, n - 1, 1.f);
+        }
+    }
+    //if (ModifierKeys::getCurrentModifiers().isCommandDown())
+    //{
+    //	for (int i=0;i<numSlots;i++) {
+    //		getFilter()->notifyHost(kNote11,i,lastNotes[0]?1.f:0.f);
+    //		for (int n=0;n<11;n++)
+    //			getFilter()->notifyHost(kNote0+n-1,i,lastNotes[n]?1.f:0.f);
+    //	}
+    //}
+    //else {
+    getFilter()->notifyHostForActiveSlot(kNote11, lastNotes[0] ? 1.f : 0.f);
+    for (int n = 0; n < 11; n++)
+    {
+        getFilter()->notifyHostForActiveSlot(kNote0 + n - 1, lastNotes[n] ? 1.f : 0.f);
+    }
+    //}
+}
+
+void PizLooperEditor::handleShiftUpButtonClick() const
+{
+    bool lastNotes[12];
+    for (int i = 0; i < 12; i++)
+    {
+        lastNotes[i] = getFilter()->keySelectorState.isNoteOn(1, i);
+    }
+    getFilter()->keySelectorState.reset();
+    if (lastNotes[11])
+    {
+        getFilter()->keySelectorState.noteOn(1, 0, 1.f);
+    }
+    for (int n = 0; n < 11; n++)
+    {
+        if (lastNotes[n])
+        {
+            getFilter()->keySelectorState.noteOn(1, n + 1, 1.f);
+        }
+    }
+    //if (ModifierKeys::getCurrentModifiers().isCommandDown())
+    //{
+    //	for (int i=0;i<numSlots;i++) {
+    //		getFilter()->notifyHost(kNote0,i,lastNotes[11] ? 1.f : 0.f);
+    //		for (int n=0;n<11;n++) {
+    //			getFilter()->notifyHost(kNote0+n+1,i,lastNotes[i]?1.f:0.f);
+    //		}
+    //	}
+    //}
+    //else {
+    getFilter()->notifyHostForActiveSlot(kNote0, lastNotes[11] ? 1.f : 0.f);
+    for (int n = 0; n < 11; n++)
+    {
+        getFilter()->notifyHostForActiveSlot(kNote0 + n + 1, lastNotes[n] ? 1.f : 0.f);
+    }
+    //}
+}
+
+void PizLooperEditor::handleForceToKeyButtonClick() const
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kForceToKey, i, b_ForceToKey->getToggleState() ? 1.f : 0.f);
+        }
+    }
+    else
+    {
+        if (getFilter()->getParamForActiveSlot(kForceToKey) >= 0.5f)
+        {
+            getFilter()->notifyHostForActiveSlot(kForceToKey, 0.0f);
+        }
+        else
+        {
+            getFilter()->notifyHostForActiveSlot(kForceToKey, 1.0f);
+        }
+    }
+}
+
+void PizLooperEditor::handleSnapButtonClick()
+{
+    b_Snap->setToggleState(! getFilter()->getPRSetting("snap"), juce::dontSendNotification);
+    getFilter()->setPRSetting("snap", b_Snap->getToggleState());
+    pianoRoll->repaintBG();
+}
+
+void PizLooperEditor::handleNoteToggleButtonClick() const
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kNoteToggle, i, b_NoteToggle->getToggleState() ? 0.f : 1.f);
+        }
+    }
+    else
+    {
+        if (getFilter()->getParamForActiveSlot(kNoteToggle) >= 0.5f)
+        {
+            getFilter()->notifyHostForActiveSlot(kNoteToggle, 0.0f);
+        }
+        else
+        {
+            getFilter()->notifyHostForActiveSlot(kNoteToggle, 1.0f);
+        }
+    }
+}
+
+void PizLooperEditor::handleFiltButtonClick() const
+{
+    if (getFilter()->getParamForActiveSlot(kFiltChan) >= 0.5f)
+    {
+        getFilter()->notifyHostForActiveSlot(kFiltChan, 0.0f);
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kFiltChan, 1.0f);
+    }
+}
+
+void PizLooperEditor::handleSaveButtonClick() const
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+    {
+        //save with filename incremented
+        getFilter()->setParameter(kSave, 1.0f);
+    }
+    else if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        getFilter()->setParameter(kSave, 0.9f);
+    }
+    else
+    {
+        juce::FileChooser myChooser("Save MIDI File...",
+                                    juce::File(getFilter()->loopDir + juce::File::getSeparatorString() + nameLabel->getText()),
+                                    "*.mid");
+
+        if (myChooser.browseForFileToSave(true))
+        {
+            juce::File midiFile(myChooser.getResult());
+            if (! midiFile.hasFileExtension("mid"))
+            {
+                midiFile = midiFile.withFileExtension("mid");
+            }
+
+            getFilter()->writeMidiFile(lastActiveLoop, midiFile);
+        }
+    }
+}
+
+void PizLooperEditor::handleReloadButtonClick() const
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        getFilter()->setParameter(kFile, 1.0f);
+    }
+    else
+    {
+        juce::FileChooser myChooser("Load MIDI File...",
+                                    juce::File(getFilter()->loopDir),
+                                    "*.mid");
+
+        if (myChooser.browseForFileToOpen())
+        {
+            juce::File midiFile(myChooser.getResult());
+            getFilter()->loadMidiFile(midiFile);
+        }
+    }
+}
+
+void PizLooperEditor::handleClearButtonClick() const
+{
+    getFilter()->setParameter(kFile, 0.0f);
+}
+
+void PizLooperEditor::handleThruButtonClick() const
+{
+    if (getFilter()->getParamForActiveSlot(kThru) >= 0.5f)
+    {
+        getFilter()->setParameter(kThru, 0.0f);
+    }
+    else
+    {
+        getFilter()->setParameter(kThru, 1.0f);
+    }
+}
+
+void PizLooperEditor::handleOverdubButtonClick() const
+{
+    if (getFilter()->getParamForActiveSlot(kRecMode) >= 0.5f)
+    {
+        getFilter()->setParameter(kRecMode, 0.0f);
+    }
+    else
+    {
+        if (juce::ModifierKeys::getCurrentModifiers().isAltDown())
+        {
+            getFilter()->setParameter(kRecMode, 1.0f);
+        }
+        else
+        {
+            getFilter()->setParameter(kRecMode, 0.7f);
+        }
+    }
+}
+
+
+void PizLooperEditor::handleForceModeComboBoxChange() const
+{
+    auto selection = forceModeBox->getText();
+
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            if (selection == "Nearest")
+            {
+                getFilter()->notifyHost(kForceToScaleMode, i, 0.f);
+            }
+            else if (selection == "Up")
+            {
+                getFilter()->notifyHost(kForceToScaleMode, i, 0.33f);
+            }
+            else if (selection == "Down")
+            {
+                getFilter()->notifyHost(kForceToScaleMode, i, 0.67f);
+            }
+            else if (selection == "Block")
+            {
+                getFilter()->notifyHost(kForceToScaleMode, i, 1.f);
+            }
+        }
+    }
+    else
+    {
+        if (selection == "Nearest")
+        {
+            getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 0.f);
+        }
+        else if (selection == "Up")
+        {
+            getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 0.33f);
+        }
+        else if (selection == "Down")
+        {
+            getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 0.67f);
+        }
+        else if (selection == "Block")
+        {
+            getFilter()->notifyHostForActiveSlot(kForceToScaleMode, 1.f);
+        }
+    }
+}
+
+void PizLooperEditor::handleMidiOutDeviceComboBoxChange() const
+{
+    if (midiOutDeviceBox->getSelectedItemIndex() == 0)
+    {
+        getFilter()->setParameter(kMidiOutDevice, 0.0f);
+        getFilter()->setActiveDevice(midiOutDeviceBox->getText());
+    }
+    else
+    {
+        getFilter()->setActiveDevice(midiOutDeviceBox->getText());
+        getFilter()->setParameter(kMidiOutDevice, 1.0f);
+        //getFilter()->setParameter(0,float(comboBox->getSelectedItemIndex()-1)/float(getFilter()->devices.size()-1)+0.00001f);
+    }
+}
+
+void PizLooperEditor::handleQuantize2ComboBoxChange()
+{
+    auto selection = quantizeBox2->getText();
+    if (selection == "4th")
+    {
+        getFilter()->setPRSetting("stepsize", 0.f);
+    }
+    else if (selection == "8th")
+    {
+        getFilter()->setPRSetting("stepsize", 0.25f);
+    }
+    else if (selection == "16th")
+    {
+        getFilter()->setPRSetting("stepsize", 0.55f);
+    }
+    else if (selection == "32nd")
+    {
+        getFilter()->setPRSetting("stepsize", 0.75f);
+    }
+    else if (selection == "64th")
+    {
+        getFilter()->setPRSetting("stepsize", 1.f);
+    }
+    pianoRoll->repaintBG();
+}
+
+void PizLooperEditor::handleQuantizeComboBoxChange() const
+{
+    auto selection = quantizeBox->getText();
+    if (selection == "Off")
+    {
+        getFilter()->notifyHostForActiveSlot(kQuantize, 0.f);
+    }
+    else if (selection == "8th")
+    {
+        getFilter()->notifyHostForActiveSlot(kQuantize, 0.25f);
+    }
+    else if (selection == "16th")
+    {
+        getFilter()->notifyHostForActiveSlot(kQuantize, 0.55f);
+    }
+    else if (selection == "32nd")
+    {
+        getFilter()->notifyHostForActiveSlot(kQuantize, 0.75f);
+    }
+    else if (selection == "64th")
+    {
+        getFilter()->notifyHostForActiveSlot(kQuantize, 1.f);
+    }
+}
+
+void PizLooperEditor::handleSyncModeComboBoxChange() const
+{
+    auto selection = syncmodeBox->getText();
+    if (selection == "PPQ (Host 0)")
+    {
+        getFilter()->notifyHostForActiveSlot(kSync, 0.f);
+    }
+    else if (selection == "PPQ (Recstart)")
+    {
+        getFilter()->notifyHostForActiveSlot(kSync, 0.25f);
+    }
+    else if (selection == "Sample")
+    {
+        getFilter()->notifyHostForActiveSlot(kSync, 1.f);
+    }
+}
+
+void PizLooperEditor::handleNoteTriggerComboBoxChange() const
+{
+    auto selection = notetriggerBox->getText();
+
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            if (selection == "Off")
+            {
+                getFilter()->notifyHost(kNoteTrig, i, 0.f);
+            }
+            else if (selection == "Mono (Transpose)")
+            {
+                getFilter()->notifyHost(kNoteTrig, i, 0.05f);
+            }
+            else if (selection == "Poly (Transpose)")
+            {
+                getFilter()->notifyHost(kNoteTrig, i, 0.15f);
+            }
+            else if (selection == "Mono (Orig. Key)")
+            {
+                getFilter()->notifyHost(kNoteTrig, i, 0.25f);
+            }
+        }
+    }
+    else
+    {
+        if (selection == "Off")
+        {
+            getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.f);
+        }
+        else if (selection == "Mono (Transpose)")
+        {
+            getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.05f);
+        }
+        else if (selection == "Poly (Transpose)")
+        {
+            getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.15f);
+        }
+        else if (selection == "Mono (Orig. Key)")
+        {
+            getFilter()->notifyHostForActiveSlot(kNoteTrig, 0.25f);
+        }
+    }
+}
+
+void PizLooperEditor::handleLoopModeComboBoxChange() const
+{
+    auto selection = loopmodeBox->getText();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            if (selection == "Loop after rec")
+            {
+                getFilter()->notifyHost(kTrigger, i, 0.f);
+            }
+            else if (selection == "Sync loop")
+            {
+                getFilter()->notifyHost(kTrigger, i, 0.05f);
+            }
+            else if (selection == "Unsync 1-shot")
+            {
+                getFilter()->notifyHost(kTrigger, i, 0.15f);
+            }
+            else if (selection == "Unsync loop")
+            {
+                getFilter()->notifyHost(kTrigger, i, 0.25f);
+            }
+        }
+    }
+    else
+    {
+        if (selection == "Loop after rec")
+        {
+            getFilter()->notifyHostForActiveSlot(kTrigger, 0.f);
+        }
+        else if (selection == "Sync loop")
+        {
+            getFilter()->notifyHostForActiveSlot(kTrigger, 0.05f);
+        }
+        else if (selection == "Unsync 1-shot")
+        {
+            getFilter()->notifyHostForActiveSlot(kTrigger, 0.15f);
+        }
+        else if (selection == "Unsync loop")
+        {
+            getFilter()->notifyHostForActiveSlot(kTrigger, 0.25f);
+        }
+    }
+}
+
+void PizLooperEditor::handleStepsizeComboBoxChange() const
+{
+    auto selection = stepsizeBox->getText();
+    if (selection == "1 Bar")
+    {
+        getFilter()->notifyHostForActiveSlot(kRecStep, 0.f);
+    }
+    else if (selection == "3 Beats")
+    {
+        getFilter()->notifyHostForActiveSlot(kRecStep, 0.15f);
+    }
+    else if (selection == "2 Beats")
+    {
+        getFilter()->notifyHostForActiveSlot(kRecStep, 0.25f);
+    }
+    else if (selection == "1 Beat")
+    {
+        getFilter()->notifyHostForActiveSlot(kRecStep, 0.35f);
+    }
+    else if (selection == "8th Note")
+    {
+        getFilter()->notifyHostForActiveSlot(kRecStep, 0.45f);
+    }
+    else if (selection == "16th Note")
+    {
+        getFilter()->notifyHostForActiveSlot(kRecStep, 0.55f);
+    }
+    else if (selection == "1 Tick")
+    {
+        getFilter()->notifyHostForActiveSlot(kRecStep, 1.0f);
+    }
+}
+
+
+void PizLooperEditor::handleTransposeChannelSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_TransposeChannel.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+        {
+            for (int i = 0; i < numSlots; i++)
+            {
+                getFilter()->notifyHost(kTransposeChannel, i, slider->mapToVSTRange());
+                getFilter()->notifyHost(kScaleChannel, i, slider->mapToVSTRange());
+            }
+        }
+        else
+        {
+            for (int i = 0; i < numSlots; i++)
+            {
+                getFilter()->notifyHost(kTransposeChannel, i, slider->mapToVSTRange());
+            }
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kTransposeChannel, slider->mapToVSTRange());
+        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+        {
+            getFilter()->notifyHostForActiveSlot(kScaleChannel, slider->mapToVSTRange());
+        }
+    }
+}
+
+void PizLooperEditor::handleVelocitySensSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_VelocitySens.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kVeloSens, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kVeloSens, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handlePlayCCSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_PlayCC.get();
+    getFilter()->notifyHostForActiveSlot(kPlayCC, slider->mapToVSTRange());
+}
+
+void PizLooperEditor::handleRecCCSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_RecCC.get();
+    getFilter()->notifyHostForActiveSlot(kRecCC, slider->mapToVSTRange());
+}
+
+void PizLooperEditor::handleNextSlotSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_NextSlot.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kNextSlot, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kNextSlot, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleNumLoopsSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_NumLoops.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kNumLoops, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kNumLoops, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleMasterTransposeSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_MasterTranspose.get();
+    getFilter()->setParameterNotifyingHost(kMasterTranspose, slider->mapToVSTRange());
+}
+
+void PizLooperEditor::handleScaleChannelSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_ScaleChannel.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+        {
+            for (int i = 0; i < numSlots; i++)
+            {
+                getFilter()->notifyHost(kScaleChannel, i, slider->mapToVSTRange());
+                getFilter()->notifyHost(kTransposeChannel, i, slider->mapToVSTRange());
+            }
+        }
+        else
+        {
+            for (int i = 0; i < numSlots; i++)
+            {
+                getFilter()->notifyHost(kScaleChannel, i, slider->mapToVSTRange());
+            }
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kScaleChannel, slider->mapToVSTRange());
+        if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+        {
+            getFilter()->notifyHostForActiveSlot(kTransposeChannel, slider->mapToVSTRange());
+        }
+    }
+}
+
+void PizLooperEditor::handleMasterVelocitySliderChange() const
+{
+    auto* slider = (VSTSlider*) s_MasterVelocity.get();
+    getFilter()->setParameterNotifyingHost(kMasterVelocity, slider->mapToVSTRange());
+}
+
+void PizLooperEditor::handleMuteGroupSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_MuteGroup.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kMuteGroup, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kMuteGroup, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handlePlayGroupSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_PlayGroup.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kPlayGroup, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kPlayGroup, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleFixedLengthSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_FixedLength.get();
+    getFilter()->notifyHostForActiveSlot(kFixedLength, slider->mapToVSTRange());
+}
+
+void PizLooperEditor::handleChannelSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Channel.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kChannel, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kChannel, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleShiftSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Shift.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kShift, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kShift, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleTrigChanSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_TrigChan.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kTrigChan, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kTrigChan, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleHighSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_High.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kNHigh, i, slider->mapToVSTRange());
+            if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+            {
+                getFilter()->notifyHost(kNLow, i, slider->mapToVSTRange());
+            }
+        }
+    }
+    else if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+    {
+        getFilter()->notifyHostForActiveSlot(kNHigh, slider->mapToVSTRange());
+        getFilter()->notifyHostForActiveSlot(kNLow, slider->mapToVSTRange());
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kNHigh, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleLowSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Low.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kNLow, i, slider->mapToVSTRange());
+            if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+            {
+                getFilter()->notifyHost(kNHigh, i, slider->mapToVSTRange());
+            }
+        }
+    }
+    else if (juce::ModifierKeys::getCurrentModifiers().isShiftDown())
+    {
+        getFilter()->notifyHostForActiveSlot(kNLow, slider->mapToVSTRange());
+        getFilter()->notifyHostForActiveSlot(kNHigh, slider->mapToVSTRange());
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kNLow, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleRootSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Root.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kRoot, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kRoot, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleStretchSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Stretch.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kStretch, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kStretch, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleEndSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_End.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kLoopEnd, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kLoopEnd, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleStartSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Start.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kLoopStart, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kLoopStart, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleVelocitySliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Velocity.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kVelocity, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kVelocity, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleOctaveSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Octave.get();
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kOctave, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kOctave, slider->mapToVSTRange());
+    }
+}
+
+void PizLooperEditor::handleTransposeSliderChange() const
+{
+    auto* slider = (VSTSlider*) s_Transpose.get();
+
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        for (int i = 0; i < numSlots; i++)
+        {
+            getFilter()->notifyHost(kTranspose, i, slider->mapToVSTRange());
+        }
+    }
+    else
+    {
+        getFilter()->notifyHostForActiveSlot(kTranspose, slider->mapToVSTRange());
+    }
+}
+
+
+
+void PizLooperEditor::handleNameLabelTextChange() const
+{
+    getFilter()->changeProgramName(getFilter()->getCurrentProgram(), nameLabel->getText());
+}
+
+void PizLooperEditor::handleNumeratorLabelTextChange()
+{
+    int x = numeratorLabel->getText().getIntValue();
+    if (x > 0)
+    {
+        pianoRoll->setTimeSig(x, pianoRoll->timeSigD);
+        getFilter()->setTimeSig(lastActiveLoop, x, pianoRoll->timeSigD);
+        pianoRoll->repaintBG();
+    }
+    else
+    {
+        numeratorLabel->setText(juce::String(getFilter()->getNumerator(lastActiveLoop)), juce::dontSendNotification);
+    }
+}
+
+void PizLooperEditor::handleLengthLabelChange()
+{
+    pianoRoll->setDisplayLength(LengthLabel->getText().getIntValue());
+    getFilter()->setPRSetting("bars", pianoRoll->getDisplayLength(), false);
+    getFilter()->setPRSetting("width", pianoRoll->getWidth(), false);
+}
+
+void PizLooperEditor::handleDenominatorLabelChange()
+{
+    int x = denominatorLabel->getText().getIntValue();
+    if (x > 0 && (x & (x - 1)) == 0)
+    {
+        pianoRoll->setTimeSig(pianoRoll->timeSigN, x);
+        getFilter()->setTimeSig(lastActiveLoop, pianoRoll->timeSigN, x);
+        pianoRoll->repaintBG();
+    }
+    else
+    {
+        denominatorLabel->setText(juce::String(getFilter()->getDenominator(lastActiveLoop)), juce::dontSendNotification);
     }
 }

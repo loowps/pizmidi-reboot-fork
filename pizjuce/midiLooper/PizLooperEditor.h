@@ -7,24 +7,17 @@
 #include "ui/PianoRoll.h"
 #include "ui/PianoRollViewport.h"
 
-//==============================================================================
 class PizLooperEditor : public juce::AudioProcessorEditor,
                         public juce::ChangeListener,
                         public juce::FileDragAndDropTarget,
                         public ClickableLabelListener,
                         public juce::Timer,
                         public juce::MidiKeyboardStateListener,
-                        public juce::Button::Listener,
-                        public juce::ComboBox::Listener,
-                        public juce::Slider::Listener,
-                        public juce::Label::Listener
+                        public juce::Button::Listener
 {
 public:
-    //==============================================================================
-    PizLooperEditor(PizLooper* const ownerFilter);
+    PizLooperEditor(PizLooper* ownerFilter);
     ~PizLooperEditor() override;
-
-    //==============================================================================
 
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     bool isInterestedInFileDrag(const juce::StringArray& files) override;
@@ -45,9 +38,6 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
     void buttonClicked(juce::Button* buttonThatWasClicked) override;
-    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
-    void sliderValueChanged(juce::Slider* sliderThatWasMoved) override;
-    void labelTextChanged(juce::Label* labelThatHasChanged) override;
 
     // Binary resources:
     static const char* piznew40_png;
@@ -164,8 +154,8 @@ private:
     std::unique_ptr<juce::TextButton> b_Dotted;
     std::unique_ptr<juce::TextButton> b_ZoomOut;
     std::unique_ptr<juce::TextButton> b_ZoomIn;
-    std::unique_ptr<juce::Label> numerator;
-    std::unique_ptr<juce::Label> denominator;
+    std::unique_ptr<juce::Label> numeratorLabel;
+    std::unique_ptr<juce::Label> denominatorLabel;
     std::unique_ptr<juce::ToggleButton> b_UseScaleChannel;
     std::unique_ptr<VSTSlider> s_ScaleChannel;
     std::unique_ptr<juce::Label> label25;
@@ -306,6 +296,72 @@ private:
     std::unique_ptr<VSTSlider> s_TransposeChannel;
     std::unique_ptr<juce::Label> label28;
     juce::Image cachedImage_piznew40_png_1;
+
+    void handleOverdubButtonClick() const;
+    void handleThruButtonClick() const;
+    void handleClearButtonClick() const;
+    void handleReloadButtonClick() const;
+    void handleSaveButtonClick() const;
+    void handleFiltButtonClick() const;
+    void handleNoteToggleButtonClick() const;
+    void handleSnapButtonClick();
+    void handleForceToKeyButtonClick() const;
+    void handleShiftUpButtonClick() const;
+    void handleShiftDownButtonClick() const;
+    void handleSingleLoopButtonClick() const;
+    static void handleAboutButtonClick();
+    void handleTripletButtonClick();
+    void handleDottedButtonClick();
+    void handleZoomOutButtonClick();
+    void handleZoomInButtonClick();
+    void handleUseScaleChannelButtonClick();
+    void handleWaitForBarButtonClick() const;
+    void handleUseTrChannelButtonClick();
+    void handleImmediateTransposeButtonClick() const;
+    void handleRemoveBarButtonClick();
+    void handleAddBarButtonClick();
+    void handleTranspose10ButtonClick() const;
+    void handleKeepLengthButtonClick() const;
+    void handleMonitorButtonClick() const;
+
+    void handleStepsizeComboBoxChange() const;
+    void handleLoopModeComboBoxChange() const;
+    void handleNoteTriggerComboBoxChange() const;
+    void handleSyncModeComboBoxChange() const;
+    void handleQuantizeComboBoxChange() const;
+    void handleQuantize2ComboBoxChange();
+    void handleMidiOutDeviceComboBoxChange() const;
+    void handleForceModeComboBoxChange() const;
+
+    void handleTransposeSliderChange() const;
+    void handleOctaveSliderChange() const;
+    void handleVelocitySliderChange() const;
+    void handleStartSliderChange() const;
+    void handleEndSliderChange() const;
+    void handleStretchSliderChange() const;
+    void handleRootSliderChange() const;
+    void handleLowSliderChange() const;
+    void handleHighSliderChange() const;
+    void handleTrigChanSliderChange() const;
+    void handleShiftSliderChange() const;
+    void handleChannelSliderChange() const;
+    void handleFixedLengthSliderChange() const;
+    void handlePlayGroupSliderChange() const;
+    void handleMuteGroupSliderChange() const;
+    void handleMasterVelocitySliderChange() const;
+    void handleScaleChannelSliderChange() const;
+    void handleMasterTransposeSliderChange() const;
+    void handleNumLoopsSliderChange() const;
+    void handleNextSlotSliderChange() const;
+    void handleRecCCSliderChange() const;
+    void handlePlayCCSliderChange() const;
+    void handleVelocitySensSliderChange() const;
+    void handleTransposeChannelSliderChange() const;
+
+    void handleDenominatorLabelChange();
+    void handleLengthLabelChange();
+    void handleNumeratorLabelTextChange();
+    void handleNameLabelTextChange() const;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PizLooperEditor)
