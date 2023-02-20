@@ -2521,7 +2521,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     ownerFilter->info->addChangeListener(this);
     pianoRoll = (PianoRoll*) pianoRollViewport->getViewedComponent();
     pianoRollViewport->setPlayline(pianoRoll->getPlayline());
-    pianoRoll->setSize(500, 1200);
+    pianoRoll->setSize(500, 1280);
     pianoRoll->setSequence(ownerFilter->getActiveLoop());
     pianoRoll->addChangeListener(this);
     keyboard = (juce::MidiKeyboardComponent*) keyboardViewport->getViewedComponent();
@@ -4688,7 +4688,8 @@ void PizLooperEditor::handleZoomInButtonClick()
     double x = (double) pianoRollViewport->getViewPositionX() / ((double) pianoRoll->getWidth() - pianoRollViewport->getWidth());
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
-        pianoRoll->setSize(pianoRoll->getWidth(), jmin(25600, (int) (pianoRoll->getHeight() * 1.33333333333)));
+        auto newHeight = pianoRoll->getHeight() * 1.33333333333;
+        pianoRoll->setSize(pianoRoll->getWidth(), jmin(25600, (int) (128 * roundToInt(newHeight / 128.0f))));
         keyboard->setSize(25, pianoRoll->getHeight());
         keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
         pianoRollViewport->setViewPositionProportionately(x, y);
@@ -4710,7 +4711,8 @@ void PizLooperEditor::handleZoomOutButtonClick()
     double x = (double) pianoRollViewport->getViewPositionX() / ((double) pianoRoll->getWidth() - pianoRollViewport->getWidth());
     if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
     {
-        pianoRoll->setSize(pianoRoll->getWidth(), jmax(366, (int) (pianoRoll->getHeight() * 0.75)));
+        auto newHeight = pianoRoll->getHeight() * 0.75;
+        pianoRoll->setSize(pianoRoll->getWidth(), jmax(128 * 3, (int) (128 * roundToInt(newHeight / 128.0f))));
         keyboard->setSize(25, pianoRoll->getHeight());
         keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
         pianoRollViewport->setViewPositionProportionately(x, y);

@@ -150,7 +150,7 @@ private:
         set("triplet", false);
         set("stepsize", 0.5f);
         set("width", 500);
-        set("height", 1200);
+        set("height", 1280);
         set("x", 0);
         set("y", 500);
         set("bars", 4);

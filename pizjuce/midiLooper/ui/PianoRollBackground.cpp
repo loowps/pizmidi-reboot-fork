@@ -12,20 +12,17 @@ PianoRollBackground::~PianoRollBackground() = default;
 void PianoRollBackground::paint(juce::Graphics& g)
 {
     const PianoRoll* roll = (PianoRoll*) getParentComponent();
-    int n                 = 0;
+    int noteNumber        = 0;
     auto y                = (float) getHeight();
     float yinc            = (float) getHeight() / 128.f;
 
-    g.setColour(juce::Colours::white);
-    g.fillRect(getBounds());
-
     while (y > 0)
     {
-        if (getNoteNameWithoutOctave(n).contains("#"))
+        if (getNoteNameWithoutOctave(noteNumber).contains("#"))
         {
-            g.setColour(juce::Colour::fromString("ffe1e1e1"));
+            g.setColour(juce::Colour::fromString("ffe9e9e9"));
         }
-        else if (n == 60)
+        else if (noteNumber == 60)
         {
             g.setColour(juce::Colours::yellow);
         }
@@ -36,19 +33,19 @@ void PianoRollBackground::paint(juce::Graphics& g)
 
         g.fillRect(0.f, std::round(y - yinc), (float) getWidth(), std::round(yinc));
 
-        if (getNoteNameWithoutOctave(n).contains("F") && ! getNoteNameWithoutOctave(n).contains("#"))
+        if (getNoteNameWithoutOctave(noteNumber).contains("F") && ! getNoteNameWithoutOctave(noteNumber).contains("#"))
         {
             g.setColour(juce::Colour::fromString("ffb3b3b3"));
             g.drawHorizontalLine(y, 0.f, (float) getWidth());
         }
 
-        if (getNoteNameWithoutOctave(n).contains("C") && ! getNoteNameWithoutOctave(n).contains("#"))
+        if (getNoteNameWithoutOctave(noteNumber).contains("C") && ! getNoteNameWithoutOctave(noteNumber).contains("#"))
         {
             g.setColour(juce::Colour::fromString("ff808080"));
             g.drawHorizontalLine(y, 0.f, (float) getWidth());
         }
 
-        n++;
+        noteNumber++;
         y -= yinc;
     }
 
