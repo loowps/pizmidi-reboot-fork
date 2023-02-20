@@ -22,6 +22,7 @@ target_sources(
   "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollNotes.h"
   "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollViewport.h"
   "${CMAKE_CURRENT_LIST_DIR}/ui/Timeline.h"
+  "${CMAKE_CURRENT_LIST_DIR}/ui/CustomLookAndFeel.h"
   # Sources
   "${CMAKE_CURRENT_LIST_DIR}/data/MidiLoop.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRoll.cpp"
@@ -34,6 +35,7 @@ target_sources(
   "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollBackground.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollNotes.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/ui/PianoRollViewport.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ui/CustomLookAndFeel.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/ui/Timeline.cpp")
 
 target_link_libraries(

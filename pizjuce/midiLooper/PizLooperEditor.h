@@ -3,6 +3,7 @@
 #include "../_common/ClickableLabel.h"
 #include "../_common/VSTSlider.h"
 #include "PizLooper.h"
+#include "ui/CustomLookAndFeel.h"
 #include "ui/KeySelector.h"
 #include "ui/PianoRoll.h"
 #include "ui/PianoRollViewport.h"
@@ -44,6 +45,8 @@ public:
     static const int piznew40_pngSize;
 
 private:
+    CustomLookAndFeel lookAndFeel;
+
     juce::TooltipWindow tooltipWindow;
     void updateParametersFromFilter();
     void updateControls(int param, float value, bool forCurProgram);

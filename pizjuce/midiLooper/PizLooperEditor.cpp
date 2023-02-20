@@ -9,6 +9,8 @@ using juce::roundToInt;
 PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     : AudioProcessorEditor(ownerFilter)
 {
+    setLookAndFeel(&lookAndFeel);
+
     aboutButton = std::make_unique<juce::ImageButton>("new button");
     addAndMakeVisible(aboutButton.get());
     aboutButton->setTooltip(TRANS("Insert Piz Here-> midiLooper v1.3  https://github.com/sleiner/pizmidi"));
