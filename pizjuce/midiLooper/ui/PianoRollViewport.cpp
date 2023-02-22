@@ -30,7 +30,10 @@ void PianoRollViewport::setKeyboard(juce::Viewport* kb)
 
 void PianoRollViewport::mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel)
 {
-    this->getParentComponent()->mouseWheelMove(e, wheel);
+    if (onMouseWheelMove != nullptr)
+    {
+        onMouseWheelMove(e, wheel);
+    }
 }
 
 void PianoRollViewport::visibleAreaChanged(const juce::Rectangle<int>& newVisibleArea)

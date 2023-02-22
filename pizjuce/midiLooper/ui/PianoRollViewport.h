@@ -14,6 +14,8 @@ public:
     void setPlayline(Component* p);
     void setKeyboard(Viewport* kb);
 
+    std::function<void(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel)> onMouseWheelMove;
+
     void mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) override;
 
     void visibleAreaChanged(const juce::Rectangle<int>& newVisibleArea) override;

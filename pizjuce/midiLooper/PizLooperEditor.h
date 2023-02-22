@@ -355,6 +355,9 @@ private:
 
     juce::Image cachedImage_piznew40_png_1;
 
+    void zoomXViewport(bool out);
+    void zoomYViewport(bool out);
+
     void handleOverdubButtonClick() const;
     void handleThruButtonClick() const;
     void handleClearButtonClick() const;
