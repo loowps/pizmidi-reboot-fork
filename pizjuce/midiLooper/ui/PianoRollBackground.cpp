@@ -35,7 +35,7 @@ void PianoRollBackground::paint(juce::Graphics& g)
 
         if (getNoteNameWithoutOctave(noteNumber).contains("F") && ! getNoteNameWithoutOctave(noteNumber).contains("#"))
         {
-            g.setColour(juce::Colour::fromString("ffb3b3b3"));
+            g.setColour(juce::Colour::fromString("ffd1d1d1"));
             g.drawHorizontalLine(y, 0.f, (float) getWidth());
         }
 
