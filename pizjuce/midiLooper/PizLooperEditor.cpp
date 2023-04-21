@@ -3623,7 +3623,9 @@ void PizLooperEditor::updateParametersFromFilter()
             pianoRoll->setNoteLength(16 * tord);
         }
         pianoRoll->setDisplayLength((int) filter->getPRSetting("bars"));
-        pianoRoll->setSize(filter->getPRSetting("width"), filter->getPRSetting("height"));
+        
+        auto newHeight = (int) (128 * roundToInt((float) filter->getPRSetting("height") / 128.0f));
+        pianoRoll->setSize(filter->getPRSetting("width"), newHeight);
         keyboard->setSize(25, pianoRoll->getHeight());
         keyboard->setKeyWidth((float) pianoRoll->getHeight() / 74.75f);
         pianoRollViewport->setViewPosition(filter->getPRSetting("x"),
