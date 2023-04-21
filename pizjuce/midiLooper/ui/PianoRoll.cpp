@@ -401,7 +401,7 @@ int PianoRoll::ppqToPixelsWithOffset(double ppq)
     return (int) ((double) getWidth() * (ppq / seqLengthInPpq)) - timeline->scrollOffset;
 }
 
-double PianoRoll::snapPpqToGrid(double ppq, bool round)
+double PianoRoll::snapPpqToGrid(double ppq, bool round) const
 {
     if (round)
     {
@@ -438,7 +438,7 @@ void PianoRoll::removeBar()
     setSize(juce::jmax(pixelBarLength, getWidth() - pixelBarLength), getHeight());
 }
 
-int PianoRoll::getDisplayLength()
+int PianoRoll::getDisplayLength() const
 {
     return (int) (juce::jmax(blankLength, seqLengthInPpq) / getPpqPerBar());
 }
@@ -455,12 +455,12 @@ void PianoRoll::setSnap(bool snap)
 
 void PianoRoll::setPlayTime(double timeInPpq)
 {
-    const int lastpixels = ppqToPixelsWithOffset(playTime);
+    const int lastPixels = ppqToPixelsWithOffset(playTime);
     const int pixels     = ppqToPixelsWithOffset(timeInPpq);
-    if (pixels != lastpixels)
+    if (pixels != lastPixels)
     {
         playTime = timeInPpq;
-        playline->repaint(lastpixels, 0, 1, getHeight());
+        playline->repaint(lastPixels, 0, 1, getHeight());
         playline->repaint(pixels, 0, 1, getHeight());
     }
 }

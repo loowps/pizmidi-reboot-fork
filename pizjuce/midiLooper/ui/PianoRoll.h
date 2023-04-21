@@ -24,7 +24,7 @@ public:
     double pixelsToPpq(float pixels, bool snap, bool round = false);
     float ppqToPixels(double ppq);
     int ppqToPixelsWithOffset(double ppq);
-    double snapPpqToGrid(double ppq, bool round = false);
+    double snapPpqToGrid(double ppq, bool round = false) const;
     void setNoteLength(float beatDiv);
     double blankLength;
 
@@ -34,7 +34,7 @@ public:
     void addBar();
     void removeBar();
 
-    int getDisplayLength();
+    int getDisplayLength() const;
 
     void mouseDown(const juce::MouseEvent& e) override;
     void mouseDrag(const juce::MouseEvent& e) override;
@@ -71,7 +71,7 @@ public:
     float barSize;  //number of pixels per measure
 
     Loop* sequence;
-    
+
     float yinc;
 
     int draggingNoteTransposition;

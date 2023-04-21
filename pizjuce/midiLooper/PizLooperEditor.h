@@ -358,6 +358,9 @@ private:
     void zoomXViewport(bool out);
     void zoomYViewport(bool out);
 
+    void handleMouseWheelMove(const juce::MouseWheelDetails& details);
+    void handleMouseWheelMove(bool out, int positionIncrement);
+
     void handleOverdubButtonClick() const;
     void handleThruButtonClick() const;
     void handleClearButtonClick() const;

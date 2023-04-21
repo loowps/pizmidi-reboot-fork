@@ -2306,52 +2306,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     pianoRollViewport->onMouseWheelMove = [this](const juce::MouseEvent& e, const juce::MouseWheelDetails& details)
     {
-        if (details.deltaY > 0)
-        {
-            if (juce::ModifierKeys::getCurrentModifiers().isCommandDown() && juce::ModifierKeys::getCurrentModifiers().isAltDown())
-            {
-                zoomYViewport(false);
-            }
-            else if (juce::ModifierKeys::getCurrentModifiers().isAltDown())
-            {
-                pianoRollViewport->setViewPosition(
-                    pianoRollViewport->getViewPositionX() - 10,
-                    pianoRollViewport->getViewPositionY());
-            }
-            else if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-            {
-                zoomXViewport(false);
-            }
-            else
-            {
-                pianoRollViewport->setViewPosition(
-                    pianoRollViewport->getViewPositionX(),
-                    pianoRollViewport->getViewPositionY() - 10);
-            }
-        }
-        else if (details.deltaY < 0)
-        {
-            if (juce::ModifierKeys::getCurrentModifiers().isCommandDown() && juce::ModifierKeys::getCurrentModifiers().isAltDown())
-            {
-                zoomYViewport(true);
-            }
-            else if (juce::ModifierKeys::getCurrentModifiers().isAltDown())
-            {
-                pianoRollViewport->setViewPosition(
-                    pianoRollViewport->getViewPositionX() + 10,
-                    pianoRollViewport->getViewPositionY());
-            }
-            else if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
-            {
-                zoomXViewport(true);
-            }
-            else
-            {
-                pianoRollViewport->setViewPosition(
-                    pianoRollViewport->getViewPositionX(),
-                    pianoRollViewport->getViewPositionY() + 10);
-            }
-        }
+        handleMouseWheelMove(details);
     };
 
     resizer = std::make_unique<juce::ResizableCornerComponent>(this, &resizeLimits);
@@ -4785,6 +4740,42 @@ void PizLooperEditor::zoomYViewport(bool out)
     pianoRollViewport->setViewPositionProportionately(x, y);
     getFilter()->setPRSetting("height", pianoRoll->getHeight(), false);
     getFilter()->setPRSetting("y", pianoRollViewport->getViewPositionY(), false);
+}
+
+void PizLooperEditor::handleMouseWheelMove(const juce::MouseWheelDetails& details)
+{
+    if (details.deltaY > 0)
+    {
+        handleMouseWheelMove(false, -10);
+    }
+    else if (details.deltaY < 0)
+    {
+        handleMouseWheelMove(true, 10);
+    }
+}
+
+void PizLooperEditor::handleMouseWheelMove(bool out, int positionIncrement)
+{
+    if (juce::ModifierKeys::getCurrentModifiers().isCommandDown() && juce::ModifierKeys::getCurrentModifiers().isAltDown())
+    {
+        zoomYViewport(out);
+    }
+    else if (juce::ModifierKeys::getCurrentModifiers().isAltDown())
+    {
+        pianoRollViewport->setViewPosition(
+            pianoRollViewport->getViewPositionX() + positionIncrement,
+            pianoRollViewport->getViewPositionY());
+    }
+    else if (juce::ModifierKeys::getCurrentModifiers().isCommandDown())
+    {
+        zoomXViewport(out);
+    }
+    else
+    {
+        pianoRollViewport->setViewPosition(
+            pianoRollViewport->getViewPositionX(),
+            pianoRollViewport->getViewPositionY() + positionIncrement);
+    }
 }
 
 void PizLooperEditor::handleDottedButtonClick()
