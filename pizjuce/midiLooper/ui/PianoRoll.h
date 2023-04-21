@@ -8,7 +8,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "PianoRollBackground.h"
 #include "PianoRollNotes.h"
-#include "Playbar.h"
+#include "PlayBar.h"
 #include "Timeline.h"
 
 class PianoRoll : public juce::Component,
@@ -54,7 +54,7 @@ public:
 
     double getPpqPerBar() const;
 
-    Component* getPlayline();
+    Component* getPlayBar();
 
     int defaultChannel;
     int timeSigN, timeSigD;
@@ -87,7 +87,7 @@ private:
     void clearSelection();
 
     Timeline* timeline;
-    Playbar* playline;
+    PlayBar* playBar;
     PianoRollBackground* bg;
     PianoRollNotes* noteLayer;
     juce::AudioProcessor* plugin;

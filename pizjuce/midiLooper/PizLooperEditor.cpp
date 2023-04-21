@@ -2493,7 +2493,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     ownerFilter->addChangeListener(this);
     ownerFilter->info->addChangeListener(this);
     pianoRoll = (PianoRoll*) pianoRollViewport->getViewedComponent();
-    pianoRollViewport->setPlayline(pianoRoll->getPlayline());
+    pianoRollViewport->setPlayBar(pianoRoll->getPlayBar());
     pianoRoll->setSize(500, 1280);
     pianoRoll->setSequence(ownerFilter->getActiveLoop());
     pianoRoll->addChangeListener(this);
@@ -3296,17 +3296,17 @@ void PizLooperEditor::changeListenerCallback(juce::ChangeBroadcaster* source)
         }
         else
         {
-            juce::String loopinfo = "Loop length: ";
+            juce::String loopInfo = "Loop length: ";
             if (getFilter()->currentLength == 1.0)
             {
-                loopinfo << "1 Beat (";
+                loopInfo << "1 Beat (";
             }
             else
             {
-                loopinfo << getFilter()->currentLength << " Beats (";
+                loopInfo << getFilter()->currentLength << " Beats (";
             }
-            loopinfo << getFilter()->currentNumEvents << " Events)";
-            loopInfoLabel->setText(loopinfo, juce::dontSendNotification);
+            loopInfo << getFilter()->currentNumEvents << " Events)";
+            loopInfoLabel->setText(loopInfo, juce::dontSendNotification);
             getButtonForSlot(lastActiveLoop)->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
             getButtonForSlot(lastActiveLoop)->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
         }
@@ -3566,7 +3566,7 @@ void PizLooperEditor::updateParametersFromFilter()
     const int d = filter->getDenominator(lastActiveLoop);
 
     const int newDevice = filter->devices.indexOf(filter->getActiveDevice());
-    bool newloop        = filter->newLoop;
+    bool newLoop        = filter->newLoop;
 
     filter->getCallbackLock().exit();
 
@@ -3676,17 +3676,17 @@ void PizLooperEditor::updateParametersFromFilter()
     }
     else
     {
-        juce::String loopinfo = "Loop length: ";
+        juce::String loopInfo = "Loop length: ";
         if (filter->currentLength == 1.0)
         {
-            loopinfo << "1 Beat (";
+            loopInfo << "1 Beat (";
         }
         else
         {
-            loopinfo << filter->currentLength << " Beats (";
+            loopInfo << filter->currentLength << " Beats (";
         }
-        loopinfo << filter->currentNumEvents << " Events)";
-        loopInfoLabel->setText(loopinfo, juce::dontSendNotification);
+        loopInfo << filter->currentNumEvents << " Events)";
+        loopInfoLabel->setText(loopInfo, juce::dontSendNotification);
     }
     noSnap = true;
     timeline->setLoop(filter->getLoopStart(lastActiveLoop), filter->getLoopLength(lastActiveLoop));
@@ -3694,7 +3694,7 @@ void PizLooperEditor::updateParametersFromFilter()
 
     loopInfoLabel2->setText(filter->info->s, juce::dontSendNotification);
 
-    if (newloop)
+    if (newLoop)
     {
         pianoRoll->setSequence(filter->getActiveLoop());
         filter->newLoop = false;

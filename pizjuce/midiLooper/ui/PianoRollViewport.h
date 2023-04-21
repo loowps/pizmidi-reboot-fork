@@ -11,7 +11,7 @@ public:
     ~PianoRollViewport() override;
 
     void setTimeline(Timeline* t);
-    void setPlayline(Component* p);
+    void setPlayBar(Component* p);
     void setKeyboard(Viewport* kb);
 
     std::function<void(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel)> onMouseWheelMove;
@@ -22,7 +22,7 @@ public:
 
 private:
     Timeline* timeline;
-    juce::Component* playline;
+    juce::Component* playBar;
     juce::Viewport* keyboard;
 };
 

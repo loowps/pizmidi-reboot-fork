@@ -37,8 +37,8 @@ PianoRoll::PianoRoll(juce::AudioProcessor* _plugin, juce::AudioProcessorEditor* 
     bg->setInterceptsMouseClicks(false, false);
     addAndMakeVisible(noteLayer = new PianoRollNotes());
     noteLayer->setInterceptsMouseClicks(false, false);
-    addAndMakeVisible(playline = new Playbar(this));
-    playline->setInterceptsMouseClicks(false, false);
+    addAndMakeVisible(playBar = new PlayBar(this));
+    playBar->setInterceptsMouseClicks(false, false);
     setSize(800, 800);
     lasso.setBounds(0, 0, 0, 0);
     wasResizing = false;
@@ -47,7 +47,7 @@ PianoRoll::PianoRoll(juce::AudioProcessor* _plugin, juce::AudioProcessorEditor* 
 PianoRoll::~PianoRoll()
 {
     dispatchPendingMessages();
-    deleteAndZero(playline);
+    deleteAndZero(playBar);
     deleteAndZero(bg);
     deleteAndZero(noteLayer);
 }
@@ -460,8 +460,8 @@ void PianoRoll::setPlayTime(double timeInPpq)
     if (pixels != lastPixels)
     {
         playTime = timeInPpq;
-        playline->repaint(lastPixels, 0, 1, getHeight());
-        playline->repaint(pixels, 0, 1, getHeight());
+        playBar->repaint(lastPixels, 0, 1, getHeight());
+        playBar->repaint(pixels, 0, 1, getHeight());
     }
 }
 
@@ -470,9 +470,9 @@ double PianoRoll::getPpqPerBar() const
     return timebase * quarterNotesPerBar;
 }
 
-juce::Component* PianoRoll::getPlayline()
+juce::Component* PianoRoll::getPlayBar()
 {
-    return (Component*) playline;
+    return (Component*) playBar;
 }
 
 void PianoRoll::repaintBG()

@@ -3,7 +3,7 @@
 PianoRollViewport::PianoRollViewport(const juce::String& name)
     : Viewport(name),
       timeline(nullptr),
-      playline(nullptr),
+      playBar(nullptr),
       keyboard(nullptr)
 {
 }
@@ -18,9 +18,9 @@ void PianoRollViewport::setTimeline(Timeline* t)
     timeline = t;
 }
 
-void PianoRollViewport::setPlayline(juce::Component* p)
+void PianoRollViewport::setPlayBar(Component* p)
 {
-    playline = p;
+    playBar = p;
 }
 
 void PianoRollViewport::setKeyboard(juce::Viewport* kb)
@@ -40,7 +40,7 @@ void PianoRollViewport::visibleAreaChanged(const juce::Rectangle<int>& newVisibl
 {
     timeline->scrollOffset = newVisibleArea.getX();
     timeline->repaint();
-    playline->setBounds(newVisibleArea);
+    playBar->setBounds(newVisibleArea);
     keyboard->setViewPosition(0, newVisibleArea.getY());
     sendChangeMessage();
 }

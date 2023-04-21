@@ -1,15 +1,15 @@
-#include "Playbar.h"
+#include "PlayBar.h"
 
 #include "PianoRoll.h"
 
-Playbar::Playbar(PianoRoll* pianoroll)
-    : roll(pianoroll)
+PlayBar::PlayBar(PianoRoll* pianoRoll)
+    : pianoRoll(pianoRoll)
 {
 }
 
-Playbar::~Playbar() = default;
+PlayBar::~PlayBar() = default;
 
-void Playbar::paint(juce::Graphics& g)
+void PlayBar::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colour(0x0));
     //if (sequence->isRecording) {
@@ -18,6 +18,6 @@ void Playbar::paint(juce::Graphics& g)
     //}
     //else {
     g.setColour(juce::Colours::green);
-    g.drawVerticalLine((int) roll->ppqToPixelsWithOffset(roll->playTime), 0.f, (float) getHeight());
+    g.drawVerticalLine((int) pianoRoll->ppqToPixelsWithOffset(pianoRoll->playTime), 0.f, (float) getHeight());
     //}
 }

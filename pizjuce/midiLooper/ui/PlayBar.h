@@ -5,17 +5,17 @@
 
 class PianoRoll;
 
-class Playbar : public juce::Component
+class PlayBar : public juce::Component
 {
 public:
-    explicit Playbar(PianoRoll* pianoroll);
+    explicit PlayBar(PianoRoll* pianoRoll);
 
-    ~Playbar() override;
+    ~PlayBar() override;
 
     void paint(juce::Graphics& g) override;
 
 private:
-    PianoRoll* roll;
+    PianoRoll* pianoRoll;
 };
 
 #endif //PIZMIDI_PLAYBAR_H
