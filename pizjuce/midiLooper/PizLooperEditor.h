@@ -366,7 +366,7 @@ private:
     void handleClearButtonClick() const;
     void handleReloadButtonClick() const;
     void handleSaveButtonClick() const;
-    void handleFiltButtonClick() const;
+    void handleTransformFilterButtonClick() const;
     void handleNoteToggleButtonClick() const;
     void handleSnapButtonClick();
     void handleForceToKeyButtonClick() const;
@@ -388,7 +388,7 @@ private:
     void handleKeepLengthButtonClick() const;
     void handleMonitorButtonClick() const;
 
-    void handleStepsizeComboBoxChange() const;
+    void handleStepSizeComboBoxChange() const;
     void handleLoopModeComboBoxChange() const;
     void handleNoteTriggerComboBoxChange() const;
     void handleSyncModeComboBoxChange() const;

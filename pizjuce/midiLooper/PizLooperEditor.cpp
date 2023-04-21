@@ -78,7 +78,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     stepSizeComboBox->setBounds(264, 15, 77, 16);
     stepSizeComboBox->onChange = [this]
     {
-        handleStepsizeComboBoxChange();
+        handleStepSizeComboBoxChange();
     };
 
     recordLengthLabel = std::make_unique<juce::Label>("RecordLengthLabel", "Record Length");
@@ -1137,7 +1137,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     transformFilterButton->setBounds(314, 440, 64, 20);
     transformFilterButton->onClick = [this]
     {
-        handleFiltButtonClick();
+        handleTransformFilterButtonClick();
     };
 
     noteTriggeringLabel = std::make_unique<juce::Label>("Sync:", "Note Triggering");
@@ -4901,7 +4901,7 @@ void PizLooperEditor::handleNoteToggleButtonClick() const
     }
 }
 
-void PizLooperEditor::handleFiltButtonClick() const
+void PizLooperEditor::handleTransformFilterButtonClick() const
 {
     if (getFilter()->getParamForActiveSlot(kFiltChan) >= 0.5f)
     {
@@ -5222,7 +5222,7 @@ void PizLooperEditor::handleLoopModeComboBoxChange() const
     }
 }
 
-void PizLooperEditor::handleStepsizeComboBoxChange() const
+void PizLooperEditor::handleStepSizeComboBoxChange() const
 {
     auto selection = stepSizeComboBox->getText();
     if (selection == "1 Bar")
