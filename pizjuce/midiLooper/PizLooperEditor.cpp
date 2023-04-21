@@ -13,7 +13,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     aboutButton = std::make_unique<juce::ImageButton>("new button");
     addAndMakeVisible(aboutButton.get());
-    aboutButton->setTooltip(TRANS("Insert Piz Here-> midiLooper v1.3  https://github.com/sleiner/pizmidi"));
+    aboutButton->setTooltip("Insert Piz Here-> midiLooper v1.3  https://github.com/sleiner/pizmidi");
     aboutButton->setButtonText(juce::String());
     aboutButton->setImages(false, true, true, juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000), juce::Image(), 1.000f, juce::Colour(0x00000000));
     aboutButton->setBounds(9, 1, 136, 47);
@@ -23,8 +23,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     };
     aboutButton->setTooltip(L"Insert Piz Here-> midiLooper v" + juce::String(JucePlugin_VersionString) + " https://github.com/sleiner/pizmidi");
 
-    hostSyncModeLabel = std::make_unique<juce::Label>("Sync",
-                                                      TRANS("Host Sync Mode"));
+    hostSyncModeLabel = std::make_unique<juce::Label>("Sync", "Host Sync Mode");
     addAndMakeVisible(hostSyncModeLabel.get());
     hostSyncModeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     hostSyncModeLabel->setJustificationType(juce::Justification::centred);
@@ -37,14 +36,14 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     syncModeComboBox = std::make_unique<juce::ComboBox>("Sync");
     addAndMakeVisible(syncModeComboBox.get());
-    syncModeComboBox->setTooltip(TRANS("\"PPQ\" modes always follow host timeline, which may not work in all hosts. \"Sample\" mode ignores the host\'s timeline, but the host\'s tempo is still followed."));
+    syncModeComboBox->setTooltip("\"PPQ\" modes always follow host timeline, which may not work in all hosts. \"Sample\" mode ignores the host\'s timeline, but the host\'s tempo is still followed.");
     syncModeComboBox->setEditableText(false);
     syncModeComboBox->setJustificationType(juce::Justification::centredLeft);
-    syncModeComboBox->setTextWhenNothingSelected(TRANS("PPQ (Recstart)"));
-    syncModeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    syncModeComboBox->addItem(TRANS("PPQ (Host 0)"), 1);
-    syncModeComboBox->addItem(TRANS("PPQ (Recstart)"), 2);
-    syncModeComboBox->addItem(TRANS("Sample"), 3);
+    syncModeComboBox->setTextWhenNothingSelected("PPQ (Recstart)");
+    syncModeComboBox->setTextWhenNoChoicesAvailable("(no choices)");
+    syncModeComboBox->addItem("PPQ (Host 0)", 1);
+    syncModeComboBox->addItem("PPQ (Recstart)", 2);
+    syncModeComboBox->addItem("Sample", 3);
     syncModeComboBox->onChange = [this]
     {
         handleSyncModeComboBoxChange();
@@ -52,8 +51,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     syncModeComboBox->setBounds(159, 15, 99, 16);
 
-    loopStepSizeLabel = std::make_unique<juce::Label>("LoopStepSize",
-                                                      TRANS("Loop Step Size"));
+    loopStepSizeLabel = std::make_unique<juce::Label>("LoopStepSize", "Loop Step Size");
     addAndMakeVisible(loopStepSizeLabel.get());
     loopStepSizeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopStepSizeLabel->setJustificationType(juce::Justification::centred);
@@ -66,25 +64,24 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     stepSizeComboBox = std::make_unique<juce::ComboBox>("Loop Step Size");
     addAndMakeVisible(stepSizeComboBox.get());
-    stepSizeComboBox->setTooltip(TRANS("Recording length will be quantized to this step size."));
+    stepSizeComboBox->setTooltip("Recording length will be quantized to this step size.");
     stepSizeComboBox->setEditableText(false);
     stepSizeComboBox->setJustificationType(juce::Justification::centredLeft);
-    stepSizeComboBox->setTextWhenNothingSelected(TRANS("16th Note"));
-    stepSizeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    stepSizeComboBox->addItem(TRANS("1 Bar"), 1);
-    stepSizeComboBox->addItem(TRANS("3 Beats"), 2);
-    stepSizeComboBox->addItem(TRANS("2 Beats"), 3);
-    stepSizeComboBox->addItem(TRANS("1 Beat"), 4);
-    stepSizeComboBox->addItem(TRANS("16th Note"), 5);
-    stepSizeComboBox->addItem(TRANS("1 Tick"), 6);
+    stepSizeComboBox->setTextWhenNothingSelected("16th Note");
+    stepSizeComboBox->setTextWhenNoChoicesAvailable("(no choices)");
+    stepSizeComboBox->addItem("1 Bar", 1);
+    stepSizeComboBox->addItem("3 Beats", 2);
+    stepSizeComboBox->addItem("2 Beats", 3);
+    stepSizeComboBox->addItem("1 Beat", 4);
+    stepSizeComboBox->addItem("16th Note", 5);
+    stepSizeComboBox->addItem("1 Tick", 6);
     stepSizeComboBox->setBounds(264, 15, 77, 16);
     stepSizeComboBox->onChange = [this]
     {
         handleStepsizeComboBoxChange();
     };
 
-    recordLengthLabel = std::make_unique<juce::Label>("RecordLengthLabel",
-                                                      TRANS("Record Length"));
+    recordLengthLabel = std::make_unique<juce::Label>("RecordLengthLabel", "Record Length");
     addAndMakeVisible(recordLengthLabel.get());
     recordLengthLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     recordLengthLabel->setJustificationType(juce::Justification::centred);
@@ -97,7 +94,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     fixedLengthSlider = std::make_unique<VSTSlider>("Recording Length");
     addAndMakeVisible(fixedLengthSlider.get());
-    fixedLengthSlider->setTooltip(TRANS("If set to \"Manual\", recording will go on as long as the record button is on. Otherwise, length will be limited to this number of steps (based on \"Loop Step Size\" setting)."));
+    fixedLengthSlider->setTooltip("If set to \"Manual\", recording will go on as long as the record button is on. Otherwise, length will be limited to this number of steps (based on \"Loop Step Size\" setting).");
     fixedLengthSlider->setRange(0, 32, 1);
     fixedLengthSlider->setSliderStyle(juce::Slider::LinearBar);
     fixedLengthSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -112,16 +109,16 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     quantizeComboBox = std::make_unique<juce::ComboBox>("Input Quantize Step");
     addAndMakeVisible(quantizeComboBox.get());
-    quantizeComboBox->setTooltip(TRANS("Recorded events will be quantized to this step size"));
+    quantizeComboBox->setTooltip("Recorded events will be quantized to this step size");
     quantizeComboBox->setEditableText(false);
     quantizeComboBox->setJustificationType(juce::Justification::centredLeft);
-    quantizeComboBox->setTextWhenNothingSelected(TRANS("32nd"));
-    quantizeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    quantizeComboBox->addItem(TRANS("Off"), 1);
-    quantizeComboBox->addItem(TRANS("8th"), 2);
-    quantizeComboBox->addItem(TRANS("16th"), 3);
-    quantizeComboBox->addItem(TRANS("32nd"), 4);
-    quantizeComboBox->addItem(TRANS("64th"), 5);
+    quantizeComboBox->setTextWhenNothingSelected("32nd");
+    quantizeComboBox->setTextWhenNoChoicesAvailable("(no choices)");
+    quantizeComboBox->addItem("Off", 1);
+    quantizeComboBox->addItem("8th", 2);
+    quantizeComboBox->addItem("16th", 3);
+    quantizeComboBox->addItem("32nd", 4);
+    quantizeComboBox->addItem("64th", 5);
     quantizeComboBox->onChange = [this]
     {
         handleQuantizeComboBoxChange();
@@ -129,8 +126,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     quantizeComboBox->setBounds(439, 15, 77, 16);
 
-    quantizeInputLabel = std::make_unique<juce::Label>("QuantizeLabel",
-                                                       TRANS("Quantize Input"));
+    quantizeInputLabel = std::make_unique<juce::Label>("QuantizeLabel", "Quantize Input");
     addAndMakeVisible(quantizeInputLabel.get());
     quantizeInputLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     quantizeInputLabel->setJustificationType(juce::Justification::centred);
@@ -143,7 +139,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     overdubButton = std::make_unique<juce::TextButton>("Overdub");
     addAndMakeVisible(overdubButton.get());
-    overdubButton->setTooltip(TRANS("Toggle overdub recording"));
+    overdubButton->setTooltip("Toggle overdub recording");
     overdubButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     overdubButton->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
     overdubButton->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
@@ -155,11 +151,11 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     midiOutDeviceComboBox = std::make_unique<juce::ComboBox>("midiOutDevice");
     addAndMakeVisible(midiOutDeviceComboBox.get());
-    midiOutDeviceComboBox->setTooltip(TRANS("Send output to selected MIDI port in addition to VST host output"));
+    midiOutDeviceComboBox->setTooltip("Send output to selected MIDI port in addition to VST host output");
     midiOutDeviceComboBox->setEditableText(false);
     midiOutDeviceComboBox->setJustificationType(juce::Justification::centredLeft);
-    midiOutDeviceComboBox->setTextWhenNothingSelected(TRANS("--"));
-    midiOutDeviceComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    midiOutDeviceComboBox->setTextWhenNothingSelected("--");
+    midiOutDeviceComboBox->setTextWhenNoChoicesAvailable("(no choices)");
     midiOutDeviceComboBox->onChange = [this]
     {
         handleMidiOutDeviceComboBoxChange();
@@ -167,8 +163,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     midiOutDeviceComboBox->setBounds(633, 15, 158, 16);
 
-    midiOutDeviceLabel = std::make_unique<juce::Label>("QuantizeLabel",
-                                                       TRANS("MIDI Output Device"));
+    midiOutDeviceLabel = std::make_unique<juce::Label>("QuantizeLabel", "MIDI Output Device");
     addAndMakeVisible(midiOutDeviceLabel.get());
     midiOutDeviceLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     midiOutDeviceLabel->setJustificationType(juce::Justification::centred);
@@ -181,8 +176,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     singleLoopToggleButton = std::make_unique<juce::ToggleButton>("Single Loop");
     addAndMakeVisible(singleLoopToggleButton.get());
-    singleLoopToggleButton->setTooltip(TRANS("When checked, switching from a playing slot to another slot will automatically play the new slot and stop the previous one"));
-    singleLoopToggleButton->setButtonText(TRANS("Play active slot only"));
+    singleLoopToggleButton->setTooltip("When checked, switching from a playing slot to another slot will automatically play the new slot and stop the previous one");
+    singleLoopToggleButton->setButtonText("Play active slot only");
     singleLoopToggleButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
     singleLoopToggleButton->setBounds(155, 36, 122, 16);
     singleLoopToggleButton->onClick = [this]
@@ -192,7 +187,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     masterVelocitySlider = std::make_unique<VSTSlider>("VMasterVelocity");
     addAndMakeVisible(masterVelocitySlider.get());
-    masterVelocitySlider->setTooltip(TRANS("Global velocity adjustment applied to all played notes"));
+    masterVelocitySlider->setTooltip("Global velocity adjustment applied to all played notes");
     masterVelocitySlider->setRange(0, 200, 1);
     masterVelocitySlider->setSliderStyle(juce::Slider::LinearBar);
     masterVelocitySlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -206,8 +201,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     masterVelocitySlider->setBounds(371, 36, 72, 16);
 
-    masterVelocityLabel = std::make_unique<juce::Label>("new label",
-                                                        TRANS("Master Velocity:"));
+    masterVelocityLabel = std::make_unique<juce::Label>("new label", "Master Velocity:");
     addAndMakeVisible(masterVelocityLabel.get());
     masterVelocityLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     masterVelocityLabel->setJustificationType(juce::Justification::centredRight);
@@ -220,7 +214,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     masterTransposeSlider = std::make_unique<VSTSlider>("MasterTranspose");
     addAndMakeVisible(masterTransposeSlider.get());
-    masterTransposeSlider->setTooltip(TRANS("Global transposition applied to all played notes (after Force to Scale)"));
+    masterTransposeSlider->setTooltip("Global transposition applied to all played notes (after Force to Scale)");
     masterTransposeSlider->setRange(-12, 12, 1);
     masterTransposeSlider->setSliderStyle(juce::Slider::LinearBar);
     masterTransposeSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -234,8 +228,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     masterTransposeSlider->setBounds(554, 36, 72, 16);
 
-    masterTransposeLabel = std::make_unique<juce::Label>("new label",
-                                                         TRANS("Master Transpose:"));
+    masterTransposeLabel = std::make_unique<juce::Label>("new label", "Master Transpose:");
     addAndMakeVisible(masterTransposeLabel.get());
     masterTransposeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     masterTransposeLabel->setJustificationType(juce::Justification::centredRight);
@@ -248,8 +241,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     midiThruButton = std::make_unique<juce::TextButton>("MIDI Thru");
     addAndMakeVisible(midiThruButton.get());
-    midiThruButton->setTooltip(TRANS("Toggle MIDI Thru (Notes selected for Note Triggering and Scale Channel are always blocked)"));
-    midiThruButton->setButtonText(TRANS("Thru"));
+    midiThruButton->setTooltip("Toggle MIDI Thru (Notes selected for Note Triggering and Scale Channel are always blocked)");
+    midiThruButton->setButtonText("Thru");
     midiThruButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     midiThruButton->setBounds(634, 33, 40, 20);
     midiThruButton->onClick = [this]
@@ -259,8 +252,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     monitorButton = std::make_unique<juce::TextButton>("MIDI_Monitor");
     addAndMakeVisible(monitorButton.get());
-    monitorButton->setTooltip(TRANS("Monitor input MIDI through active slot\'s settings (Transpose, Scale, I/O Channel)"));
-    monitorButton->setButtonText(TRANS("Monitor"));
+    monitorButton->setTooltip("Monitor input MIDI through active slot\'s settings (Transpose, Scale, I/O Channel)");
+    monitorButton->setButtonText("Monitor");
     monitorButton->onClick = [this]
     {
         handleMonitorButtonClick();
@@ -271,7 +264,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton1 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton1.get());
-    textButton1->setButtonText(TRANS("1"));
+    textButton1->setButtonText("1");
     textButton1->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton1->setRadioGroupId(1);
 
@@ -279,7 +272,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton2 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton2.get());
-    textButton2->setButtonText(TRANS("2"));
+    textButton2->setButtonText("2");
     textButton2->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton2->setRadioGroupId(1);
     textButton2->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -288,7 +281,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton3 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton3.get());
-    textButton3->setButtonText(TRANS("3"));
+    textButton3->setButtonText("3");
     textButton3->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton3->setRadioGroupId(1);
 
@@ -296,7 +289,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton4 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton4.get());
-    textButton4->setButtonText(TRANS("4"));
+    textButton4->setButtonText("4");
     textButton4->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton4->setRadioGroupId(1);
 
@@ -304,7 +297,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton5 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton5.get());
-    textButton5->setButtonText(TRANS("5"));
+    textButton5->setButtonText("5");
     textButton5->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton5->setRadioGroupId(1);
 
@@ -312,7 +305,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton6 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton6.get());
-    textButton6->setButtonText(TRANS("6"));
+    textButton6->setButtonText("6");
     textButton6->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton6->setRadioGroupId(1);
 
@@ -320,7 +313,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton7 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton7.get());
-    textButton7->setButtonText(TRANS("7"));
+    textButton7->setButtonText("7");
     textButton7->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton7->setRadioGroupId(1);
 
@@ -328,7 +321,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton8 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton8.get());
-    textButton8->setButtonText(TRANS("8"));
+    textButton8->setButtonText("8");
     textButton8->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton8->setRadioGroupId(1);
 
@@ -336,7 +329,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton9 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton9.get());
-    textButton9->setButtonText(TRANS("9"));
+    textButton9->setButtonText("9");
     textButton9->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton9->setRadioGroupId(1);
 
@@ -344,7 +337,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton10 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton10.get());
-    textButton10->setButtonText(TRANS("10"));
+    textButton10->setButtonText("10");
     textButton10->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton10->setRadioGroupId(1);
 
@@ -352,7 +345,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton11 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton11.get());
-    textButton11->setButtonText(TRANS("11"));
+    textButton11->setButtonText("11");
     textButton11->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton11->setRadioGroupId(1);
 
@@ -360,7 +353,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton12 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton12.get());
-    textButton12->setButtonText(TRANS("12"));
+    textButton12->setButtonText("12");
     textButton12->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton12->setRadioGroupId(1);
 
@@ -368,7 +361,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton13 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton13.get());
-    textButton13->setButtonText(TRANS("13"));
+    textButton13->setButtonText("13");
     textButton13->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton13->setRadioGroupId(1);
 
@@ -376,7 +369,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton14 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton14.get());
-    textButton14->setButtonText(TRANS("14"));
+    textButton14->setButtonText("14");
     textButton14->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton14->setRadioGroupId(1);
 
@@ -384,7 +377,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton15 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton15.get());
-    textButton15->setButtonText(TRANS("15"));
+    textButton15->setButtonText("15");
     textButton15->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton15->setRadioGroupId(1);
 
@@ -392,16 +385,15 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton16 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton16.get());
-    textButton16->setButtonText(TRANS("16"));
+    textButton16->setButtonText("16");
     textButton16->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton16->setRadioGroupId(1);
 
     textButton16->setBounds(359, 61, 28, 24);
 
-    patternNameLabel = std::make_unique<ClickableLabel>("Name",
-                                                        TRANS("Bassline (4 bars)"));
+    patternNameLabel = std::make_unique<ClickableLabel>("Name", "Bassline (4 bars)");
     addAndMakeVisible(patternNameLabel.get());
-    patternNameLabel->setTooltip(TRANS("Current pattern name (double-click to edit)"));
+    patternNameLabel->setTooltip("Current pattern name (double-click to edit)");
     patternNameLabel->setFont(juce::Font(26.30f, juce::Font::plain).withTypefaceStyle("Bold"));
     patternNameLabel->setJustificationType(juce::Justification::centredLeft);
     patternNameLabel->setEditable(false, true, false);
@@ -415,7 +407,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     clearButton = std::make_unique<juce::TextButton>("Clear");
     addAndMakeVisible(clearButton.get());
-    clearButton->setTooltip(TRANS("Erase MIDI data from the current slot"));
+    clearButton->setTooltip("Erase MIDI data from the current slot");
     clearButton->setConnectedEdges(juce::Button::ConnectedOnRight);
     clearButton->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
     clearButton->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
@@ -428,7 +420,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     saveButton = std::make_unique<juce::TextButton>("Save");
     addAndMakeVisible(saveButton.get());
-    saveButton->setTooltip(TRANS("Save a MIDI file of the current pattern (Ctrl-click: save to the \"midiloops\" folder with the current name)"));
+    saveButton->setTooltip("Save a MIDI file of the current pattern (Ctrl-click: save to the \"midiloops\" folder with the current name)");
     saveButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
     saveButton->onClick = [this]
     {
@@ -442,7 +434,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     reloadButton = std::make_unique<juce::TextButton>("Load");
     addAndMakeVisible(reloadButton.get());
-    reloadButton->setTooltip(TRANS("Load MIDI file (Ctrl-click: load MIDI file with the current pattern name from the \"midiloops\" folder)"));
+    reloadButton->setTooltip("Load MIDI file (Ctrl-click: load MIDI file with the current pattern name from the \"midiloops\" folder)");
     reloadButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
     reloadButton->onClick = [this]
     {
@@ -456,8 +448,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     playButton = std::make_unique<juce::TextButton>("Play");
     addAndMakeVisible(playButton.get());
-    playButton->setTooltip(TRANS("Toggle playback of current slot"));
-    playButton->setButtonText(TRANS("PLAY"));
+    playButton->setTooltip("Toggle playback of current slot");
+    playButton->setButtonText("PLAY");
     playButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnTop);
     playButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xd213540e));
     playButton->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff00c400));
@@ -467,8 +459,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     recordButton = std::make_unique<juce::TextButton>("Record");
     addAndMakeVisible(recordButton.get());
-    recordButton->setTooltip(TRANS("Toggle recording to current slot"));
-    recordButton->setButtonText(TRANS("RECORD "));
+    recordButton->setTooltip("Toggle recording to current slot");
+    recordButton->setButtonText("RECORD ");
     recordButton->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnTop);
     recordButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xd2a90000));
     recordButton->setColour(juce::TextButton::buttonOnColourId, juce::Colours::red);
@@ -479,8 +471,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     waitForBarButton = std::make_unique<juce::ToggleButton>("WaitForBar");
     addAndMakeVisible(waitForBarButton.get());
-    waitForBarButton->setTooltip(TRANS("When checked, play/stop of this slot will happen at the start of the bar after"));
-    waitForBarButton->setButtonText(TRANS("Wait for Next Bar"));
+    waitForBarButton->setTooltip("When checked, play/stop of this slot will happen at the start of the bar after");
+    waitForBarButton->setButtonText("Wait for Next Bar");
     waitForBarButton->onClick = [this]
     {
         handleWaitForBarButtonClick();
@@ -490,15 +482,15 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopModeComboBox = std::make_unique<juce::ComboBox>("Loop Mode");
     addAndMakeVisible(loopModeComboBox.get());
-    loopModeComboBox->setTooltip(TRANS("Playback Mode: \"Sync Loop\" follows the host timeline. \"Loop after rec\" is the same but also plays automatically as soon as recording ends. \"Unsync\" modes play the pattern from the beginning as soon as playback is started."));
+    loopModeComboBox->setTooltip("Playback Mode: \"Sync Loop\" follows the host timeline. \"Loop after rec\" is the same but also plays automatically as soon as recording ends. \"Unsync\" modes play the pattern from the beginning as soon as playback is started.");
     loopModeComboBox->setEditableText(false);
     loopModeComboBox->setJustificationType(juce::Justification::centredLeft);
-    loopModeComboBox->setTextWhenNothingSelected(TRANS("Unsync 1-shot"));
-    loopModeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    loopModeComboBox->addItem(TRANS("Loop after rec"), 1);
-    loopModeComboBox->addItem(TRANS("Sync loop"), 2);
-    loopModeComboBox->addItem(TRANS("Unsync 1-shot"), 3);
-    loopModeComboBox->addItem(TRANS("Unsync loop"), 4);
+    loopModeComboBox->setTextWhenNothingSelected("Unsync 1-shot");
+    loopModeComboBox->setTextWhenNoChoicesAvailable("(no choices)");
+    loopModeComboBox->addItem("Loop after rec", 1);
+    loopModeComboBox->addItem("Sync loop", 2);
+    loopModeComboBox->addItem("Unsync 1-shot", 3);
+    loopModeComboBox->addItem("Unsync loop", 4);
     loopModeComboBox->onChange = [this]
     {
         handleLoopModeComboBoxChange();
@@ -507,7 +499,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     playGroupSlider = std::make_unique<VSTSlider>("TriggerChannel");
     addAndMakeVisible(playGroupSlider.get());
-    playGroupSlider->setTooltip(TRANS("Slots with the same Play Group number will all start/stop at the same time"));
+    playGroupSlider->setTooltip("Slots with the same Play Group number will all start/stop at the same time");
     playGroupSlider->setRange(0, 16, 1);
     playGroupSlider->setSliderStyle(juce::Slider::LinearBar);
     playGroupSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -521,8 +513,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     playGroupSlider->setBounds(312, 136, 64, 20);
 
-    playGroupLabel = std::make_unique<juce::Label>("Trigger Channel",
-                                                   TRANS("Play Group"));
+    playGroupLabel = std::make_unique<juce::Label>("Trigger Channel", "Play Group");
     addAndMakeVisible(playGroupLabel.get());
     playGroupLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     playGroupLabel->setJustificationType(juce::Justification::centred);
@@ -535,7 +526,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     rootNoteSlider = std::make_unique<VSTSlider>("Root Note");
     addAndMakeVisible(rootNoteSlider.get());
-    rootNoteSlider->setTooltip(TRANS("Transposed note triggering and Scale Channel input will transpose the pattern relative to this note"));
+    rootNoteSlider->setTooltip("Transposed note triggering and Scale Channel input will transpose the pattern relative to this note");
     rootNoteSlider->setRange(-1, 127, 1);
     rootNoteSlider->setSliderStyle(juce::Slider::LinearBar);
     rootNoteSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -549,8 +540,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     rootNoteSlider->setBounds(76, 174, 64, 20);
 
-    rootNoteLabel = std::make_unique<juce::Label>("new label",
-                                                  TRANS("Root Note:"));
+    rootNoteLabel = std::make_unique<juce::Label>("new label", "Root Note:");
     addAndMakeVisible(rootNoteLabel.get());
     rootNoteLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     rootNoteLabel->setJustificationType(juce::Justification::centred);
@@ -563,7 +553,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     numLoopsSlider = std::make_unique<VSTSlider>("NumLoops");
     addAndMakeVisible(numLoopsSlider.get());
-    numLoopsSlider->setTooltip(TRANS("Number of times to loop playback"));
+    numLoopsSlider->setTooltip("Number of times to loop playback");
     numLoopsSlider->setRange(0, 64, 1);
     numLoopsSlider->setSliderStyle(juce::Slider::LinearBar);
     numLoopsSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -579,7 +569,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     nextSlotSlider = std::make_unique<VSTSlider>("NextSlot");
     addAndMakeVisible(nextSlotSlider.get());
-    nextSlotSlider->setTooltip(TRANS("What to do after the selected number of loops have played"));
+    nextSlotSlider->setTooltip("What to do after the selected number of loops have played");
     nextSlotSlider->setRange(0, 16, 1);
     nextSlotSlider->setSliderStyle(juce::Slider::LinearBar);
     nextSlotSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -595,7 +585,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     muteGroupSlider = std::make_unique<VSTSlider>("TriggerChannel");
     addAndMakeVisible(muteGroupSlider.get());
-    muteGroupSlider->setTooltip(TRANS("Only one slot with the same Mute Group number can be played at the same time"));
+    muteGroupSlider->setTooltip("Only one slot with the same Mute Group number can be played at the same time");
     muteGroupSlider->setRange(0, 16, 1);
     muteGroupSlider->setSliderStyle(juce::Slider::LinearBar);
     muteGroupSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -609,8 +599,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     muteGroupSlider->setBounds(312, 174, 64, 20);
 
-    muteGroupLabel = std::make_unique<juce::Label>("Trigger Channel",
-                                                   TRANS("Mute Group"));
+    muteGroupLabel = std::make_unique<juce::Label>("Trigger Channel", "Mute Group");
     addAndMakeVisible(muteGroupLabel.get());
     muteGroupLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     muteGroupLabel->setJustificationType(juce::Justification::centred);
@@ -621,8 +610,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     muteGroupLabel->setBounds(307, 157, 74, 16);
 
-    loopSettingsLabel = std::make_unique<juce::Label>("Sync:",
-                                                      TRANS("Loop Settings"));
+    loopSettingsLabel = std::make_unique<juce::Label>("Sync:", "Loop Settings");
     addAndMakeVisible(loopSettingsLabel.get());
     loopSettingsLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     loopSettingsLabel->setJustificationType(juce::Justification::centred);
@@ -635,8 +623,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     useTransposeChannelButton = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(useTransposeChannelButton.get());
-    useTransposeChannelButton->setTooltip(TRANS("When checked, notes on selected \"Transpose Ch\" will apply to \"Semitones\" and \"Octave\" settings, relative to \"Root Note\""));
-    useTransposeChannelButton->setButtonText(TRANS("Use Transp Ch"));
+    useTransposeChannelButton->setTooltip("When checked, notes on selected \"Transpose Ch\" will apply to \"Semitones\" and \"Octave\" settings, relative to \"Root Note\"");
+    useTransposeChannelButton->setButtonText("Use Transp Ch");
     useTransposeChannelButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
     useTransposeChannelButton->setBounds(148, 252, 130, 17);
     useTransposeChannelButton->onClick = [this]
@@ -646,8 +634,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     immediateTransposeButton = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(immediateTransposeButton.get());
-    immediateTransposeButton->setTooltip(TRANS("When checked, playing notes will be split and transposed immediately on changes to Semitones / Octave / Force to Scale / Master Transpose settings"));
-    immediateTransposeButton->setButtonText(TRANS("Split"));
+    immediateTransposeButton->setTooltip("When checked, playing notes will be split and transposed immediately on changes to Semitones / Octave / Force to Scale / Master Transpose settings");
+    immediateTransposeButton->setButtonText("Split");
     immediateTransposeButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
     immediateTransposeButton->setBounds(247, 252, 48, 17);
     immediateTransposeButton->onClick = [this]
@@ -657,7 +645,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     transpose10Button = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(transpose10Button.get());
-    transpose10Button->setButtonText(TRANS("transpose channel 10"));
+    transpose10Button->setButtonText("transpose channel 10");
     transpose10Button->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     transpose10Button->setBounds(306, 252, 72, 13);
     transpose10Button->onClick = [this]
@@ -667,7 +655,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     scaleChannelSlider = std::make_unique<VSTSlider>("ScaleChannel");
     addAndMakeVisible(scaleChannelSlider.get());
-    scaleChannelSlider->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Scale Ch\" is enabled"));
+    scaleChannelSlider->setTooltip("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Scale Ch\" is enabled");
     scaleChannelSlider->setRange(1, 16, 1);
     scaleChannelSlider->setSliderStyle(juce::Slider::LinearBar);
     scaleChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -681,8 +669,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     scaleChannelSlider->setBounds(10, 283, 60, 20);
 
-    scaleChannelLabel = std::make_unique<juce::Label>("scale ch",
-                                                      TRANS("Scale Ch"));
+    scaleChannelLabel = std::make_unique<juce::Label>("scale ch", "Scale Ch");
     addAndMakeVisible(scaleChannelLabel.get());
     scaleChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     scaleChannelLabel->setJustificationType(juce::Justification::centred);
@@ -695,7 +682,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     transposeChannelSlider = std::make_unique<VSTSlider>("TransposeChannel");
     addAndMakeVisible(transposeChannelSlider.get());
-    transposeChannelSlider->setTooltip(TRANS("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Transp Ch\" is enabled"));
+    transposeChannelSlider->setTooltip("Input notes on this channel will affect Semitones, Octave, and/or Force to Scale settings where \"Use Transp Ch\" is enabled");
     transposeChannelSlider->setRange(1, 16, 1);
     transposeChannelSlider->setSliderStyle(juce::Slider::LinearBar);
     transposeChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -709,8 +696,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     transposeChannelSlider->setBounds(76, 283, 60, 20);
 
-    transposeChannelLabel = std::make_unique<juce::Label>("tr ch",
-                                                          TRANS("Transpose Ch"));
+    transposeChannelLabel = std::make_unique<juce::Label>("tr ch", "Transpose Ch");
     addAndMakeVisible(transposeChannelLabel.get());
     transposeChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     transposeChannelLabel->setJustificationType(juce::Justification::centred);
@@ -723,7 +709,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     transposeSlider = std::make_unique<VSTSlider>("Transpose");
     addAndMakeVisible(transposeSlider.get());
-    transposeSlider->setTooltip(TRANS("Transposition applied to the current slot"));
+    transposeSlider->setTooltip("Transposition applied to the current slot");
     transposeSlider->setRange(-12, 12, 1);
     transposeSlider->setSliderStyle(juce::Slider::LinearBar);
     transposeSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -737,8 +723,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     transposeSlider->setBounds(146, 283, 72, 20);
 
-    transposeLabel = std::make_unique<juce::Label>("new label",
-                                                   TRANS("Semitones"));
+    transposeLabel = std::make_unique<juce::Label>("new label", "Semitones");
     addAndMakeVisible(transposeLabel.get());
     transposeLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     transposeLabel->setJustificationType(juce::Justification::centred);
@@ -751,7 +736,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     octaveSlider = std::make_unique<VSTSlider>("Octave Shift");
     addAndMakeVisible(octaveSlider.get());
-    octaveSlider->setTooltip(TRANS("Transposition by octave for the current slot"));
+    octaveSlider->setTooltip("Transposition by octave for the current slot");
     octaveSlider->setRange(-4, 4, 1);
     octaveSlider->setSliderStyle(juce::Slider::LinearBar);
     octaveSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -765,8 +750,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     octaveSlider->setBounds(226, 283, 72, 20);
 
-    octaveLabel = std::make_unique<juce::Label>("new label",
-                                                TRANS("Octave"));
+    octaveLabel = std::make_unique<juce::Label>("new label", "Octave");
     addAndMakeVisible(octaveLabel.get());
     octaveLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     octaveLabel->setJustificationType(juce::Justification::centred);
@@ -779,7 +763,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     velocitySlider = std::make_unique<VSTSlider>("Velocity Offset");
     addAndMakeVisible(velocitySlider.get());
-    velocitySlider->setTooltip(TRANS("Velocity adjustment for the current slot"));
+    velocitySlider->setTooltip("Velocity adjustment for the current slot");
     velocitySlider->setRange(0, 200, 1);
     velocitySlider->setSliderStyle(juce::Slider::LinearBar);
     velocitySlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -793,8 +777,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     velocitySlider->setBounds(306, 283, 72, 20);
 
-    velocityLabel = std::make_unique<juce::Label>("new label",
-                                                  TRANS("Velocity"));
+    velocityLabel = std::make_unique<juce::Label>("new label", "Velocity");
     addAndMakeVisible(velocityLabel.get());
     velocityLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     velocityLabel->setJustificationType(juce::Justification::centred);
@@ -807,8 +790,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     forceToKeyButton = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(forceToKeyButton.get());
-    forceToKeyButton->setTooltip(TRANS("When checked, played notes will be fitted to the defined scale"));
-    forceToKeyButton->setButtonText(TRANS("Force to Scale"));
+    forceToKeyButton->setTooltip("When checked, played notes will be fitted to the defined scale");
+    forceToKeyButton->setButtonText("Force to Scale");
     forceToKeyButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
     forceToKeyButton->setBounds(11, 312, 99, 17);
     forceToKeyButton->onClick = [this]
@@ -820,12 +803,12 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     addAndMakeVisible(forceModeComboBox.get());
     forceModeComboBox->setEditableText(false);
     forceModeComboBox->setJustificationType(juce::Justification::centredLeft);
-    forceModeComboBox->setTextWhenNothingSelected(TRANS("Nearest"));
-    forceModeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    forceModeComboBox->addItem(TRANS("Nearest"), 1);
-    forceModeComboBox->addItem(TRANS("Up"), 2);
-    forceModeComboBox->addItem(TRANS("Down"), 3);
-    forceModeComboBox->addItem(TRANS("Block"), 4);
+    forceModeComboBox->setTextWhenNothingSelected("Nearest");
+    forceModeComboBox->setTextWhenNoChoicesAvailable("(no choices)");
+    forceModeComboBox->addItem("Nearest", 1);
+    forceModeComboBox->addItem("Up", 2);
+    forceModeComboBox->addItem("Down", 3);
+    forceModeComboBox->addItem("Block", 4);
     forceModeComboBox->onChange = [this]
     {
         handleForceModeComboBoxChange();
@@ -835,8 +818,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     useScaleChannelButton = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(useScaleChannelButton.get());
-    useScaleChannelButton->setTooltip(TRANS("When checked, input notes on \"Scale Ch\" will be used to define the scale"));
-    useScaleChannelButton->setButtonText(TRANS("Use Scale Channel"));
+    useScaleChannelButton->setTooltip("When checked, input notes on \"Scale Ch\" will be used to define the scale");
+    useScaleChannelButton->setButtonText("Use Scale Channel");
     useScaleChannelButton->onClick = [this]
     {
         handleUseScaleChannelButtonClick();
@@ -846,8 +829,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     shiftDownButton = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(shiftDownButton.get());
-    shiftDownButton->setTooltip(TRANS("Shift selected notes one semitone down"));
-    shiftDownButton->setButtonText(TRANS("<"));
+    shiftDownButton->setTooltip("Shift selected notes one semitone down");
+    shiftDownButton->setButtonText("<");
     shiftDownButton->setConnectedEdges(juce::Button::ConnectedOnRight);
     shiftDownButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     shiftDownButton->setBounds(178, 314, 21, 30);
@@ -863,8 +846,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     shiftUpButton = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(shiftUpButton.get());
-    shiftUpButton->setTooltip(TRANS("Shift selected notes one semitone up"));
-    shiftUpButton->setButtonText(TRANS(">"));
+    shiftUpButton->setTooltip("Shift selected notes one semitone up");
+    shiftUpButton->setButtonText(">");
     shiftUpButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
     shiftUpButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     shiftUpButton->setBounds(353, 314, 21, 30);
@@ -875,7 +858,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopStartSlider = std::make_unique<VSTSlider>("Loop Start");
     addAndMakeVisible(loopStartSlider.get());
-    loopStartSlider->setTooltip(TRANS("Offsets the loop start time by this number of beats"));
+    loopStartSlider->setTooltip("Offsets the loop start time by this number of beats");
     loopStartSlider->setRange(-8, 8, 1);
     loopStartSlider->setSliderStyle(juce::Slider::LinearBar);
     loopStartSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
@@ -889,8 +872,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopStartSlider->setBounds(66, 367, 72, 20);
 
-    startOffsetLabel = std::make_unique<juce::Label>("new label",
-                                                     TRANS("Start Offset"));
+    startOffsetLabel = std::make_unique<juce::Label>("new label", "Start Offset");
     addAndMakeVisible(startOffsetLabel.get());
     startOffsetLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     startOffsetLabel->setJustificationType(juce::Justification::centred);
@@ -903,7 +885,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopEndOffsetSlider = std::make_unique<VSTSlider>("Loop End");
     addAndMakeVisible(loopEndOffsetSlider.get());
-    loopEndOffsetSlider->setTooltip(TRANS("Offsets the loop end time by this number of beats"));
+    loopEndOffsetSlider->setTooltip("Offsets the loop end time by this number of beats");
     loopEndOffsetSlider->setRange(-8, 8, 1);
     loopEndOffsetSlider->setSliderStyle(juce::Slider::LinearBar);
     loopEndOffsetSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
@@ -917,8 +899,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopEndOffsetSlider->setBounds(146, 367, 72, 20);
 
-    loopEndOffsetLabel = std::make_unique<juce::Label>("new label",
-                                                       TRANS("End Offset"));
+    loopEndOffsetLabel = std::make_unique<juce::Label>("new label", "End Offset");
     addAndMakeVisible(loopEndOffsetLabel.get());
     loopEndOffsetLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopEndOffsetLabel->setJustificationType(juce::Justification::centred);
@@ -931,7 +912,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     shiftPatternSlider = std::make_unique<VSTSlider>("Shift");
     addAndMakeVisible(shiftPatternSlider.get());
-    shiftPatternSlider->setTooltip(TRANS("Shifts the pattern by this number of beats, with wraparound"));
+    shiftPatternSlider->setTooltip("Shifts the pattern by this number of beats, with wraparound");
     shiftPatternSlider->setRange(-8, 8, 1);
     shiftPatternSlider->setSliderStyle(juce::Slider::LinearBar);
     shiftPatternSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, true, 80, 20);
@@ -945,8 +926,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     shiftPatternSlider->setBounds(226, 367, 72, 20);
 
-    shiftPatternLabel = std::make_unique<juce::Label>("Shift",
-                                                      TRANS("Beat Shift"));
+    shiftPatternLabel = std::make_unique<juce::Label>("Shift", "Beat Shift");
     addAndMakeVisible(shiftPatternLabel.get());
     shiftPatternLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     shiftPatternLabel->setJustificationType(juce::Justification::centred);
@@ -959,7 +939,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     stretchSlider = std::make_unique<VSTSlider>("Loop Stretch");
     addAndMakeVisible(stretchSlider.get());
-    stretchSlider->setTooltip(TRANS("Playback speed, relative to host tempo"));
+    stretchSlider->setTooltip("Playback speed, relative to host tempo");
     stretchSlider->setRange(-10, 10, 1);
     stretchSlider->setSliderStyle(juce::Slider::LinearBar);
     stretchSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -973,8 +953,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     stretchSlider->setBounds(306, 367, 72, 20);
 
-    speedLabel = std::make_unique<juce::Label>("new label",
-                                               TRANS("Speed"));
+    speedLabel = std::make_unique<juce::Label>("new label", "Speed");
     addAndMakeVisible(speedLabel.get());
     speedLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     speedLabel->setJustificationType(juce::Justification::centred);
@@ -987,15 +966,15 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     noteTriggerComboBox = std::make_unique<juce::ComboBox>("Note Trigger");
     addAndMakeVisible(noteTriggerComboBox.get());
-    noteTriggerComboBox->setTooltip(TRANS("For \"Transpose\" modes, pattern will be transposed relative to \"Root Note\""));
+    noteTriggerComboBox->setTooltip("For \"Transpose\" modes, pattern will be transposed relative to \"Root Note\"");
     noteTriggerComboBox->setEditableText(false);
     noteTriggerComboBox->setJustificationType(juce::Justification::centredLeft);
-    noteTriggerComboBox->setTextWhenNothingSelected(TRANS("Mono (Transposed)"));
-    noteTriggerComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    noteTriggerComboBox->addItem(TRANS("Off"), 1);
-    noteTriggerComboBox->addItem(TRANS("Mono (Transpose)"), 2);
-    noteTriggerComboBox->addItem(TRANS("Poly (Transpose)"), 3);
-    noteTriggerComboBox->addItem(TRANS("Mono (Orig. Key)"), 4);
+    noteTriggerComboBox->setTextWhenNothingSelected("Mono (Transposed)");
+    noteTriggerComboBox->setTextWhenNoChoicesAvailable("(no choices)");
+    noteTriggerComboBox->addItem("Off", 1);
+    noteTriggerComboBox->addItem("Mono (Transpose)", 2);
+    noteTriggerComboBox->addItem("Poly (Transpose)", 3);
+    noteTriggerComboBox->addItem("Mono (Orig. Key)", 4);
     noteTriggerComboBox->addSeparator();
     noteTriggerComboBox->onChange = [this]
     {
@@ -1006,8 +985,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     noteToggleButton = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(noteToggleButton.get());
-    noteToggleButton->setTooltip(TRANS("When enabled, Note On events will toggle playback, ignoring Note Off events; otherwise Note Off will stop playback"));
-    noteToggleButton->setButtonText(TRANS("Toggle"));
+    noteToggleButton->setTooltip("When enabled, Note On events will toggle playback, ignoring Note Off events; otherwise Note Off will stop playback");
+    noteToggleButton->setButtonText("Toggle");
     noteToggleButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     noteToggleButton->setBounds(257, 402, 40, 16);
     noteToggleButton->onClick = [this]
@@ -1017,7 +996,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     minTriggerNoteSlider = std::make_unique<VSTSlider>("Low Note");
     addAndMakeVisible(minTriggerNoteSlider.get());
-    minTriggerNoteSlider->setTooltip(TRANS("Lowest note to use for triggering"));
+    minTriggerNoteSlider->setTooltip("Lowest note to use for triggering");
     minTriggerNoteSlider->setRange(-1, 127, 1);
     minTriggerNoteSlider->setSliderStyle(juce::Slider::LinearBar);
     minTriggerNoteSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -1031,8 +1010,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     minTriggerNoteSlider->setBounds(18, 440, 64, 20);
 
-    minTriggerNoteLabel = std::make_unique<juce::Label>("new label",
-                                                        TRANS("Low Note"));
+    minTriggerNoteLabel = std::make_unique<juce::Label>("new label", "Low Note");
     addAndMakeVisible(minTriggerNoteLabel.get());
     minTriggerNoteLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     minTriggerNoteLabel->setJustificationType(juce::Justification::centred);
@@ -1045,7 +1023,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     maxTriggerNoteSlider = std::make_unique<VSTSlider>("High Note");
     addAndMakeVisible(maxTriggerNoteSlider.get());
-    maxTriggerNoteSlider->setTooltip(TRANS("Highest note to use for triggering"));
+    maxTriggerNoteSlider->setTooltip("Highest note to use for triggering");
     maxTriggerNoteSlider->setRange(-1, 127, 1);
     maxTriggerNoteSlider->setSliderStyle(juce::Slider::LinearBar);
     maxTriggerNoteSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -1059,8 +1037,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     maxTriggerNoteSlider->setBounds(90, 440, 64, 20);
 
-    maxTriggerNoteLabel = std::make_unique<juce::Label>("new label",
-                                                        TRANS("High Note"));
+    maxTriggerNoteLabel = std::make_unique<juce::Label>("new label", "High Note");
     addAndMakeVisible(maxTriggerNoteLabel.get());
     maxTriggerNoteLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     maxTriggerNoteLabel->setJustificationType(juce::Justification::centred);
@@ -1072,7 +1049,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     triggerChannelSlider = std::make_unique<VSTSlider>("TriggerChannel");
     addAndMakeVisible(triggerChannelSlider.get());
-    triggerChannelSlider->setTooltip(TRANS("Channel to use for trigger notes"));
+    triggerChannelSlider->setTooltip("Channel to use for trigger notes");
     triggerChannelSlider->setRange(1, 16, 1);
     triggerChannelSlider->setSliderStyle(juce::Slider::LinearBar);
     triggerChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -1086,8 +1063,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     triggerChannelSlider->setBounds(162, 440, 64, 20);
 
-    triggerChannelLabel = std::make_unique<juce::Label>("Trigger Channel",
-                                                        TRANS("Channel"));
+    triggerChannelLabel = std::make_unique<juce::Label>("Trigger Channel", "Channel");
     addAndMakeVisible(triggerChannelLabel.get());
     triggerChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     triggerChannelLabel->setJustificationType(juce::Justification::centred);
@@ -1100,7 +1076,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     velocitySensSlider = std::make_unique<VSTSlider>("Velocity Sensitivity");
     addAndMakeVisible(velocitySensSlider.get());
-    velocitySensSlider->setTooltip(TRANS("Velocity Sensitivity (Input Velocity -> Output Velocity)"));
+    velocitySensSlider->setTooltip("Velocity Sensitivity (Input Velocity -> Output Velocity)");
     velocitySensSlider->setRange(0, 200, 1);
     velocitySensSlider->setSliderStyle(juce::Slider::LinearBar);
     velocitySensSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -1114,8 +1090,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     velocitySensSlider->setBounds(234, 440, 64, 20);
 
-    velocitySenSlider = std::make_unique<juce::Label>("new label",
-                                                      TRANS("VeloSens"));
+    velocitySenSlider = std::make_unique<juce::Label>("new label", "VeloSens");
     addAndMakeVisible(velocitySenSlider.get());
     velocitySenSlider->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     velocitySenSlider->setJustificationType(juce::Justification::centred);
@@ -1128,7 +1103,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     slotIOChannelSlider = std::make_unique<VSTSlider>("Channel");
     addAndMakeVisible(slotIOChannelSlider.get());
-    slotIOChannelSlider->setTooltip(TRANS("Input and output channel for the current slot"));
+    slotIOChannelSlider->setTooltip("Input and output channel for the current slot");
     slotIOChannelSlider->setRange(0, 16, 1);
     slotIOChannelSlider->setSliderStyle(juce::Slider::LinearBar);
     slotIOChannelSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -1142,8 +1117,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     slotIOChannelSlider->setBounds(314, 414, 64, 20);
 
-    slotIOChannelLabel = std::make_unique<juce::Label>("I/O Channel",
-                                                       TRANS("I/O Channel"));
+    slotIOChannelLabel = std::make_unique<juce::Label>("I/O Channel", "I/O Channel");
     addAndMakeVisible(slotIOChannelLabel.get());
     slotIOChannelLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     slotIOChannelLabel->setJustificationType(juce::Justification::centred);
@@ -1156,8 +1130,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     transformFilterButton = std::make_unique<juce::TextButton>("Transform/Filter");
     addAndMakeVisible(transformFilterButton.get());
-    transformFilterButton->setTooltip(TRANS("Transform: all events in the pattern are channelized to the selected channel; Filter: only events with the selected channel will be output"));
-    transformFilterButton->setButtonText(TRANS("Transform"));
+    transformFilterButton->setTooltip("Transform: all events in the pattern are channelized to the selected channel; Filter: only events with the selected channel will be output");
+    transformFilterButton->setButtonText("Transform");
     transformFilterButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff999999));
     transformFilterButton->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
     transformFilterButton->setBounds(314, 440, 64, 20);
@@ -1166,8 +1140,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
         handleFiltButtonClick();
     };
 
-    noteTriggeringLabel = std::make_unique<juce::Label>("Sync:",
-                                                        TRANS("Note Triggering"));
+    noteTriggeringLabel = std::make_unique<juce::Label>("Sync:", "Note Triggering");
     addAndMakeVisible(noteTriggeringLabel.get());
     noteTriggeringLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     noteTriggeringLabel->setJustificationType(juce::Justification::centred);
@@ -1180,7 +1153,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton17 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton17.get());
-    textButton17->setButtonText(TRANS("1"));
+    textButton17->setButtonText("1");
     textButton17->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton17->setRadioGroupId(1);
 
@@ -1188,7 +1161,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton18 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton18.get());
-    textButton18->setButtonText(TRANS("2"));
+    textButton18->setButtonText("2");
     textButton18->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton18->setRadioGroupId(1);
     textButton18->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -1197,7 +1170,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton19 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton19.get());
-    textButton19->setButtonText(TRANS("3"));
+    textButton19->setButtonText("3");
     textButton19->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton19->setRadioGroupId(1);
 
@@ -1205,7 +1178,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton20 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton20.get());
-    textButton20->setButtonText(TRANS("4"));
+    textButton20->setButtonText("4");
     textButton20->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton20->setRadioGroupId(1);
 
@@ -1213,7 +1186,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton21 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton21.get());
-    textButton21->setButtonText(TRANS("5"));
+    textButton21->setButtonText("5");
     textButton21->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton21->setRadioGroupId(1);
 
@@ -1221,7 +1194,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton22 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton22.get());
-    textButton22->setButtonText(TRANS("6"));
+    textButton22->setButtonText("6");
     textButton22->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton22->setRadioGroupId(1);
 
@@ -1229,7 +1202,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton23 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton23.get());
-    textButton23->setButtonText(TRANS("7"));
+    textButton23->setButtonText("7");
     textButton23->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton23->setRadioGroupId(1);
 
@@ -1237,7 +1210,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton24 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton24.get());
-    textButton24->setButtonText(TRANS("8"));
+    textButton24->setButtonText("8");
     textButton24->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton24->setRadioGroupId(1);
 
@@ -1245,7 +1218,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton25 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton25.get());
-    textButton25->setButtonText(TRANS("9"));
+    textButton25->setButtonText("9");
     textButton25->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton25->setRadioGroupId(1);
 
@@ -1253,7 +1226,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton26 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton26.get());
-    textButton26->setButtonText(TRANS("10"));
+    textButton26->setButtonText("10");
     textButton26->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton26->setRadioGroupId(1);
 
@@ -1261,7 +1234,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton27 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton27.get());
-    textButton27->setButtonText(TRANS("11"));
+    textButton27->setButtonText("11");
     textButton27->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton27->setRadioGroupId(1);
 
@@ -1269,7 +1242,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton28 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton28.get());
-    textButton28->setButtonText(TRANS("12"));
+    textButton28->setButtonText("12");
     textButton28->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton28->setRadioGroupId(1);
 
@@ -1277,7 +1250,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton29 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton29.get());
-    textButton29->setButtonText(TRANS("13"));
+    textButton29->setButtonText("13");
     textButton29->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton29->setRadioGroupId(1);
 
@@ -1285,7 +1258,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton30 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton30.get());
-    textButton30->setButtonText(TRANS("14"));
+    textButton30->setButtonText("14");
     textButton30->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton30->setRadioGroupId(1);
 
@@ -1293,7 +1266,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton31 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton31.get());
-    textButton31->setButtonText(TRANS("15"));
+    textButton31->setButtonText("15");
     textButton31->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton31->setRadioGroupId(1);
 
@@ -1301,7 +1274,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton32 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton32.get());
-    textButton32->setButtonText(TRANS("16"));
+    textButton32->setButtonText("16");
     textButton32->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton32->setRadioGroupId(1);
 
@@ -1309,7 +1282,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton33 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton33.get());
-    textButton33->setButtonText(TRANS("1"));
+    textButton33->setButtonText("1");
     textButton33->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton33->setRadioGroupId(1);
 
@@ -1317,7 +1290,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton34 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton34.get());
-    textButton34->setButtonText(TRANS("2"));
+    textButton34->setButtonText("2");
     textButton34->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton34->setRadioGroupId(1);
     textButton34->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -1326,7 +1299,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton35 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton35.get());
-    textButton35->setButtonText(TRANS("3"));
+    textButton35->setButtonText("3");
     textButton35->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton35->setRadioGroupId(1);
 
@@ -1334,7 +1307,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton36 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton36.get());
-    textButton36->setButtonText(TRANS("4"));
+    textButton36->setButtonText("4");
     textButton36->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton36->setRadioGroupId(1);
 
@@ -1342,7 +1315,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton37 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton37.get());
-    textButton37->setButtonText(TRANS("5"));
+    textButton37->setButtonText("5");
     textButton37->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton37->setRadioGroupId(1);
 
@@ -1350,7 +1323,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton38 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton38.get());
-    textButton38->setButtonText(TRANS("6"));
+    textButton38->setButtonText("6");
     textButton38->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton38->setRadioGroupId(1);
 
@@ -1358,7 +1331,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton39 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton39.get());
-    textButton39->setButtonText(TRANS("7"));
+    textButton39->setButtonText("7");
     textButton39->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton39->setRadioGroupId(1);
 
@@ -1366,7 +1339,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton40 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton40.get());
-    textButton40->setButtonText(TRANS("8"));
+    textButton40->setButtonText("8");
     textButton40->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton40->setRadioGroupId(1);
 
@@ -1374,7 +1347,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton41 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton41.get());
-    textButton41->setButtonText(TRANS("9"));
+    textButton41->setButtonText("9");
     textButton41->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton41->setRadioGroupId(1);
 
@@ -1382,7 +1355,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton42 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton42.get());
-    textButton42->setButtonText(TRANS("10"));
+    textButton42->setButtonText("10");
     textButton42->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton42->setRadioGroupId(1);
 
@@ -1390,7 +1363,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton43 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton43.get());
-    textButton43->setButtonText(TRANS("11"));
+    textButton43->setButtonText("11");
     textButton43->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton43->setRadioGroupId(1);
 
@@ -1398,7 +1371,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton44 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton44.get());
-    textButton44->setButtonText(TRANS("12"));
+    textButton44->setButtonText("12");
     textButton44->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton44->setRadioGroupId(1);
 
@@ -1406,7 +1379,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton45 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton45.get());
-    textButton45->setButtonText(TRANS("13"));
+    textButton45->setButtonText("13");
     textButton45->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton45->setRadioGroupId(1);
 
@@ -1414,7 +1387,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton46 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton46.get());
-    textButton46->setButtonText(TRANS("14"));
+    textButton46->setButtonText("14");
     textButton46->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton46->setRadioGroupId(1);
 
@@ -1422,7 +1395,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton47 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton47.get());
-    textButton47->setButtonText(TRANS("15"));
+    textButton47->setButtonText("15");
     textButton47->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton47->setRadioGroupId(1);
 
@@ -1430,7 +1403,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton48 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton48.get());
-    textButton48->setButtonText(TRANS("16"));
+    textButton48->setButtonText("16");
     textButton48->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton48->setRadioGroupId(1);
 
@@ -1438,7 +1411,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton49 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton49.get());
-    textButton49->setButtonText(TRANS("1"));
+    textButton49->setButtonText("1");
     textButton49->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton49->setRadioGroupId(1);
 
@@ -1446,7 +1419,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton50 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton50.get());
-    textButton50->setButtonText(TRANS("2"));
+    textButton50->setButtonText("2");
     textButton50->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton50->setRadioGroupId(1);
     textButton50->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -1455,7 +1428,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton51 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton51.get());
-    textButton51->setButtonText(TRANS("3"));
+    textButton51->setButtonText("3");
     textButton51->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton51->setRadioGroupId(1);
 
@@ -1463,7 +1436,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton52 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton52.get());
-    textButton52->setButtonText(TRANS("4"));
+    textButton52->setButtonText("4");
     textButton52->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton52->setRadioGroupId(1);
 
@@ -1471,7 +1444,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton53 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton53.get());
-    textButton53->setButtonText(TRANS("5"));
+    textButton53->setButtonText("5");
     textButton53->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton53->setRadioGroupId(1);
 
@@ -1479,7 +1452,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton54 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton54.get());
-    textButton54->setButtonText(TRANS("6"));
+    textButton54->setButtonText("6");
     textButton54->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton54->setRadioGroupId(1);
 
@@ -1487,7 +1460,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton55 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton55.get());
-    textButton55->setButtonText(TRANS("7"));
+    textButton55->setButtonText("7");
     textButton55->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton55->setRadioGroupId(1);
 
@@ -1495,7 +1468,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton56 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton56.get());
-    textButton56->setButtonText(TRANS("8"));
+    textButton56->setButtonText("8");
     textButton56->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton56->setRadioGroupId(1);
 
@@ -1503,7 +1476,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton57 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton57.get());
-    textButton57->setButtonText(TRANS("9"));
+    textButton57->setButtonText("9");
     textButton57->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton57->setRadioGroupId(1);
 
@@ -1511,7 +1484,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton58 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton58.get());
-    textButton58->setButtonText(TRANS("10"));
+    textButton58->setButtonText("10");
     textButton58->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton58->setRadioGroupId(1);
 
@@ -1519,7 +1492,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton59 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton59.get());
-    textButton59->setButtonText(TRANS("11"));
+    textButton59->setButtonText("11");
     textButton59->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton59->setRadioGroupId(1);
 
@@ -1527,7 +1500,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton60 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton60.get());
-    textButton60->setButtonText(TRANS("12"));
+    textButton60->setButtonText("12");
     textButton60->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton60->setRadioGroupId(1);
 
@@ -1535,7 +1508,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton61 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton61.get());
-    textButton61->setButtonText(TRANS("13"));
+    textButton61->setButtonText("13");
     textButton61->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton61->setRadioGroupId(1);
 
@@ -1543,7 +1516,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton62 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton62.get());
-    textButton62->setButtonText(TRANS("14"));
+    textButton62->setButtonText("14");
     textButton62->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton62->setRadioGroupId(1);
 
@@ -1551,7 +1524,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton63 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton63.get());
-    textButton63->setButtonText(TRANS("15"));
+    textButton63->setButtonText("15");
     textButton63->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton63->setRadioGroupId(1);
 
@@ -1559,7 +1532,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton64 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton64.get());
-    textButton64->setButtonText(TRANS("16"));
+    textButton64->setButtonText("16");
     textButton64->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton64->setRadioGroupId(1);
 
@@ -1567,7 +1540,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton65 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton65.get());
-    textButton65->setButtonText(TRANS("1"));
+    textButton65->setButtonText("1");
     textButton65->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton65->setRadioGroupId(1);
 
@@ -1575,7 +1548,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton66 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton66.get());
-    textButton66->setButtonText(TRANS("2"));
+    textButton66->setButtonText("2");
     textButton66->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton66->setRadioGroupId(1);
     textButton66->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -1584,7 +1557,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton67 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton67.get());
-    textButton67->setButtonText(TRANS("3"));
+    textButton67->setButtonText("3");
     textButton67->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton67->setRadioGroupId(1);
 
@@ -1592,7 +1565,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton68 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton68.get());
-    textButton68->setButtonText(TRANS("4"));
+    textButton68->setButtonText("4");
     textButton68->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton68->setRadioGroupId(1);
 
@@ -1600,7 +1573,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton69 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton69.get());
-    textButton69->setButtonText(TRANS("5"));
+    textButton69->setButtonText("5");
     textButton69->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton69->setRadioGroupId(1);
 
@@ -1608,7 +1581,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton70 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton70.get());
-    textButton70->setButtonText(TRANS("6"));
+    textButton70->setButtonText("6");
     textButton70->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton70->setRadioGroupId(1);
 
@@ -1616,7 +1589,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton71 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton71.get());
-    textButton71->setButtonText(TRANS("7"));
+    textButton71->setButtonText("7");
     textButton71->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton71->setRadioGroupId(1);
 
@@ -1624,7 +1597,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton72 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton72.get());
-    textButton72->setButtonText(TRANS("8"));
+    textButton72->setButtonText("8");
     textButton72->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton72->setRadioGroupId(1);
 
@@ -1632,7 +1605,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton73 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton73.get());
-    textButton73->setButtonText(TRANS("9"));
+    textButton73->setButtonText("9");
     textButton73->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton73->setRadioGroupId(1);
 
@@ -1640,7 +1613,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton74 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton74.get());
-    textButton74->setButtonText(TRANS("10"));
+    textButton74->setButtonText("10");
     textButton74->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton74->setRadioGroupId(1);
 
@@ -1648,7 +1621,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton75 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton75.get());
-    textButton75->setButtonText(TRANS("11"));
+    textButton75->setButtonText("11");
     textButton75->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton75->setRadioGroupId(1);
 
@@ -1656,7 +1629,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton76 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton76.get());
-    textButton76->setButtonText(TRANS("12"));
+    textButton76->setButtonText("12");
     textButton76->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton76->setRadioGroupId(1);
 
@@ -1664,7 +1637,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton77 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton77.get());
-    textButton77->setButtonText(TRANS("13"));
+    textButton77->setButtonText("13");
     textButton77->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton77->setRadioGroupId(1);
 
@@ -1672,7 +1645,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton78 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton78.get());
-    textButton78->setButtonText(TRANS("14"));
+    textButton78->setButtonText("14");
     textButton78->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton78->setRadioGroupId(1);
 
@@ -1680,7 +1653,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton79 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton79.get());
-    textButton79->setButtonText(TRANS("15"));
+    textButton79->setButtonText("15");
     textButton79->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton79->setRadioGroupId(1);
 
@@ -1688,7 +1661,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton80 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton80.get());
-    textButton80->setButtonText(TRANS("16"));
+    textButton80->setButtonText("16");
     textButton80->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton80->setRadioGroupId(1);
 
@@ -1696,7 +1669,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton81 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton81.get());
-    textButton81->setButtonText(TRANS("1"));
+    textButton81->setButtonText("1");
     textButton81->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton81->setRadioGroupId(1);
 
@@ -1704,7 +1677,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton82 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton82.get());
-    textButton82->setButtonText(TRANS("2"));
+    textButton82->setButtonText("2");
     textButton82->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton82->setRadioGroupId(1);
     textButton82->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -1713,7 +1686,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton83 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton83.get());
-    textButton83->setButtonText(TRANS("3"));
+    textButton83->setButtonText("3");
     textButton83->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton83->setRadioGroupId(1);
 
@@ -1721,7 +1694,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton84 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton84.get());
-    textButton84->setButtonText(TRANS("4"));
+    textButton84->setButtonText("4");
     textButton84->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton84->setRadioGroupId(1);
 
@@ -1729,7 +1702,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton85 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton85.get());
-    textButton85->setButtonText(TRANS("5"));
+    textButton85->setButtonText("5");
     textButton85->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton85->setRadioGroupId(1);
 
@@ -1737,7 +1710,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton86 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton86.get());
-    textButton86->setButtonText(TRANS("6"));
+    textButton86->setButtonText("6");
     textButton86->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton86->setRadioGroupId(1);
 
@@ -1745,7 +1718,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton87 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton87.get());
-    textButton87->setButtonText(TRANS("7"));
+    textButton87->setButtonText("7");
     textButton87->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton87->setRadioGroupId(1);
 
@@ -1753,7 +1726,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton88 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton88.get());
-    textButton88->setButtonText(TRANS("8"));
+    textButton88->setButtonText("8");
     textButton88->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton88->setRadioGroupId(1);
 
@@ -1761,7 +1734,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton89 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton89.get());
-    textButton89->setButtonText(TRANS("9"));
+    textButton89->setButtonText("9");
     textButton89->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton89->setRadioGroupId(1);
 
@@ -1769,7 +1742,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton90 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton90.get());
-    textButton90->setButtonText(TRANS("10"));
+    textButton90->setButtonText("10");
     textButton90->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton90->setRadioGroupId(1);
 
@@ -1777,7 +1750,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton91 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton91.get());
-    textButton91->setButtonText(TRANS("11"));
+    textButton91->setButtonText("11");
     textButton91->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton91->setRadioGroupId(1);
 
@@ -1785,7 +1758,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton92 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton92.get());
-    textButton92->setButtonText(TRANS("12"));
+    textButton92->setButtonText("12");
     textButton92->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton92->setRadioGroupId(1);
 
@@ -1793,7 +1766,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton93 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton93.get());
-    textButton93->setButtonText(TRANS("13"));
+    textButton93->setButtonText("13");
     textButton93->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton93->setRadioGroupId(1);
 
@@ -1801,7 +1774,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton94 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton94.get());
-    textButton94->setButtonText(TRANS("14"));
+    textButton94->setButtonText("14");
     textButton94->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton94->setRadioGroupId(1);
 
@@ -1809,7 +1782,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton95 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton95.get());
-    textButton95->setButtonText(TRANS("15"));
+    textButton95->setButtonText("15");
     textButton95->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton95->setRadioGroupId(1);
 
@@ -1817,7 +1790,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton96 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton96.get());
-    textButton96->setButtonText(TRANS("16"));
+    textButton96->setButtonText("16");
     textButton96->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton96->setRadioGroupId(1);
 
@@ -1825,7 +1798,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton97 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton97.get());
-    textButton97->setButtonText(TRANS("1"));
+    textButton97->setButtonText("1");
     textButton97->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton97->setRadioGroupId(1);
 
@@ -1833,7 +1806,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton98 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton98.get());
-    textButton98->setButtonText(TRANS("2"));
+    textButton98->setButtonText("2");
     textButton98->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton98->setRadioGroupId(1);
     textButton98->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -1842,7 +1815,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton99 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton99.get());
-    textButton99->setButtonText(TRANS("3"));
+    textButton99->setButtonText("3");
     textButton99->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton99->setRadioGroupId(1);
 
@@ -1850,7 +1823,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton100 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton100.get());
-    textButton100->setButtonText(TRANS("4"));
+    textButton100->setButtonText("4");
     textButton100->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton100->setRadioGroupId(1);
 
@@ -1858,7 +1831,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton101 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton101.get());
-    textButton101->setButtonText(TRANS("5"));
+    textButton101->setButtonText("5");
     textButton101->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton101->setRadioGroupId(1);
 
@@ -1866,7 +1839,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton102 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton102.get());
-    textButton102->setButtonText(TRANS("6"));
+    textButton102->setButtonText("6");
     textButton102->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton102->setRadioGroupId(1);
 
@@ -1874,7 +1847,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton103 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton103.get());
-    textButton103->setButtonText(TRANS("7"));
+    textButton103->setButtonText("7");
     textButton103->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton103->setRadioGroupId(1);
 
@@ -1882,7 +1855,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton104 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton104.get());
-    textButton104->setButtonText(TRANS("8"));
+    textButton104->setButtonText("8");
     textButton104->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton104->setRadioGroupId(1);
 
@@ -1890,7 +1863,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton105 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton105.get());
-    textButton105->setButtonText(TRANS("9"));
+    textButton105->setButtonText("9");
     textButton105->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton105->setRadioGroupId(1);
 
@@ -1898,7 +1871,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton106 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton106.get());
-    textButton106->setButtonText(TRANS("10"));
+    textButton106->setButtonText("10");
     textButton106->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton106->setRadioGroupId(1);
 
@@ -1906,7 +1879,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton107 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton107.get());
-    textButton107->setButtonText(TRANS("11"));
+    textButton107->setButtonText("11");
     textButton107->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton107->setRadioGroupId(1);
 
@@ -1914,7 +1887,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton108 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton108.get());
-    textButton108->setButtonText(TRANS("12"));
+    textButton108->setButtonText("12");
     textButton108->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton108->setRadioGroupId(1);
 
@@ -1922,7 +1895,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton109 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton109.get());
-    textButton109->setButtonText(TRANS("13"));
+    textButton109->setButtonText("13");
     textButton109->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton109->setRadioGroupId(1);
 
@@ -1930,7 +1903,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton110 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton110.get());
-    textButton110->setButtonText(TRANS("14"));
+    textButton110->setButtonText("14");
     textButton110->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton110->setRadioGroupId(1);
 
@@ -1938,7 +1911,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton111 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton111.get());
-    textButton111->setButtonText(TRANS("15"));
+    textButton111->setButtonText("15");
     textButton111->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton111->setRadioGroupId(1);
 
@@ -1946,7 +1919,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton112 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton112.get());
-    textButton112->setButtonText(TRANS("16"));
+    textButton112->setButtonText("16");
     textButton112->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton112->setRadioGroupId(1);
 
@@ -1954,7 +1927,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton113 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton113.get());
-    textButton113->setButtonText(TRANS("1"));
+    textButton113->setButtonText("1");
     textButton113->setConnectedEdges(juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton113->setRadioGroupId(1);
 
@@ -1962,7 +1935,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton114 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton114.get());
-    textButton114->setButtonText(TRANS("2"));
+    textButton114->setButtonText("2");
     textButton114->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton114->setRadioGroupId(1);
     textButton114->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -1971,7 +1944,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton115 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton115.get());
-    textButton115->setButtonText(TRANS("3"));
+    textButton115->setButtonText("3");
     textButton115->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton115->setRadioGroupId(1);
 
@@ -1979,7 +1952,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton116 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton116.get());
-    textButton116->setButtonText(TRANS("4"));
+    textButton116->setButtonText("4");
     textButton116->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton116->setRadioGroupId(1);
 
@@ -1987,7 +1960,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton117 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton117.get());
-    textButton117->setButtonText(TRANS("5"));
+    textButton117->setButtonText("5");
     textButton117->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton117->setRadioGroupId(1);
 
@@ -1995,7 +1968,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton118 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton118.get());
-    textButton118->setButtonText(TRANS("6"));
+    textButton118->setButtonText("6");
     textButton118->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton118->setRadioGroupId(1);
 
@@ -2003,7 +1976,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton119 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton119.get());
-    textButton119->setButtonText(TRANS("7"));
+    textButton119->setButtonText("7");
     textButton119->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton119->setRadioGroupId(1);
 
@@ -2011,7 +1984,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton120 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton120.get());
-    textButton120->setButtonText(TRANS("8"));
+    textButton120->setButtonText("8");
     textButton120->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton120->setRadioGroupId(1);
 
@@ -2019,7 +1992,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton121 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton121.get());
-    textButton121->setButtonText(TRANS("9"));
+    textButton121->setButtonText("9");
     textButton121->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton121->setRadioGroupId(1);
 
@@ -2027,7 +2000,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton122 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton122.get());
-    textButton122->setButtonText(TRANS("10"));
+    textButton122->setButtonText("10");
     textButton122->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton122->setRadioGroupId(1);
 
@@ -2035,7 +2008,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton123 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton123.get());
-    textButton123->setButtonText(TRANS("11"));
+    textButton123->setButtonText("11");
     textButton123->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton123->setRadioGroupId(1);
 
@@ -2043,7 +2016,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton124 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton124.get());
-    textButton124->setButtonText(TRANS("12"));
+    textButton124->setButtonText("12");
     textButton124->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton124->setRadioGroupId(1);
 
@@ -2051,7 +2024,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton125 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton125.get());
-    textButton125->setButtonText(TRANS("13"));
+    textButton125->setButtonText("13");
     textButton125->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton125->setRadioGroupId(1);
 
@@ -2059,7 +2032,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton126 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton126.get());
-    textButton126->setButtonText(TRANS("14"));
+    textButton126->setButtonText("14");
     textButton126->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton126->setRadioGroupId(1);
 
@@ -2067,7 +2040,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton127 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton127.get());
-    textButton127->setButtonText(TRANS("15"));
+    textButton127->setButtonText("15");
     textButton127->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight | juce::Button::ConnectedOnBottom);
     textButton127->setRadioGroupId(1);
 
@@ -2075,14 +2048,13 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     textButton128 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(textButton128.get());
-    textButton128->setButtonText(TRANS("16"));
+    textButton128->setButtonText("16");
     textButton128->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnBottom);
     textButton128->setRadioGroupId(1);
 
     textButton128->setBounds(767, -29, 28, 24);
 
-    loopInfoLabel = std::make_unique<juce::Label>("Loop Info",
-                                                  TRANS("label text"));
+    loopInfoLabel = std::make_unique<juce::Label>("Loop Info", "label text");
     addAndMakeVisible(loopInfoLabel.get());
     loopInfoLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopInfoLabel->setJustificationType(juce::Justification::centredLeft);
@@ -2093,8 +2065,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopInfoLabel->setBounds(14, 205, 272, 16);
 
-    loopInfoLabel2 = std::make_unique<juce::Label>("Loop Info 2",
-                                                   TRANS("label text"));
+    loopInfoLabel2 = std::make_unique<juce::Label>("Loop Info 2", "label text");
     addAndMakeVisible(loopInfoLabel2.get());
     loopInfoLabel2->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     loopInfoLabel2->setJustificationType(juce::Justification::centredLeft);
@@ -2104,8 +2075,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     loopInfoLabel2->setBounds(14, 225, 272, 16);
 
-    loopManipulationLabel = std::make_unique<juce::Label>("Sync:",
-                                                          TRANS("Loop Manipulation"));
+    loopManipulationLabel = std::make_unique<juce::Label>("Sync:", "Loop Manipulation");
     addAndMakeVisible(loopManipulationLabel.get());
     loopManipulationLabel->setFont(juce::Font(12.00f, juce::Font::plain).withTypefaceStyle("Bold"));
     loopManipulationLabel->setJustificationType(juce::Justification::centred);
@@ -2118,8 +2088,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     snapButton = std::make_unique<juce::ToggleButton>("new toggle button");
     addAndMakeVisible(snapButton.get());
-    snapButton->setTooltip(TRANS("Toggle Snap to Grid"));
-    snapButton->setButtonText(TRANS("Snap"));
+    snapButton->setTooltip("Toggle Snap to Grid");
+    snapButton->setButtonText("Snap");
     snapButton->setBounds(392, 61, 59, 24);
     snapButton->onClick = [this]
     {
@@ -2128,16 +2098,16 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     quantize2ComboBox = std::make_unique<juce::ComboBox>("PR Quantize Step");
     addAndMakeVisible(quantize2ComboBox.get());
-    quantize2ComboBox->setTooltip(TRANS("Grid Size"));
+    quantize2ComboBox->setTooltip("Grid Size");
     quantize2ComboBox->setEditableText(false);
     quantize2ComboBox->setJustificationType(juce::Justification::centredLeft);
-    quantize2ComboBox->setTextWhenNothingSelected(TRANS("32nd"));
-    quantize2ComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
-    quantize2ComboBox->addItem(TRANS("4th"), 1);
-    quantize2ComboBox->addItem(TRANS("8th"), 2);
-    quantize2ComboBox->addItem(TRANS("16th"), 3);
-    quantize2ComboBox->addItem(TRANS("32nd"), 4);
-    quantize2ComboBox->addItem(TRANS("64th"), 5);
+    quantize2ComboBox->setTextWhenNothingSelected("32nd");
+    quantize2ComboBox->setTextWhenNoChoicesAvailable("(no choices)");
+    quantize2ComboBox->addItem("4th", 1);
+    quantize2ComboBox->addItem("8th", 2);
+    quantize2ComboBox->addItem("16th", 3);
+    quantize2ComboBox->addItem("32nd", 4);
+    quantize2ComboBox->addItem("64th", 5);
     quantize2ComboBox->onChange = [this]
     {
         handleQuantize2ComboBoxChange();
@@ -2147,8 +2117,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     tripletButton = std::make_unique<juce::TextButton>("Triplet");
     addAndMakeVisible(tripletButton.get());
-    tripletButton->setTooltip(TRANS("Toggle Triplet Note Grid"));
-    tripletButton->setButtonText(TRANS("3"));
+    tripletButton->setTooltip("Toggle Triplet Note Grid");
+    tripletButton->setButtonText("3");
     tripletButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
     tripletButton->setRadioGroupId(2);
     tripletButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
@@ -2160,8 +2130,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     dottedButton = std::make_unique<juce::TextButton>("Dotted");
     addAndMakeVisible(dottedButton.get());
-    dottedButton->setTooltip(TRANS("Toggle Dotted Note Grid"));
-    dottedButton->setButtonText(TRANS("."));
+    dottedButton->setTooltip("Toggle Dotted Note Grid");
+    dottedButton->setButtonText(".");
     dottedButton->setConnectedEdges(juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight);
     dottedButton->setRadioGroupId(2);
     dottedButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff8d8d8d));
@@ -2171,10 +2141,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
         handleDottedButtonClick();
     };
 
-    numeratorLabel = std::make_unique<juce::Label>("new label",
-                                                   TRANS("4"));
+    numeratorLabel = std::make_unique<juce::Label>("new label", "4");
     addAndMakeVisible(numeratorLabel.get());
-    numeratorLabel->setTooltip(TRANS("Time Sig Numerator"));
+    numeratorLabel->setTooltip("Time Sig Numerator");
     numeratorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     numeratorLabel->setJustificationType(juce::Justification::centredRight);
     numeratorLabel->setEditable(true, true, false);
@@ -2186,10 +2155,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     };
     numeratorLabel->setBounds(555, 64, 27, 18);
 
-    denominatorLabel = std::make_unique<juce::Label>("new label",
-                                                     TRANS("4"));
+    denominatorLabel = std::make_unique<juce::Label>("new label", "4");
     addAndMakeVisible(denominatorLabel.get());
-    denominatorLabel->setTooltip(TRANS("Time Sig Denominator"));
+    denominatorLabel->setTooltip("Time Sig Denominator");
     denominatorLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     denominatorLabel->setJustificationType(juce::Justification::centredLeft);
     denominatorLabel->setEditable(true, true, false);
@@ -2204,8 +2172,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     keepLengthToggleButton = std::make_unique<juce::ToggleButton>("OverdubMode");
     addAndMakeVisible(keepLengthToggleButton.get());
-    keepLengthToggleButton->setTooltip(TRANS("When checked, overdubbing will loop record into existing loop length"));
-    keepLengthToggleButton->setButtonText(TRANS("Keep Length"));
+    keepLengthToggleButton->setTooltip("When checked, overdubbing will loop record into existing loop length");
+    keepLengthToggleButton->setButtonText("Keep Length");
     keepLengthToggleButton->setColour(juce::ToggleButton::textColourId, juce::Colours::white);
     keepLengthToggleButton->setBounds(520, -2, 83, 16);
     keepLengthToggleButton->onClick = [this]
@@ -2213,7 +2181,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
         handleKeepLengthButtonClick();
     };
 
-    zoomLabel = std::make_unique<juce::Label>("new label", TRANS("Zoom"));
+    zoomLabel = std::make_unique<juce::Label>("new label", "Zoom");
     addAndMakeVisible(zoomLabel.get());
     zoomLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     zoomLabel->setJustificationType(juce::Justification::centredLeft);
@@ -2225,8 +2193,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     zoomOutButton = std::make_unique<juce::TextButton>("ZoomOut");
     addAndMakeVisible(zoomOutButton.get());
-    zoomOutButton->setTooltip(TRANS("Zoom Out (Ctrl-click for vertical)"));
-    zoomOutButton->setButtonText(TRANS("-"));
+    zoomOutButton->setTooltip("Zoom Out (Ctrl-click for vertical)");
+    zoomOutButton->setButtonText("-");
     zoomOutButton->setConnectedEdges(juce::Button::ConnectedOnRight);
     zoomOutButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
     zoomOutButton->setBounds(656, 64, 18, 18);
@@ -2237,8 +2205,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     zoomInButton = std::make_unique<juce::TextButton>("ZoomIn");
     addAndMakeVisible(zoomInButton.get());
-    zoomInButton->setTooltip(TRANS("Zoom In (Ctrl-click for vertical)"));
-    zoomInButton->setButtonText(TRANS("+"));
+    zoomInButton->setTooltip("Zoom In (Ctrl-click for vertical)");
+    zoomInButton->setButtonText("+");
     zoomInButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
     zoomInButton->setRadioGroupId(2);
     zoomInButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -2250,8 +2218,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     removeBarButton = std::make_unique<juce::TextButton>("RemoveBar");
     addAndMakeVisible(removeBarButton.get());
-    removeBarButton->setTooltip(TRANS("Remove bar"));
-    removeBarButton->setButtonText(TRANS("-"));
+    removeBarButton->setTooltip("Remove bar");
+    removeBarButton->setButtonText("-");
     removeBarButton->setConnectedEdges(juce::Button::ConnectedOnRight);
     removeBarButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
     removeBarButton->setBounds(706, 64, 18, 18);
@@ -2261,9 +2229,9 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
     };
 
     patternLengthLabel = std::make_unique<juce::Label>("Length",
-                                                       TRANS("4"));
+                                                       "4");
     addAndMakeVisible(patternLengthLabel.get());
-    patternLengthLabel->setTooltip(TRANS("Pattern length in bars"));
+    patternLengthLabel->setTooltip("Pattern length in bars");
     patternLengthLabel->setFont(juce::Font(15.00f, juce::Font::plain).withTypefaceStyle("Regular"));
     patternLengthLabel->setJustificationType(juce::Justification::centred);
     patternLengthLabel->setEditable(true, true, false);
@@ -2278,8 +2246,8 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     addBarButton = std::make_unique<juce::TextButton>("AddBar");
     addAndMakeVisible(addBarButton.get());
-    addBarButton->setTooltip(TRANS("Add bar"));
-    addBarButton->setButtonText(TRANS("+"));
+    addBarButton->setTooltip("Add bar");
+    addBarButton->setButtonText("+");
     addBarButton->setConnectedEdges(juce::Button::ConnectedOnLeft);
     addBarButton->setRadioGroupId(2);
     addBarButton->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffbbbbff));
@@ -2314,7 +2282,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     recCCSlider = std::make_unique<VSTSlider>("recCC");
     addAndMakeVisible(recCCSlider.get());
-    recCCSlider->setTooltip(TRANS("CC Number to toggle recording to active slot"));
+    recCCSlider->setTooltip("CC Number to toggle recording to active slot");
     recCCSlider->setRange(-2, 127, 1);
     recCCSlider->setSliderStyle(juce::Slider::LinearBar);
     recCCSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -2330,7 +2298,7 @@ PizLooperEditor::PizLooperEditor(PizLooper* const ownerFilter)
 
     playCCSlider = std::make_unique<VSTSlider>("playCC");
     addAndMakeVisible(playCCSlider.get());
-    playCCSlider->setTooltip(TRANS("CC Number to toggle play for active slot"));
+    playCCSlider->setTooltip("CC Number to toggle play for active slot");
     playCCSlider->setRange(-2, 127, 1);
     playCCSlider->setSliderStyle(juce::Slider::LinearBar);
     playCCSlider->setTextBoxStyle(juce::Slider::TextBoxLeft, false, 80, 20);
@@ -2935,7 +2903,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 44, y = 23, width = 108, height = 20;
-        juce::String text(TRANS("midiLooper"));
+        juce::String text("midiLooper");
         auto fillColour = juce::Colour(0xffcbcbcb);
 
         g.setColour(fillColour);
@@ -2945,7 +2913,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 46, y = 8, width = 108, height = 20;
-        juce::String text(TRANS("Insert Piz Here->"));
+        juce::String text("Insert Piz Here->");
         auto fillColour = juce::Colour(0xffbfbfbf);
 
         g.setColour(fillColour);
@@ -2994,7 +2962,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 215, y = 177, width = 24, height = 15;
-        juce::String text(TRANS("->"));
+        juce::String text("->");
         juce::Colour fillColour = juce::Colours::white;
 
         g.setColour(fillColour);
@@ -3004,7 +2972,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 153, y = 162, width = 24, height = 15;
-        juce::String text(TRANS("PLAY"));
+        juce::String text("PLAY");
         juce::Colour fillColour = juce::Colours::white;
 
         g.setColour(fillColour);
@@ -3014,7 +2982,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 230, y = 162, width = 29, height = 15;
-        juce::String text(TRANS("THEN"));
+        juce::String text("THEN");
         juce::Colour fillColour = juce::Colours::white;
 
         g.setColour(fillColour);
@@ -3032,7 +3000,7 @@ void PizLooperEditor::paint(juce::Graphics& g)
 
     {
         int x = 574, y = 67, width = 20, height = 12;
-        juce::String text(TRANS("/"));
+        juce::String text("/");
         juce::Colour fillColour = juce::Colours::black;
 
         g.setColour(fillColour);
